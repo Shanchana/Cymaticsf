@@ -1,7 +1,6 @@
 # Ignore the virtual environment
 env/
 /db.sqlite3
-config/credentials.json
 .env
 
 # Python bytecode

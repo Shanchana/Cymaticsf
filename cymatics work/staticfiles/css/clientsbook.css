@@ -1,0 +1,111 @@
+
+  
+  
+  
+  .filter-btn, .back-btn {
+    padding: 10px 15px;
+    background-color: #000;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    margin-left: 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+  }
+  
+  .filter-btn img, .back-btn img {
+    margin-right: 5px;
+    height: 24px;
+    width:24px;
+  }
+  
+  .client-book {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+  }
+  
+  .client-book h2 {
+    margin-top: 0;
+  }
+  
+  .client-list {
+    margin-top: 20px;
+  }
+  
+  .client-item {
+    display: flex;
+    padding: 15px;
+    border-bottom: 1px solid #ddd;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .client-item:last-child {
+    border-bottom: none;
+  }
+  
+  .client-info {
+    display: flex;
+    align-items: center;
+  }
+  
+  .client-id {
+    font-size: 1.2em;
+    margin-right: 10px;
+    color: #555;
+  }
+  
+  .client-details {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .client-name {
+    font-weight: bold;
+  }
+  
+  .client-detail {
+    color: #777;
+  }
+  
+  .client-arrow img {
+    width: 15px;
+    height: 15px;
+  }
+  
+  @media (max-width: 768px) {
+    .container {
+      flex-direction: column;
+    }
+  
+    .sidebar {
+      width: 100%;
+      height: auto;
+    }
+  
+    .menu-title {
+      text-align: center;
+    }
+  
+    .menu-title h3 {
+      margin: 0;
+      padding: 10px;
+    }
+  
+    .sidebar nav ul {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-around;
+    }
+  
+    .sidebar nav ul li {
+      padding: 10px;
+      width: 48%;
+    }
+  
+    .main-content {
+      padding: 10px;
+    }
+  }
