@@ -1,3 +1,20 @@
 # Ignore the virtual environment
 env/
 /db.sqlite3
+config/credentials.json
+.env
+
+# Python bytecode
+__pycache__/
+*.pyc
+
+# Django migration files (keep init.py)
+*/migrations/*
+!*/migrations/__init__.py
+
+# IDE files
+.vscode/
+.idea/
+
+# Log files
+*.log

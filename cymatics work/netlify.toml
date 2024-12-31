@@ -1,0 +1,26 @@
+
+
+[build]
+command = "python manage.py collectstatic --noinput"
+publish = "staticfiles"
+
+
+
+[build.environment]
+  PYTHONPATH = "$PYTHONPATH:./cymaticspro"
+  DJANGO_SETTINGS_MODULE = "cymaticspro.settings"
+  CREDENTIALS_FILE = "config/credentials.json"
+  DB_HOST = "db.qpouaobvdrjhckjjwyao.supabase.co"
+  DB_NAME = "postgres"
+  DB_PASSWORD = "sanju@23"
+  DB_PORT = "5432"
+  DB_USER = "postgres"
+  EMAIL_HOST = "smtp.gmail.com"
+  EMAIL_HOST_PASSWORD = "zyjm xirt avtj alhj"
+  EMAIL_HOST_USER = "shanchana2317@gmail.com"
+  EMAIL_PORT = "587"
+  GOOGLE_MAPS_API_KEY = "AIzaSyAqIalCM0rqsXeHiyRP4ImBbVgqwMSv8D8"
+  OAUTH_REDIRECT_URI = "http://127.0.0.1:8000/accounts/google/login/callback/"
+  SECRET_KEY = "django-insecure--3g6z%qy%v7ss6m3u4cme=p5voz(bv3-3xsvrmawc5)f)^s_%4"
+  SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = "1021478837420-dfclc0hg6h2s9pgooffq4ti195fh6pbf.apps.googleusercontent.com"
+  SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = "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"
