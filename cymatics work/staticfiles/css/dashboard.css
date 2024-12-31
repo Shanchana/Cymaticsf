@@ -1,0 +1,313 @@
+
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.header .stats {
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.header .stat {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    flex: 1;
+    margin-right: 20px;
+    margin-bottom: 20px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.header .stat:hover {
+    background-color: #e0e0e0;
+}
+
+.header .stat:last-child {
+    margin-right: 0;
+}
+
+.header .stat span {
+    display: block;
+    font-size: 14px;
+    color: #666;
+}
+
+.header .stat strong {
+    font-size: 24px;
+    color: #000;
+}
+
+html, body {
+    height: 100%;
+    margin: 0;
+}
+.button-container {
+    display: flex;
+    justify-content: space-between; /* Space buttons evenly */
+    width: 100%; /* Full width */
+    max-width: 800px; /* Set a max width for the container */
+}
+
+.button {
+    background-color: #f0f0f0; /* Light gray background */
+    border: 1px solid #ccc; /* Light border */
+    border-radius: 5px; /* Rounded corners */
+    padding: 20px; /* Padding for button */
+    text-align: center; /* Center text */
+    font-size: 16px; /* Font size */
+    color: purple; /* Text color */
+    cursor: pointer; /* Pointer cursor on hover */
+    flex: 1; /* Make buttons flexible */
+    margin: 0 10px; /* Space between buttons */
+    display: flex; /* Use flex to align items */
+    flex-direction: column; /* Stack icon and text vertically */
+    align-items: center; /* Center items horizontally */
+    text-decoration: none; /* Remove underline */
+}
+
+.button a {
+    text-decoration: none; /* Ensure no underline */
+    color: inherit; /* Inherit button text color */
+    display: flex; /* Flex for alignment */
+    flex-direction: column; /* Stack icon and text */
+    align-items: center; /* Center items */
+}
+
+.button img {
+    width: 24px; /* Set image width */
+    height: auto; /* Maintain aspect ratio */
+    margin-bottom: 8px; /* Space between image and text */
+}
+.payment-pending {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    margin-top: 20px;
+}
+
+.payment-pending h2 {
+    margin-top: 0;
+}
+
+.payment-pending table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.payment-pending tr {
+    cursor: pointer; /* Change cursor to pointer for rows */
+}
+
+.payment-pending tr:hover {
+    background-color: #f9f9f9; /* Light background on hover */
+}
+
+.payment-pending table td {
+    padding: 15px;
+    border-bottom: 1px solid #ddd;
+}
+
+.payment-pending table td:last-child {
+    text-align: right;
+}
+
+.pagination {
+display: flex;
+justify-content: center;
+align-items: center;
+margin: 20px;
+}
+
+.arrow {
+background-color: #f1f1f1;
+border: none;
+padding: 10px;
+cursor: pointer;
+}
+
+.page-numbers {
+display: flex;
+margin: 0 10px;
+}
+
+.page {
+padding: 8px;
+margin: 0 5px;
+cursor: pointer;
+background-color: #f1f1f1;
+border-radius: 3px;
+}
+
+.page.active {
+background-color: #050505;
+color: white;
+}
+
+.page:hover {
+background-color: #ddd;
+}
+
+
+
+
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+    }
+
+
+    .header .stats, .boxes-container {
+        flex-direction: column;
+    }
+
+    .header .stat, .box {
+        margin-right: 0;
+        width: 100%;
+    }
+
+    .payment-pending table td {
+        display: block;
+        width: 100%;
+        text-align: left;
+        padding: 10px 5px;
+    }
+
+    .payment-pending table td:last-child {
+        text-align: left;
+    }
+}
+
+@media (max-width: 480px) {
+    .sidebar nav ul li {
+        width: 100%;
+    }
+}
+
+.upcoming-shoot {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    margin-top: 20px; /* Add margin to separate from other content */
+}
+
+.upcoming-shoot h2 {
+    margin-top: 0;
+}
+
+.shoot-item {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    background-color: #f4f4f4;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.shoot-item:hover {
+    background-color: #e0e0e0;
+}
+
+.shoot-item img {
+    width: 40px;
+    height: 40px;
+    margin-right: 10px;
+    border-radius: 5px;
+}
+
+.shoot-details {
+    flex-grow: 1;
+}
+
+.shoot-details p {
+    margin: 0;
+    font-size: 14px;
+}
+
+.shoot-details p.company {
+    font-weight: bold;
+}
+
+.arrow-icon {
+    width: 15px !important; /* Adjusted width */
+    height: 15px !important; /* Adjusted height */
+}
+
+.project-pending-section {
+    margin-top: 20px;
+    padding: 20px;
+    background-color: white;
+    border-radius: 10px;
+}
+
+.project-pending-section h2 {
+    font-size: 24px;
+    margin-bottom: 10px;
+    text-align:left;
+}
+
+.pending-projects {
+    display: flex;
+    flex-wrap: wrap; /* Allow wrapping of boxes */
+    justify-content:space-between; /* Create space between boxes */
+    gap:10px; /* Add gap between boxes */
+}
+
+.project-box {
+    flex: 1 1 calc(33.33% - 20px); /* Four boxes in a row with some margin */
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    transition: transform 0.3s, background-color 0.3s;
+    cursor: pointer;
+    display: flex; /* Enable flexbox for centering content */
+    flex-direction: column; /* Arrange content vertically */
+    align-items: left; /* Center items horizontally */
+    justify-content: flex-start; /* Align items to the start */
+    padding: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add shadow for depth */
+    margin-bottom: 2px;
+    margin-right:0px;
+}
+
+.project-box:hover {
+    transform: scale(1.05); /* Slightly increase size on hover */
+    background-color: #e0e0e0; /* Change background color on hover */
+}
+
+.map-area {
+    width: 100%;
+    height: 70px; /* Height for the map area */
+    background-color: #ddd;
+    border-radius: 4px;
+}
+
+.project-name {
+    font-size: 16px; /* Font size for project name */
+    font-weight: bold;
+    text-align: left; 
+    margin: 0; /* Reduced margin for less gap */
+}
+
+.project-namep2 {
+    font-weight: 400; /* Lighter weight for second line */
+    margin: 0; /* Reduced margin for less gap */
+}
+
+.project-status {
+    font-size: 14px; /* Font size for project status */
+    color: #555;
+    text-align: left; /* Align text to the left */
+    margin: 0; /* Reduced margin for less gap */
+}
+

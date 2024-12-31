@@ -1,0 +1,294 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    height: 100vh;
+    flex-direction: column;
+}
+.container {
+    display: flex;
+    width: 100%;
+    flex-grow: 1;
+}
+    .sidebar {
+      background-color: #1e1e1e;
+      color: white;
+      width: 250px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: center;
+      transition: width 0.3s;
+      position: relative;
+  }
+  .sidebar.closed {
+    width: 60px;
+}
+
+/* Icon visibility and border */
+.sidebar .toggle-icon {
+    position: absolute;
+    top: 25px !important; /* Aligned near the top */
+    right: -8px; /* Adjusted to be right on the edge line */
+    cursor: pointer;
+    visibility: hidden;
+    border: 3px solid rgba(78, 27, 231, 0.5); /* Light border */
+    border-radius: 8px;
+    padding: 1px;
+    transition: visibility 0.3s ease-in-out, top 0.3s ease-in-out; /* Smooth transitions */
+    z-index: 2;
+}
+#toggle-icon {
+    width: 20px;
+    height: 20px;
+}
+
+
+/* Adjust position for closed state to avoid overlap */
+.sidebar.closed .toggle-icon {
+    top: 10px;
+    right: -8px; /* Keep it on the edge even when closed */
+}
+
+/* Show icon when hovering near the sidebar or over the icon */
+.sidebar:hover .toggle-icon, .toggle-icon:hover {
+    visibility: visible;
+}
+
+.sidebar .logo {
+    padding: 20px;
+    text-align: center;
+}
+
+.sidebar.closed .logo {
+    display: none;
+}
+
+.sidebar nav ul {
+    list-style: none;
+    padding: 0;
+    width: 100%;
+    text-align: center;
+}
+
+.sidebar nav ul li {
+    padding: 12px 20px;
+    cursor: pointer;
+    transition: background-color 0.3s, border-left 0.3s;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.sidebar.closed nav ul li {
+    justify-content: center;
+}
+
+.sidebar nav ul li a {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: white;
+    width: 100%;
+    font-family: Arial, sans-serif;
+}
+
+.sidebar nav ul li a:hover {
+    background-color: #555;
+    border-left: 4px solid #ffcc00;
+}
+
+.menu-icon {
+    margin-right: 10px;
+    width: 24px;
+    height: 24px;
+}
+
+.menu-text {
+    transition: opacity 0.3s, visibility 0.3s;
+    font-family: Arial, sans-serif;
+}
+
+.sidebar.closed .menu-text {
+    display: none;
+}
+
+.sidebar.closed nav ul li:hover {
+    background-color: inherit;
+}
+
+
+.main-content {
+  flex-grow: 1;
+  background-color: #f1f1f1;
+  padding: 20px;
+  position: relative; /* Required for positioning the form */
+}
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.clients-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.clients-table th, .clients-table td {
+    padding: 15px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+    position: relative;
+}
+
+.clients-table tr:hover .client-actions {
+    display: flex;
+}
+
+.client-actions {
+    display: none;
+    align-items: center;
+    gap: 10px;
+}
+
+.client-actions button {
+    padding: 5px 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}
+
+.share-btn {
+    background-color: #333;
+    color: white;
+}
+
+.call-btn {
+    background-color: #f0f0f0;
+    color: #333;
+}
+
+.button-icon {
+    margin-right: 5px;
+    width: 16px;
+    height: 16px;
+}
+
+.search-box {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.search-box input {
+    padding: 10px;
+    width: 15%;
+    margin-right: 10px;
+}
+
+.new-btn {
+    background-color: #333;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+}
+
+.options-icon {
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+/* Modal Styles */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.4);
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 50%;
+    border-radius: 10px;
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.modal-content form {
+    display: flex;
+    flex-direction: column;
+}
+
+.modal-content form label {
+    margin-top: 10px;
+}
+
+.modal-content form input,
+.modal-content form button {
+    padding: 10px;
+    margin-top: 5px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 20px;
+}
+
+.form-actions button {
+    margin-left: 10px;
+}
+
+form button[type="submit"],
+form button[type="button"] {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+form button[type="submit"] {
+    background-color: black;
+    color: white;
+}
+
+form button[type="button"] {
+    background-color: #ccc;
+}
