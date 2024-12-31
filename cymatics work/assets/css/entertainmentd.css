@@ -1,0 +1,114 @@
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            height: 100vh;
+            flex-direction: column;
+        }
+
+        .container {
+            display: flex;
+            width: 100%;
+            flex-grow: 1;
+        }
+
+        .sidebar {
+            background-color: #1e1e1e;
+            color: white;
+            width: 250px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+        }
+
+        .sidebar .logo {
+            padding: 20px;
+            text-align: center;
+        }
+
+        .menu-title {
+            padding: 10px 0;
+            text-align: center;
+        }
+
+        .sidebar nav ul {
+            list-style: none;
+            padding: 0;
+            width: 100%;
+        }
+
+        .sidebar nav ul li {
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: background-color 0.3s, color 0.3s, border-left 0.3s;
+            text-align: left;
+            display: flex;
+            align-items: center;
+        }
+
+        .sidebar nav ul li:hover {
+            background-color: #333;
+            color: #fff;
+            border-left: 4px solid #fff;
+        }
+
+        .menu-icon {
+            margin-right: 10px;
+            width: 24px;
+            height: 24px;
+        }
+
+        .main-content {
+            flex-grow: 1;
+            background-color: #f1f1f1;
+            padding: 20px;
+        }
+
+        .left-side {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            padding-left: 20px;
+            padding-top: 20px;
+        }
+
+        
+        .movie-title {
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .language {
+            color: #888;
+            font-size: 14px;
+            padding-left:11px;
+        }
+
+        .rating {
+            display: flex;
+            align-items: center;
+            font-size: 24px;
+            padding-top: 110px;
+        }
+
+        .rating span {
+            color: rgb(0, 0, 0);
+            cursor: pointer;
+        }
+
+        .rating span.inactive {
+            color: #ccc;
+        }
+
+        
+        .content-wrapper {
+            display: flex;
+            margin-left: 20px; 
+            flex-grow: 1;
+        }
+
+      

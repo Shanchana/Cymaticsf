@@ -1,0 +1,411 @@
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    height: 100vh;
+    flex-direction: column;
+}
+
+.container {
+    display: flex;
+    width: 100%;
+    flex-grow: 1;
+}
+
+.sidebar {
+    background-color: #1e1e1e;
+    color: white;
+    width: 250px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.sidebar .logo {
+    font-size: 24px;
+    font-weight: bold;
+    padding: 20px;
+    text-align: center;
+}
+
+.menu-title {
+    padding: 10px 0;
+    text-align: center;
+}
+
+.sidebar nav ul {
+    list-style: none;
+    padding: 0;
+    width: 100%;
+}
+
+.sidebar nav ul li {
+    padding: 12px 20px;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s, border-left 0.3s;
+    text-align: left;
+    display: flex;
+    align-items: center;
+}
+
+.sidebar nav ul li:hover {
+    background-color: #333;
+    color: #fff;
+    border-left: 4px solid #fff;
+}
+
+.menu-icon {
+    margin-right: 10px;
+    width: 24px;
+    height: 24px;
+}
+
+.main-content {
+    flex-grow: 1;
+    background-color: #f1f1f1;
+    padding: 20px;
+    overflow-y: auto; /* Allow scrolling if content overflows */
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.header .stats {
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.header .stat {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    flex: 1;
+    margin-right: 20px;
+    margin-bottom: 20px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.header .stat:hover {
+    background-color: #e0e0e0;
+}
+
+.header .stat:last-child {
+    margin-right: 0;
+}
+
+.header .stat span {
+    display: block;
+    font-size: 14px;
+    color: #666;
+}
+
+.header .stat strong {
+    font-size: 24px;
+    color: #000;
+}
+
+html, body {
+    height: 100%;
+    margin: 0;
+}
+
+.button-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center; /* Center the button container */
+    gap: 10px;
+    width: 300px; /* Fixed width for the button container */
+    margin: 0 auto; /* Center the button container */
+    height: 100%; /* Adjust the gap between rows if needed */
+}
+
+.row {
+    display: flex;
+    justify-content: center;
+    width: 150%;
+    margin-bottom: 10px;
+}
+
+.button {
+    flex: 1;
+    padding: 10px 20px;
+    margin: 5px;
+    background-color: #c2c2c2c2; /* Button background color */
+    color: black; /* Button text color */
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    text-align: center;
+    width: 200px; /* Adjust the button width as needed */
+    display: flex; /* Enable flexbox for centering content */
+    align-items: center; /* Center items vertically */
+    justify-content: center; /* Center items horizontally */
+}
+
+.button img {
+    margin-right: 10px; /* Space between icon and text */
+    width: 20px; /* Icon width */
+    height: 20px; /* Icon height */
+}
+
+.button:hover {
+    background-color: #d9d9d9c8; /* Button hover color */
+}
+
+.payment-pending {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    margin-top: 20px;
+}
+
+.payment-pending h2 {
+    margin-top: 0;
+}
+
+.payment-pending table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.payment-pending tr {
+    cursor: pointer; /* Change cursor to pointer for rows */
+}
+
+.payment-pending tr:hover {
+    background-color: #f9f9f9; /* Light background on hover */
+}
+
+.payment-pending table td {
+    padding: 15px;
+    border-bottom: 1px solid #ddd;
+}
+
+.payment-pending table td:last-child {
+    text-align: right;
+}
+
+.pagination {
+display: flex;
+justify-content: center;
+align-items: center;
+margin: 20px;
+}
+
+.arrow {
+background-color: #f1f1f1;
+border: none;
+padding: 10px;
+cursor: pointer;
+}
+
+.page-numbers {
+display: flex;
+margin: 0 10px;
+}
+
+.page {
+padding: 8px;
+margin: 0 5px;
+cursor: pointer;
+background-color: #f1f1f1;
+border-radius: 3px;
+}
+
+.page.active {
+background-color: #050505;
+color: white;
+}
+
+.page:hover {
+background-color: #ddd;
+}
+
+
+
+
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        width: 100%;
+        flex-direction: row;
+        justify-content: space-between;
+        padding: 10px;
+    }
+
+    .sidebar nav ul {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        width: 100%;
+    }
+
+    .sidebar nav ul li {
+        padding: 10px;
+        width: calc(100% / 3);
+        text-align: center;
+    }
+
+    .header .stats, .boxes-container {
+        flex-direction: column;
+    }
+
+    .header .stat, .box {
+        margin-right: 0;
+        width: 100%;
+    }
+
+    .payment-pending table td {
+        display: block;
+        width: 100%;
+        text-align: left;
+        padding: 10px 5px;
+    }
+
+    .payment-pending table td:last-child {
+        text-align: left;
+    }
+}
+
+@media (max-width: 480px) {
+    .sidebar nav ul li {
+        width: 100%;
+    }
+}
+
+.upcoming-shoot {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    margin-top: 20px; /* Add margin to separate from other content */
+}
+
+.upcoming-shoot h2 {
+    margin-top: 0;
+}
+
+.shoot-item {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    background-color: #f4f4f4;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.shoot-item:hover {
+    background-color: #e0e0e0;
+}
+
+.shoot-item img {
+    width: 40px;
+    height: 40px;
+    margin-right: 10px;
+    border-radius: 5px;
+}
+
+.shoot-details {
+    flex-grow: 1;
+}
+
+.shoot-details p {
+    margin: 0;
+    font-size: 14px;
+}
+
+.shoot-details p.company {
+    font-weight: bold;
+}
+
+.arrow-icon {
+    width: 15px !important; /* Adjusted width */
+    height: 15px !important; /* Adjusted height */
+}
+
+.project-pending-section {
+    margin-top: 20px;
+    padding: 20px;
+    background-color: white;
+    border-radius: 10px;
+}
+
+.project-pending-section h2 {
+    font-size: 24px;
+    margin-bottom: 10px;
+    text-align:left;
+}
+
+.pending-projects {
+    display: flex;
+    flex-wrap: wrap; /* Allow wrapping of boxes */
+    justify-content:space-between; /* Create space between boxes */
+    gap:10px; /* Add gap between boxes */
+}
+
+.project-box {
+    flex: 1 1 calc(33.33% - 20px); /* Four boxes in a row with some margin */
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    transition: transform 0.3s, background-color 0.3s;
+    cursor: pointer;
+    display: flex; /* Enable flexbox for centering content */
+    flex-direction: column; /* Arrange content vertically */
+    align-items: left; /* Center items horizontally */
+    justify-content: flex-start; /* Align items to the start */
+    padding: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add shadow for depth */
+    margin-bottom: 2px;
+    margin-right:0px;
+}
+
+.project-box:hover {
+    transform: scale(1.05); /* Slightly increase size on hover */
+    background-color: #e0e0e0; /* Change background color on hover */
+}
+
+.map-area {
+    width: 100%;
+    height: 70px; /* Height for the map area */
+    background-color: #ddd;
+    border-radius: 4px;
+}
+
+.project-name {
+    font-size: 16px; /* Font size for project name */
+    font-weight: bold;
+    text-align: left; 
+    margin: 0; /* Reduced margin for less gap */
+}
+
+.project-namep2 {
+    font-weight: 400; /* Lighter weight for second line */
+    margin: 0; /* Reduced margin for less gap */
+}
+
+.project-status {
+    font-size: 14px; /* Font size for project status */
+    color: #555;
+    text-align: left; /* Align text to the left */
+    margin: 0; /* Reduced margin for less gap */
+}
+

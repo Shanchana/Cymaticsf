@@ -1,0 +1,451 @@
+{% load static %}
+{% static "images" as baseurl %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assets Page</title>
+    <link rel="stylesheet" type="text/css" href="https://npmcdn.com/flatpickr/dist/themes/dark.css">
+    <link rel="stylesheet" href="{% static './css/assetd.css' %}" >
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+</head>
+<style>
+    .modal-content {
+    position: relative; /* Allows absolute positioning inside this element */
+    background-color: white;
+    margin: 5% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 400px;
+    border-radius: 10px;
+}
+.close {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 28px; /* Increase size */
+    font-weight: bold;
+    color: #000;
+    cursor: pointer;
+}
+
+.close:hover,
+.close:focus {
+    color: rgb(0, 0, 0); /* Optional: Change color on hover */
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.modal-content h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size:19px;
+}
+.edit-btn {
+    background-color: #000;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 20px 0;
+    width: 200px;
+    height: 40px;
+}
+
+.edit-btn img {
+    margin-right: 10px;
+    width: 16px;
+    height: 16px;
+}
+
+.edit-btn:hover {
+    box-shadow: inset 5px 5px 8px rgba(0, 0, 0, 0.2);
+}
+.main-content {
+    flex-grow: 1;
+    background-color: #f1f1f1;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+.profile-section {
+    position: relative; /* Allows positioning of the dropdown */
+    padding: 12px 20px; /* Match padding with other menu items */
+    cursor: pointer; /* Change cursor on hover */
+    transition: background-color 0.3s, border-left 0.3s; /* Smooth transition */
+}
+
+.profile-section:hover {
+    background-color: #555; /* Background color on hover */
+    border-left: 4px solid #ffcc00; /* Left border on hover */
+}
+
+.dropdown {
+    position: absolute; /* Position relative to the profile section */
+    bottom: 100%; /* Position above the profile section */
+    left: 0; /* Align to the left */
+    background-color: white; /* Background color of the dropdown */
+    border: 1px solid #ccc; /* Border for the dropdown */
+    border-radius: 4px; /* Rounded corners */
+    z-index: 1000; /* Ensure it appears above other elements */
+    width: 160px; /* Set width for the dropdown */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Shadow for a floating effect */
+    display: none; /* Initially hidden */
+}
+.dropdown ul {
+    list-style: none; /* Remove default list styles */
+    padding: 0; /* Remove padding */
+    margin: 0; /* Remove margin */
+}
+
+.dropdown li {
+    padding: 10px; /* Padding for each item */
+    color: black; /* Set text color to black */
+    cursor: pointer; /* Change cursor on hover */
+}
+
+.dropdown li:hover {
+    background-color: #f1f1f1; /* Background on hover */
+}
+.user-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #ddd;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    font-size: 18px;
+    color: #0e0e0e;
+    background-color: #e1ecb8;
+
+}
+</style>
+
+<body>
+    
+    <div class="top-bar"></div>
+    <div class="container">
+        <aside class="sidebar">
+            <div class="toggle-icon">
+                <img src="{% static 'images/menuleft.png' %}" alt="icon" id="toggle-icon" width="16" height="16">
+            </div>
+            <div class="logo">
+                <img src="{% static './images/logowhite.png' %}" alt="logo" width="50" height="50">
+            </div>
+            <nav>
+                <ul>
+                    <li class="menu-item"><a href="{% url 'dashboard' %}"><img src="{% static 'images/dashboard.png' %}" class="menu-icon"><span class="menu-text">Dashboard</span></a></li>
+                    <li class="menu-item"><a href="{% url 'projects' %}"><img src="{% static 'images/project.png' %}" class="menu-icon"><span class="menu-text">Project</span></a></li>
+                    <li class="menu-item"><a href="{% url 'incomef_view' %}"><img src="{% static 'images/income.png' %}" class="menu-icon"><span class="menu-text">Income</span></a></li>
+                    <li class="menu-item"><a href="{% url 'expense' %}"><img src="{% static 'images/expenses.png' %}" class="menu-icon"><span class="menu-text">Expense</span></a></li>
+                    <li class="menu-item"><a href="{% url 'calendar' %}"><img src="{% static 'images/calendar.png' %}" class="menu-icon"><span class="menu-text">Calendar</span></a></li>
+                    <li class="menu-item"><a href="{% url 'allproject' %}"><img src="{% static 'images/All projects.png' %}" class="menu-icon"><span class="menu-text">All Projects</span></a></li>
+                    <li class="menu-item"><a href="{% url 'clientsbook' %}"><img src="{% static 'images/clientsbook.png' %}" class="menu-icon"><span class="menu-text">Clients Book</span></a></li>
+                    <li class="menu-item"><a href="{% url 'clients' %}"><img src="{% static 'images/Clients.png' %}" class="menu-icon"><span class="menu-text">Clients</span></a></li>
+                    <li class="menu-item"><a href="{% url 'status' %}"><img src="{% static 'images/status.png' %}" class="menu-icon"><span class="menu-text">Status</span></a></li>
+                    <li class="menu-item active"><a href="{% url 'pending_pay' %}"><img src="{% static 'images/pending.png' %}" class="menu-icon"><span class="menu-text">Pending Payments</span></a></li>
+                    <li class="menu-item"><a href="{% url 'project_map' %}"><img src="{% static 'images/map.png' %}" class="menu-icon"><span class="menu-text">Map</span></a></li>
+                    <li class="menu-item"><a href="{% url 'assets' %}"><img src="{% static 'images/Assets.png' %}" class="menu-icon"><span class="menu-text">Assets</span></a></li>
+                    <li class="menu-item"><a href="{% url 'budget' %}"><img src="{% static 'images/budget.png' %}" class="menu-icon"><span class="menu-text">Budget</span></a></li>
+                    <li class="menu-item"><a href="{% url 'entertainment' %}"><img src="{% static 'images/Entertainment.png' %}" class="menu-icon"><span class="menu-text">Entertainment</span></a></li>
+                </ul>
+            </nav>
+            <div class="profile-section" id="profileMenu">
+                <div class="user-icon" id="userIcon">
+                  <!-- Default content in case JS is not available -->
+                  U
+              </div>
+  
+                <span class="menu-text" id="name">{{ user.username }}</span>
+                <div class="dropdown" id="profileDropdown">
+                    <ul>
+                        <li><a href="{% url 'profile' %}">View Profile</a></li>
+                        <li><a href="{% url 'logout_view' %}">Sign Out</a></li>
+                    </ul>
+                </div>
+              </div>
+        </aside>
+        <main class="main-content">
+            <div class="asset-header">
+              <img src="{{ objs.image.url }}" alt="Logo">
+              <h1>{{ objs.name }}</h1>
+              <p>{{ quantity }}</p>
+              <p>{{ objs.type }}</p>
+          </div>
+          <button class="edit-btn" onclick="openModal('{{ objs.id }}')" data-id="{{ objs.id }}">
+              <img src="{% static 'images/edit.png' %}" alt="Edit Icon">
+              Edit
+          </button>
+          <!-- Moved asset details container below the edit button -->
+          <div class="asset-details-container">
+              <p class="asset-number">{{ buy_price }}</p>
+              <div class="asset-details">
+                  <div class="value-box">
+                      <p class="value-label">Value</p>
+                      <p>{{ objs.value }}</p>
+                  </div>
+              </div>
+          </div>
+      </main>
+  </div>
+
+  <!-- Modal -->
+  <div id="editModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <h2>Edit Asset</h2>
+        <form id="editForm">
+            <label for="editdate">Date</label>
+            <input type="date" id="editdate" name="editdate">
+            
+            <label for="editcategory">Type</label>
+            <input type="text" id="editcategory" name="editcategory">
+            
+            <label for="editName">Name</label>
+            <input type="text" id="editName" name="editName">
+            
+            <label for="editqty">Qty</label>
+            <input type="number" id="editqty" name="editqty">
+            
+            <label for="editbuyprice">Buy Price</label>
+            <input type="number" id="editbuyprice" name="editbuyprice" step="0.01">
+            
+            <label for="editvalue">Value</label>
+            <input type="number" id="editvalue" name="editvalue" step="0.01">
+            
+            <label for="editnote">Note</label>
+            <input type="text" id="editnote" name="editnote">
+            
+            <label for="editimage">Image</label>
+            <input type="file" id="editimage" name="editimage">
+            <p id="image-file-name"></p> <!-- This will show the previously uploaded or newly selected file name -->
+
+            
+            <div class="form-actions">
+                <button type="submit">Submit</button>
+                <button type="button" onclick="closeModal()" id="cancelBtn">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+  <script> // front end
+      function openModal() {
+          document.getElementById('editModal').style.display = 'block';
+      }
+
+      function closeModal() {
+          document.getElementById('editModal').style.display = 'none';
+      }
+
+      // Close the modal when clicking outside of it
+      window.onclick = function(event) {
+          if (event.target === document.getElementById('editModal')) {
+              closeModal();
+          }
+      }
+  </script>
+
+  <script>// edit form
+
+    $(document).ready(function() {
+        var modal = $('#editModal');
+        var span = $('.close');
+        var cancelBtn = $('#cancelBtn');
+    
+        $.ajaxSetup({
+            beforeSend: function(xhr, settings) {
+                if (!this.crossDomain) {
+                    xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+                }
+            }
+        });
+    
+        function getCookie(name) {
+            var cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+    
+        // Close the modal
+        span.on('click', function() {
+            modal.hide();
+        });
+    
+        cancelBtn.on('click', function() {
+            modal.hide();
+        });
+    
+        
+        function convertToDate(dateStr) {
+            const date = new Date(dateStr);
+            const pad = (num) => (num < 10 ? '0' + num : num);
+            const localDate = pad(date.getDate()) + '-' +  // Day first
+                              pad(date.getMonth() + 1) + '-' +  // Month second
+                              date.getFullYear();  // Year last
+            return localDate;
+        }
+
+    
+        function openModal(ast_id) {
+            if (ast_id) {
+                $.ajax({
+                    url: '/get_asset_data/' + ast_id + '/',
+                    method: 'GET',
+                    success: function(data) {
+                        $('#editForm').attr('data-edit-id', ast_id); // Set the edit code
+                        $('#editdate').val(convertToDate(data.date));
+                        $('#editcategory').val(data.type);
+                        $('#editName').val(data.name);
+                        $('#editqty').val(data.qty);
+                        $('#editbuyprice').val(data.buy);
+                        $('#editvalue').val(data.value);
+                        $('#editnote').val(data.note);
+    
+                        // Display the previously uploaded file name
+                        if (data.image) {
+                            $('#image-file-name').text("Previously uploaded file: " + data.image.split('/').pop());
+                        } else {
+                            $('#image-file-name').text("No file uploaded.");
+                        }
+    
+                        modal.show();
+                    },
+                    error: function() {
+                        alert('Failed to fetch data. Please try again.');
+                    }
+                });
+            } else {
+                $('#editForm').removeAttr('data-edit-id'); // Clear the edit code for new projects
+                modal.show();
+            }
+        }
+    
+        // Attach click event to edit buttons
+        $('.edit-btn').on('click', function(event) {
+            event.preventDefault(); // Prevent default link behavior
+            var id = $(this).data('id'); // Get the project code from the button
+            openModal(id);
+        });
+    
+        $('#editForm').on('submit', function(event) {
+            event.preventDefault();
+
+            // Convert the date from dd-mm-yyyy to yyyy-mm-dd
+            var dateField = $('#editdate');  // Select the date field
+            var dateValue = dateField.val();
+            var convertedDate = convertToBackendDate(dateValue);
+            dateField.val(convertedDate);  // Set the new converted date value back to the field
+
+            var id = $('#editForm').attr('data-edit-id'); // Get the edit code
+            var url = '/edit_asset/' + (id ? id + '/' : ''); // Ensure URL includes code if available
+    
+            // Create FormData object
+            var formData = new FormData(this);
+    
+            $.ajax({
+                url: url,
+                method: 'POST',
+                data: formData,
+                processData: false,  // Prevent jQuery from automatically transforming the data into a query string
+                contentType: false,  // Let the browser set the content type automatically (needed for file uploads)
+    
+                success: function(response) {
+                    if (response.success) {
+                        alert('Form submitted successfully!');
+                        modal.hide();
+                        location.reload();  // Reload the page to reflect changes
+                    } else {
+                        alert('Failed to submit form: ' + response.error);
+                    }
+                },
+                error: function() {
+                    alert('An error occurred. Please try again.');
+                }
+            });
+        });
+    
+        // Show selected file name when a file is chosen
+        $('#editimage').on('change', function() {
+            var fileName = $(this).val().split('\\').pop();  // Get the file name only
+            $('#image-file-name').text("Selected file: " + fileName);
+        });
+    });
+    
+    
+</script>
+
+<script> // backend date conversion
+    function convertToBackendDate(dateStr) {
+        const parts = dateStr.split('-');
+        return `${parts[2]}-${parts[1]}-${parts[0]}`;  // Rearrange to yyyy-mm-dd
+    }
+</script>
+
+<script> // front end
+    const sidebar = document.querySelector('.sidebar');
+    const toggleIcon = document.getElementById('toggle-icon');
+    
+    toggleIcon.addEventListener('click', function() {
+      if (sidebar.classList.contains('closed')) {
+        sidebar.classList.remove('closed');
+        toggleIcon.src = "{% static 'images/menuleft.png' %}";  // Change to the "left-chevron" when open
+      } else {
+        sidebar.classList.add('closed');
+        toggleIcon.src = "{% static 'images/menuright.png' %}";  // Change to the "chevron" when closed
+      }
+    });
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <script>
+    config={
+        enableTime:false,
+        dateFormat: "d-m-Y"
+
+    }
+    flatpickr("input[type=date]",config);
+</script>
+
+    <script> // front end
+        document.getElementById('profileMenu').addEventListener('click', function(event) {
+            event.stopPropagation(); // Prevents the click from bubbling up
+            const dropdown = document.getElementById('profileDropdown');
+            dropdown.style.display = dropdown.style.display === 'none' || dropdown.style.display === '' ? 'block' : 'none';
+        });
+        
+        // Hide dropdown when clicking outside
+        document.addEventListener('click', function() {
+            const dropdown = document.getElementById('profileDropdown');
+            dropdown.style.display = 'none';
+        });
+    </script>
+
+    <script> // user icon
+        const username = document.getElementById('name').textContent; 
+        document.querySelector('#userIcon').innerText = username.charAt(0);
+      </script>
+
+</body>
+
+</html>

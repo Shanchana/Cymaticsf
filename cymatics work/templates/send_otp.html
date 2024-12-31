@@ -1,0 +1,191 @@
+{% load static %}
+{% static "images" as baseurl %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Cymatics</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://accounts.google.com/gsi/client" async></script>
+</head>
+<body>
+    {% load socialaccount %}
+    <div class="login-container">
+        <div class="login-form">
+            <img src="{% static './images/logo.png' %}" alt="Cymatics Logo" class="logo">
+            <h2>Login to Cymatics</h2>
+            
+            <!-- login form -->
+        <form method="post" action="{% url 'send_otp' %}">
+            {% csrf_token %}
+            <label class="log-txt">Please enter your email address</label>
+            <input class="email" name="email" type="email" id="email" placeholder="Enter your email" oninput="checkEmail()">
+
+
+            <button type="submit" class="continue-btn" id="continue-btn" >Send otp</button>
+
+        </form>
+
+
+            <hr class="separator">
+            <button class="google-btn" onclick= "window.location.href='{% provider_login_url 'google' %}'">
+                <span class="google-text">Continue with Google</span>
+                <img src="{% static 'images/google.png' %}" alt="Google Logo" class="google-logo">
+            </button>
+            
+        </div>
+    </div>
+</body>
+</html>
+
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body, html {
+    height: 100%;
+}
+
+body {
+    background-color: black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.log-txt {
+    text-decoration-color: #f5f5f5;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.email {
+    background-color: #efefef;
+    font-size: medium;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    width: 100%;
+}
+
+.login-form {
+    background-color: white;
+    padding: 30px;
+    border-radius: 40px;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    width: 350px;
+    height: 80vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Center items vertically */
+    align-items: center; /* Center items horizontally */
+}
+
+.logo {
+    height: 50px;
+    width: 50px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+h2 {
+    font-size: 18px;
+    color: black;
+    margin-bottom: 15px;
+}
+
+label {
+    font-size: 14px;
+    color: black;
+    display: block;
+    margin-bottom: 10px;
+}
+
+input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.continue-btn {
+    width: 100%;
+    padding: 10px;
+    background-color: #999999; /* Default color */
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    margin-bottom: 10px;
+    font-size: large;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+.continue-btn:disabled {
+    cursor: not-allowed;
+}
+
+.separator {
+    width: 100%;
+    border: 0;
+    border-top: 1px solid #ccc; /* Fine line above the Google button */
+    margin: 20px 0;
+}
+.google-btn {
+    width: 100%;
+    padding: 10px;
+    background-color: #f5f5f5;
+    border: none;
+    cursor: pointer;
+    font-size: medium;
+    font-weight: 550;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center; /* Center both logo and text in the button */
+    gap: 10px; /* Space between logo and text */
+}
+
+.google-logo {
+    width: 20px;
+    height: 20px;
+}
+
+.google-text {
+    color: black; /* Ensures the text color is consistent */
+    font-weight: bold;
+}
+
+</style>
+
+<script>
+  function checkEmail() {
+            const emailInput = document.getElementById('email').value;
+            const continueButton = document.getElementById('continue-btn');
+
+            // Simple email validation pattern
+            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+            if (emailPattern.test(emailInput)) {
+                continueButton.style.backgroundColor = 'black';
+                continueButton.disabled = false;
+            } else {
+                continueButton.style.backgroundColor = 'lightgrey';
+                continueButton.disabled = true;
+            }
+        }
+</script>

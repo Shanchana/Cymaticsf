@@ -1,0 +1,261 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    height: 100vh;
+    flex-direction: column;
+    background-color: #f1f1f1;
+}
+
+.top-bar {
+    background-color: #000;
+    width: 100%;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    color: white;
+}
+
+.container {
+    display: flex;
+    width: 100%;
+    flex-grow: 1;
+}
+
+.sidebar {
+    background-color: #1e1e1e;
+    color: white;
+    width: 250px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.sidebar .logo {
+    padding: 20px;
+    text-align: center;
+}
+
+.menu-title {
+    padding: 10px 0;
+    text-align: center;
+    color: #fff;
+}
+
+.sidebar nav ul {
+    list-style: none;
+    padding: 0;
+    width: 100%;
+}
+
+.sidebar nav ul li {
+    padding: 12px 20px;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s, border-left 0.3s;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    color: #fff;
+}
+
+.sidebar nav ul li:hover {
+    background-color: #333;
+    color: #fff;
+    border-left: 4px solid #fff;
+}
+
+.menu-icon {
+    margin-right: 10px;
+    width: 24px;
+    height: 24px;
+}
+
+.main-content {
+    flex-grow: 1;
+    background-color: #f1f1f1;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.asset-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.asset-header img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    margin-bottom: 20px;
+}
+
+.asset-header h1 {
+    margin: 0;
+    font-size: 2em;
+}
+
+.asset-header p {
+    margin: 5px 0;
+    font-size: 1.2em;
+    color: #777;
+}
+
+.edit-btn {
+    background-color: #000;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 20px 0;
+    width: 200px;
+    height: 40px;
+}
+
+.edit-btn img {
+    margin-right: 10px;
+    width: 16px;
+    height: 16px;
+}
+
+.edit-btn:hover {
+    box-shadow: inset 5px 5px 8px rgba(0, 0, 0, 0.2);
+}
+
+.asset-details-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-top: 20px;
+    width: 100%; /* Adjust width as needed */
+}
+
+.asset-number {
+    font-size: 1.2em;
+    margin-bottom: 10px;
+}
+
+.asset-details {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    width: 150px;
+    text-align: left;
+}
+
+.asset-details p {
+    margin: 10px 0;
+    font-size: 1.2em;
+}
+
+.value-box p {
+    margin: 0;
+}
+
+.value-label {
+    color: #777;
+    font-size: 0.9em;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 800px;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.modal-content form {
+    display: flex;
+    flex-direction: column;
+}
+
+.modal-content form label {
+    margin-top: 10px;
+    font-weight: bold;
+}
+
+.modal-content form input,
+.modal-content form button {
+    padding: 10px;
+    margin-top: 5px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 20px;
+}
+
+.form-actions button {
+    margin-left: 10px;
+}
+
+form button[type="submit"],
+form button[type="button"] {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+form button[type="submit"] {
+    background-color: black;
+    color: white;
+}
+
+form button[type="button"] {
+    background-color: #ccc;
+}
+
+.checkbox-container {
+    display: flex;
+    align-items: center;
+}
+
+.checkbox-container input {
+    margin-right: 10px;
+}

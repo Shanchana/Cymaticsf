@@ -1,0 +1,1275 @@
+{% load static %}
+{% static "images" as baseurl %}
+<!doctype html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+	    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	    <title>Entertainment</title>
+        <link rel="stylesheet" type="text/css" href="https://npmcdn.com/flatpickr/dist/themes/dark.css">
+        <link href="https://maxcdn.bootstrapcdn.com/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+        <link rel="stylesheet" href="{% static './css/entertainment.css' %}" >
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    </head>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            height: 100vh;
+            flex-direction: column;
+        }
+        .container {
+            display: flex;
+            width: 100%;
+            flex-grow: 1;
+        }
+            .sidebar {
+              background-color: #1e1e1e;
+              color: white;
+              width: 250px;
+              display: flex;
+              flex-direction: column;
+              justify-content: flex-start;
+              align-items: center;
+              transition: width 0.3s;
+              position: relative;
+          }
+          
+          .sidebar.closed {
+              width: 60px;
+          }
+          /* Icon visibility and border */
+          .sidebar .toggle-icon {
+              position: absolute;
+              top: 25px !important; /* Aligned near the top */
+              right: -8px; /* Adjusted to be right on the edge line */
+              cursor: pointer;
+              visibility: hidden;
+              border: 3px solid rgba(78, 27, 231, 0.5); /* Light border */
+              border-radius: 8px;
+              padding: 1px;
+              transition: visibility 0.3s ease-in-out, top 0.3s ease-in-out; /* Smooth transitions */
+              z-index: 2;
+          }
+          #toggle-icon {
+              width: 20px;
+              height: 20px;
+          }
+          
+          
+          /* Adjust position for closed state to avoid overlap */
+          .sidebar.closed .toggle-icon {
+              top: 10px;
+              right: -8px; /* Keep it on the edge even when closed */
+          }
+          
+          /* Show icon when hovering near the sidebar or over the icon */
+          .sidebar:hover .toggle-icon, .toggle-icon:hover {
+              visibility: visible;
+          }
+          
+          .sidebar .logo {
+              padding: 20px;
+              text-align: center;
+          }
+          
+          .sidebar.closed .logo {
+              display: none;
+          }
+          
+          .sidebar nav ul {
+              list-style: none;
+              padding: 0;
+              width: 100%;
+              text-align: center;
+          }
+          
+          .sidebar nav ul li {
+              padding: 12px 20px;
+              cursor: pointer;
+              transition: background-color 0.3s, border-left 0.3s;
+              display: flex;
+              justify-content: flex-start;
+              align-items: center;
+          }
+          
+          .sidebar.closed nav ul li {
+              justify-content: center;
+          }
+          
+          .sidebar nav ul li a {
+              display: flex;
+              align-items: center;
+              text-decoration: none;
+              color: white;
+              width: 100%;
+              font-family: Arial, sans-serif;
+          }
+          .sidebar nav ul li a:hover {
+            background-color: #555;
+            border-left: 4px solid #ffcc00;
+        }
+        
+        .menu-icon {
+            margin-right: 10px;
+            width: 24px;
+            height: 24px;
+        }
+        
+        .menu-text {
+            transition: opacity 0.3s, visibility 0.3s;
+            font-family: Arial, sans-serif;
+        }
+        
+        .sidebar.closed .menu-text {
+            display: none;
+        }
+        
+        .sidebar.closed nav ul li:hover {
+            background-color: inherit;
+        }
+        .main-content {
+            flex-grow: 1;
+            background-color: #f1f1f1;
+            padding: 20px;
+            position: relative; /* Required for positioning the form */
+        }
+
+        .profile-section:hover {
+            background-color: #555; /* Background color on hover */
+            border-left: 4px solid #ffcc00; /* Left border on hover */
+        }
+        .profile-section {
+            position: relative; /* Allows positioning of the dropdown */
+            padding: 12px 20px; /* Match padding with other menu items */
+            cursor: pointer; /* Change cursor on hover */
+            transition: background-color 0.3s, border-left 0.3s; /* Smooth transition */
+        }
+        
+        .dropdown {
+            position: absolute; /* Position relative to the profile section */
+            bottom: 100%; /* Position above the profile section */
+            left: 0; /* Align to the left */
+            background-color: white; /* Background color of the dropdown */
+            border: 1px solid #ccc; /* Border for the dropdown */
+            border-radius: 4px; /* Rounded corners */
+            z-index: 1000; /* Ensure it appears above other elements */
+            width: 160px; /* Set width for the dropdown */
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Shadow for a floating effect */
+            display: none; /* Initially hidden */
+        }
+        
+        .dropdown ul {
+            list-style: none; /* Remove default list styles */
+            padding: 0; /* Remove padding */
+            margin: 0; /* Remove margin */
+        }
+        
+        .dropdown li {
+            padding: 10px; /* Padding for each item */
+            color: black; /* Set text color to black */
+            cursor: pointer; /* Change cursor on hover */
+        }
+        .dropdown li:hover {
+            background-color: #f1f1f1; /* Background on hover */
+        }
+         .user-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #ddd;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 18px;
+            color: #0e0e0e;
+            background-color: #e1ecb8;
+        
+        }
+  
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    background-color: white;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 20px; 
+    border-bottom: none; 
+    margin-bottom: 0; 
+  }
+ 
+
+  
+  .header h1 {
+    font-size: 24px;
+  }
+  
+  .search-add {
+    display: flex;
+    align-items: center;
+  }
+  
+  .search-add input {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin-right: 10px;
+  }
+  
+  .search-add .add-btn {
+    padding: 10px 20px;
+    border: none;
+    background-color: #000000;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .content {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    padding: 20px;
+  }
+  
+  .movie {
+    position: relative;
+    flex: 1;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .movie:hover {
+    background-color: #e9e9e9;
+  }
+  
+  .movie p {
+    margin: 0;
+  }
+  
+  .options {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+  }
+  
+  .options-btn {
+    border: none;
+    background: none;
+    font-size: 20px;
+    cursor: pointer;
+  }
+  
+   .options-menu {
+            display: none;
+            position: absolute;
+            top: 30px;
+            right: 0;
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            z-index: 10;
+            width: 150px;
+            
+        }
+        .options-menu button {
+            border: none;
+            background: none;
+            padding: 10px 20px;
+            width: 100%;
+            text-align: left;
+            cursor: pointer;
+            font-weight: 400;
+            font-size:15px;
+        }
+        .options-menu button:hover {
+            background-color: #f4f4f4;
+        }
+  .modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    position: relative; /* Allows absolute positioning inside this element */
+    background-color: white;
+    margin: 5% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 500px;
+    border-radius: 10px;
+}
+.close {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 28px; /* Increase size */
+    font-weight: bold;
+    color: #000;
+    cursor: pointer;
+}
+
+.close:hover,
+.close:focus {
+    color: rgb(0, 0, 0); /* Optional: Change color on hover */
+    text-decoration: none;
+    cursor: pointer;
+}
+.modal-content form {
+    display: flex;
+    flex-direction: column;
+}
+
+.modal-content form label {
+    margin: 10px 0 5px;
+}
+
+
+.modal-content form input,
+.modal-content form select {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 100%;
+    box-sizing: border-box; 
+}
+
+.form-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+  #editForm, #addForm {
+    display: flex;
+    flex-direction: column;
+    gap: 15px; 
+  }
+  
+  #editForm label, #addForm label {
+    margin-bottom: 5px; 
+  }
+  
+  #editForm input, #addForm input, #addForm select {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    width: 100%; 
+    box-sizing: border-box;
+  }
+  
+  .form-buttons {
+    display: flex;
+    gap: 10px; 
+  }
+  
+  .submit-btn,
+.cancel-btn {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin: 0 5px; 
+}
+  
+  .submit-btn {
+    background-color: #000;
+    color: white;
+  }
+  
+  .cancel-btn {
+    background-color: #ffffff;
+    color: black;
+    border: 1px solid #888 !important;
+  }
+  
+  
+  
+  #editForm,
+  #addForm {
+    display: flex;
+    flex-direction: column;
+    gap: 15px; 
+  }
+  
+  #editForm label,
+  #addForm label {
+    margin-bottom: 5px; 
+  }
+  
+  #editForm input,
+  #addForm input,
+  #addForm select {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    width: 100%; 
+    box-sizing: border-box;
+  }
+  
+  .form-buttons {
+    display: flex;
+    gap: 10px; 
+  }
+  
+  .submit-btn,
+  .cancel-btn {
+    flex: 1; 
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .submit-btn {
+    background-color: #000;
+    color: white;
+  }
+  
+  .cancel-btn {
+    background-color: #ffffff;
+    color: black;
+    border: 1px solid #888 !important;
+  }
+  .btn-check {
+        display: none; /* Hide the checkbox */
+    }
+
+    .btn-primary {
+        background-color: #ffffff !important; /* Ensure white background */
+        color: black !important; /* Ensure black text */
+        border: 2px solid #ccc;
+        border-radius: 10px;
+        padding: 10px 15px;
+        cursor: pointer;
+        margin: 8px; /* Add margin to create gaps */
+        transition: background-color 0.3s, color 0.3s, border-color 0.3s, box-shadow 0.3s;
+        font-weight: bold;
+        font-size: 14px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn-primary.active {
+        background-color: #000000;
+        border-color: #000000;
+        color: white;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
+
+    #typeButtons, #languageButtons {
+        display: flex; /* Align buttons in a row */
+        justify-content: flex-start; /* Align to the start */
+    }
+.modal-content h2 {
+    text-align: center;
+    font-size: 20px; /* Adjust as needed */
+    margin-bottom: 20px;
+}
+.rating-container {
+    display: flex;
+    align-items: center;
+    margin-right:50px;
+}
+
+.rating-title {
+    
+    margin-right:50px; 
+}
+
+.rating {
+    display: flex;
+    gap: 10px;
+    margin-left: 270px;
+}
+
+.rating-label {
+    cursor: pointer;
+}
+
+.rating-label i.fa-star {
+    font-size: 25px;
+    color: #cccccc; 
+    transition: color 0.3s ease, transform 0.2s ease; 
+}
+
+input[type="checkbox"]:checked + label i.fa-star {
+    color: #1e1e1e; 
+}
+
+input[type="checkbox"]:checked + label i.fa-star:hover {
+    transform: scale(1.2);
+}
+
+.rating-input {
+    display: none; 
+}
+
+
+
+    </style>
+    <body>
+        <div class="container">
+            <aside class="sidebar">
+                <div class="toggle-icon">
+                    <img src="{% static 'images/menuleft.png' %}" alt="icon" id="toggle-icon" width="16" height="16">
+                </div>
+                <div class="logo">
+                    <img src="{% static './images/logowhite.png' %}" alt="logo" width="50" height="50">
+                </div>
+                <nav>
+                    <ul>
+                        <li class="menu-item"><a href="{% url 'dashboard' %}"><img src="{% static 'images/dashboard.png' %}" class="menu-icon"><span class="menu-text">Dashboard</span></a></li>
+                        <li class="menu-item"><a href="{% url 'projects' %}"><img src="{% static 'images/project.png' %}" class="menu-icon"><span class="menu-text">Project</span></a></li>
+                        <li class="menu-item"><a href="{% url 'incomef_view' %}"><img src="{% static 'images/income.png' %}" class="menu-icon"><span class="menu-text">Income</span></a></li>
+                        <li class="menu-item"><a href="{% url 'expense' %}"><img src="{% static 'images/expenses.png' %}" class="menu-icon"><span class="menu-text">Expense</span></a></li>
+                        <li class="menu-item"><a href="{% url 'calendar' %}"><img src="{% static 'images/calendar.png' %}" class="menu-icon"><span class="menu-text">Calendar</span></a></li>
+                        <li class="menu-item"><a href="{% url 'allproject' %}"><img src="{% static 'images/All projects.png' %}" class="menu-icon"><span class="menu-text">All Projects</span></a></li>
+                        <li class="menu-item"><a href="{% url 'clientsbook' %}"><img src="{% static 'images/clientsbook.png' %}" class="menu-icon"><span class="menu-text">Clients Book</span></a></li>
+                        <li class="menu-item"><a href="{% url 'clients' %}"><img src="{% static 'images/Clients.png' %}" class="menu-icon"><span class="menu-text">Clients</span></a></li>
+                        <li class="menu-item"><a href="{% url 'status' %}"><img src="{% static 'images/status.png' %}" class="menu-icon"><span class="menu-text">Status</span></a></li>
+                        <li class="menu-item active"><a href="{% url 'pending_pay' %}"><img src="{% static 'images/pending.png' %}" class="menu-icon"><span class="menu-text">Pending Payments</span></a></li>
+                        <li class="menu-item"><a href="{% url 'project_map' %}"><img src="{% static 'images/map.png' %}" class="menu-icon"><span class="menu-text">Map</span></a></li>
+                        <li class="menu-item"><a href="{% url 'assets' %}"><img src="{% static 'images/Assets.png' %}" class="menu-icon"><span class="menu-text">Assets</span></a></li>
+                        <li class="menu-item"><a href="{% url 'budget' %}"><img src="{% static 'images/budget.png' %}" class="menu-icon"><span class="menu-text">Budget</span></a></li>
+                        <li class="menu-item"><a href="{% url 'entertainment' %}"><img src="{% static 'images/Entertainment.png' %}" class="menu-icon"><span class="menu-text">Entertainment</span></a></li>
+                    </ul>
+                </nav>
+                <div class="profile-section" id="profileMenu">
+                    <div class="user-icon" id="userIcon">
+                      <!-- Default content in case JS is not available -->
+                      U
+                  </div>
+      
+                    <span class="menu-text" id="name">{{ user.username }}</span>
+                    <div class="dropdown" id="profileDropdown">
+                        <ul>
+                            <li><a href="{% url 'profile' %}">View Profile</a></li>
+                            <li><a href="{% url 'logout_view' %}">Sign Out</a></li>
+                        </ul>
+                    </div>
+                  </div>
+            </aside>
+            <main class="main-content">
+                <header class="header">
+                    <h1>Entertainment</h1>
+                    <div class="search-add">
+                         <!-- search box -->
+                       <form method="get" action="{% url 'entertainment' %}">
+                          {% csrf_token %}
+                          <input type="text" name="q" placeholder="Search..." value="{{ query }}">
+                      </form>
+
+                      {% if is_admin %}
+                        <button class="add-btn" onclick="openAddModal()">+ Add</button>
+                        {% endif %}
+                    </div>
+                </header>
+                <section class="content">
+                    <!-- Existing movie items -->
+                    {% for item in objs %}
+
+                    <div class="movie" onclick="moveToDetailPage('{{ item.id }}')">
+                        <p>{{item.rating}}</p>
+                        <p>{{item.name}}</p>
+                        <p>{{item.language}}</p>
+
+                        <div class="options">
+                            {% if is_admin %}
+                            <button class="options-btn" onclick="toggleOptions(this)">⋮</button>
+                            {% endif %}
+                            
+                            <div class="options-menu">
+                                <button class="action-btn" onclick = "openEditForm()" data-id="{{ item.id }}">Edit</button>
+                                <button onclick="deleteItem(this)" class="delete-btn" data-id = "{{ item.id }}">Delete</button>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+            </section>
+        </main>
+    </div>
+
+     
+       
+       <!-- Edit Modal -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Edit</h2>
+            <form id="editForm" method="post">
+                {% csrf_token %}
+                <label for="editdate">Date</label>
+                <input type="date" id="editdate" name="editdate">
+
+                <label for="edittype">Type</label>
+                <select  id="edittype" name="edittype" required>
+                    <option value="Movie">Movie</option>
+                    <option value="Series">Series</option>
+                    <option value="Documentary">Documentary</option>
+                    <option value="Podcast">Podcast</option>
+                    <option value="AudioBook">AudioBook</option>
+                </select>
+
+                <label for="editlanguage">Language</label>
+                <select id="editlanguage" name="editlanguage" required>
+                    <option value="Tamil">Tamil</option>
+                    <option value="English">English</option>
+                    <option value="Other">Other</option>
+                </select>
+
+                <label for="editrating">Rating</label>
+                <input type="text" id="editrating" name="editrating">
+
+                <div class="form-actions">
+                    <button type="submit" class="submit-btn" >Submit</button>
+                    <button type="button" class="cancel-btn" id ="cancelBtn">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+  <!-- Add Modal -->
+<div id="addModal" class="modal" >
+    <div class="modal-content">
+        <span class="close" onclick="closeAddModal()">&times;</span>
+        <h2>Add Item</h2>
+        <form id="addForm" enctype="multipart/form-data" action="{% url 'entertainment' %}" method="POST">
+            {% csrf_token %}
+            
+            <!-- Type Section -->
+            <label for="addtype">Type</label>
+            <div id="typeButtons">
+                <input type="checkbox" class="btn-check" id="typeMovie" name="type" value="Movie" autocomplete="off" onclick="toggleStatus(this, 'type')">
+                <label class="btn btn-primary" for="typeMovie">Movie</label>
+
+                <input type="checkbox" class="btn-check" id="typeSeries" name="type" value="Series" autocomplete="off" onclick="toggleStatus(this, 'type')">
+                <label class="btn btn-primary" for="typeSeries">Series</label>
+
+                <input type="checkbox" class="btn-check" id="typeDocumentary" name="type" value="Documentary" autocomplete="off" onclick="toggleStatus(this, 'type')">
+                <label class="btn btn-primary" for="typeDocumentary">Documentary</label>
+
+                <input type="checkbox" class="btn-check" id="typePodcast" name="type" value="Podcast" autocomplete="off" onclick="toggleStatus(this, 'type')">
+                <label class="btn btn-primary" for="typePodcast">Podcast</label>
+
+                <input type="checkbox" class="btn-check" id="typeAudioBook" name="type" value="AudioBook" autocomplete="off" onclick="toggleStatus(this, 'type')">
+                <label class="btn btn-primary" for="typeAudioBook">AudioBook</label>
+            </div>
+
+            <!-- Name Section -->
+            <label for="addname">Name</label>
+            <input type="text" id="addname" name="name" required>
+
+             <!-- Language Section -->
+             <label for="language">Language</label>
+             <div id="languageButtons">
+                 <input type="checkbox" class="btn-check" id="languageTamil" name="language" value="Tamil" autocomplete="off" onclick="toggleStatus(this, 'language')">
+                 <label class="btn btn-primary" for="languageTamil">Tamil</label>
+ 
+                 <input type="checkbox" class="btn-check" id="languageEnglish" name="language" value="English" autocomplete="off" onclick="toggleStatus(this, 'language')">
+                 <label class="btn btn-primary" for="languageEnglish">English</label>
+ 
+                 <input type="checkbox" class="btn-check" id="languageOther" name="language" value="Other" autocomplete="off" onclick="toggleStatus(this, 'language')">
+                 <label class="btn btn-primary" for="languageOther">Other</label>
+             </div>
+
+            <div class="rating-container">
+                <label for="rating" class="rating-title">Rating</label>
+                <div class="rating" id="rating">
+                    <!-- Star 1 -->
+                    <input class="rating-input" name="rating" value="1" type="checkbox" id="rating_star_1"/>
+                    <label class="rating-label" for="rating_star_1">
+                        <i class="fa fa-star fs-1"></i>
+                    </label>
+            
+                    <!-- Star 2 -->
+                    <input class="rating-input" name="rating" value="2" type="checkbox" id="rating_star_2"/>
+                    <label class="rating-label" for="rating_star_2">
+                        <i class="fa fa-star fs-1"></i>
+                    </label>
+            
+                    <!-- Star 3 -->
+                    <input class="rating-input" name="rating" value="3" type="checkbox" id="rating_star_3"/>
+                    <label class="rating-label" for="rating_star_3">
+                        <i class="fa fa-star fs-1"></i>
+                    </label>
+            
+                    <!-- Star 4 -->
+                    <input class="rating-input" name="rating" value="4" type="checkbox" id="rating_star_4"/>
+                    <label class="rating-label" for="rating_star_4">
+                        <i class="fa fa-star fs-1"></i>
+                    </label>
+            
+                    <!-- Star 5 -->
+                    <input class="rating-input" name="rating" value="5" type="checkbox" id="rating_star_5"/>
+                    <label class="rating-label" for="rating_star_5">
+                        <i class="fa fa-star fs-1"></i>
+                    </label>
+                </div>
+            </div>
+            
+            <label for="addsource">Source</label>
+            <input type="text" id="addsource" name="source">
+
+            <label for="addimage">Image</label>
+            <input type="file" id="addimage" name="addimage">
+
+            <div class="form-actions">
+                <button type="submit" class="submit-btn" id="addBtn">Submit</button>
+                <button type="button" class="cancel-btn" onclick="closeAddModal()">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.querySelectorAll('.rating-input').forEach((input, index) => {
+        input.addEventListener('click', function() {
+            const stars = document.querySelectorAll('.rating-input');
+            const starIcons = document.querySelectorAll('.fa-star');
+            const currentStarIndex = index;
+            const wasChecked = this.checked;
+    
+            // Case when the first star is clicked
+            if (currentStarIndex === 0) {
+                // If star one is already checked and clicked again, uncheck it
+                if (stars[0].checked && !wasChecked) {
+                    stars[0].checked = false;
+                    starIcons[0].classList.remove('checked');
+                } else {
+                    // Check the first star and uncheck the rest
+                    stars[0].checked = true;
+                    starIcons[0].classList.add('checked');
+    
+                    // Uncheck all other stars
+                    for (let i = 1; i < stars.length; i++) {
+                        stars[i].checked = false;
+                        starIcons[i].classList.remove('checked');
+                    }
+                }
+                return;
+            }
+    
+            // Check if all stars up to current star are checked
+            const allPreviousChecked = Array.from(stars)
+                .slice(0, currentStarIndex + 1)
+                .every(star => star.checked);
+    
+            // If clicking a checked star and all previous stars are checked
+            if (wasChecked && allPreviousChecked) {
+                // Keep the current star checked
+                this.checked = true;
+                starIcons[currentStarIndex].classList.add('checked');
+    
+                // Keep all previous stars checked
+                for (let i = 0; i < currentStarIndex; i++) {
+                    stars[i].checked = true;
+                    starIcons[i].classList.add('checked');
+                }
+    
+                // Only uncheck stars after the current star
+                for (let i = currentStarIndex + 1; i < stars.length; i++) {
+                    stars[i].checked = false;
+                    starIcons[i].classList.remove('checked');
+                }
+            } else {
+                // Regular rating behavior - check all stars up to and including current
+                for (let i = 0; i <= currentStarIndex; i++) {
+                    stars[i].checked = true;
+                    starIcons[i].classList.add('checked');
+                }
+                // Uncheck all stars after current
+                for (let i = currentStarIndex + 1; i < stars.length; i++) {
+                    stars[i].checked = false;
+                    starIcons[i].classList.remove('checked');
+                }
+            }
+        });
+    });
+    </script>
+    
+
+
+
+   
+    
+
+<script>
+
+let currentMovieElement;
+
+function toggleOptions(button) {
+    event.stopPropagation();
+
+    const optionsMenu = button.nextElementSibling;
+    
+    // Close any other open options menu
+    document.querySelectorAll('.options-menu').forEach(menu => {
+        if (menu !== optionsMenu) {
+            menu.style.display = 'none';
+        }
+    });
+    
+    // Toggle the clicked options menu
+    optionsMenu.style.display = optionsMenu.style.display === "block" ? "none" : "block";
+}
+
+// Opens the edit form
+function openEditForm() {
+    document.getElementById("editModal").style.display = "block";
+}
+
+// Deletes the item and closes the options menu
+function deleteItem(button) {
+    const movieDiv = button.closest('.movie');
+    movieDiv.remove();
+    
+    // Close the options menu after action
+    const optionsMenu = button.closest('.options-menu');
+    optionsMenu.style.display = 'none';
+}
+
+// Closes the edit modal
+function closeEditModal() {
+    document.getElementById('editModal').style.display = 'none';
+}
+
+// Populates and opens the edit form when "Edit" is clicked
+function editItem(button) {
+    const movieDiv = button.closest('.movie');
+    currentMovieElement = movieDiv;
+
+    const movieId = movieDiv.dataset.id;
+    const movieTitle = movieDiv.dataset.title;
+    const movieLanguage = movieDiv.dataset.language;
+    const movieRating = movieDiv.dataset.rating;
+    const movieDate = movieDiv.dataset.date;
+
+    document.getElementById('date').value = movieDate;
+    document.getElementById('type').value = 'Movie';
+    document.getElementById('language').value = movieLanguage;
+    document.getElementById('rating').value = movieRating;
+
+    document.getElementById('editModal').style.display = 'block';
+    
+    // Close the options menu after action
+    const optionsMenu = button.closest('.options-menu');
+    optionsMenu.style.display = 'none';
+}
+
+// Submits the edited details and updates the corresponding movie
+function submitEdit() {
+    const date = document.getElementById('date').value;
+    const type = document.getElementById('type').value;
+    const language = document.getElementById('language').value;
+    const rating = document.getElementById('rating').value;
+
+    currentMovieElement.dataset.date = date;
+    currentMovieElement.dataset.type = type;
+    currentMovieElement.dataset.language = language;
+    currentMovieElement.dataset.rating = rating;
+
+    const movieDetails = currentMovieElement.querySelectorAll('p');
+    movieDetails[0].textContent = rating;
+    movieDetails[1].textContent = currentMovieElement.dataset.title;
+    movieDetails[2].textContent = language;
+
+    closeEditModal();
+}
+
+// Submits a new item to the list
+function submitAdd() {
+    const type = document.getElementById('add-type').value;
+    const name = document.getElementById('add-name').value;
+    const language = document.getElementById('add-language').value;
+    const rating = document.getElementById('add-rating').value;
+    const source = document.getElementById('add-source').value;
+    const image = document.getElementById('add-image').value;
+
+    const movieSection = document.querySelector('.content');
+
+    const newMovie = document.createElement('div');
+    newMovie.classList.add('movie');
+    newMovie.dataset.id = Date.now();
+    newMovie.dataset.title = name;
+    newMovie.dataset.language = language;
+    newMovie.dataset.rating = rating;
+    newMovie.dataset.date = new Date().toISOString().split('T')[0];
+
+    newMovie.innerHTML = `
+        <p>${rating}</p>
+        <p>${name}</p>
+        <p>${language}</p>
+        <div class="options">
+            <button class="options-btn" onclick="toggleOptions(this)">⋮</button>
+            <div class="options-menu">
+                <button onclick="editItem(this)">Edit</button>
+                <button onclick="deleteItem(this)">Delete</button>
+            </div>
+        </div>
+    `;
+
+    movieSection.appendChild(newMovie);
+    closeAddModal();
+}
+
+// Opens the Add Modal
+function openAddModal() {
+    document.getElementById('addModal').style.display = 'block';
+}
+
+// Closes the Add Modal
+function closeAddModal() {
+    document.getElementById('addModal').style.display = 'none';
+}
+
+// Closes any open options menu when clicking outside
+document.addEventListener('click', function(event) {
+    const isClickInside = event.target.closest('.options, .options-menu, .options-btn');
+    event.stopPropagation();
+
+    if (!isClickInside) {
+        document.querySelectorAll('.options-menu').forEach(menu => {
+            menu.style.display = 'none';
+        });
+    }
+});
+</script>
+
+
+
+<script>// add form
+
+    document.getElementById('addBtn').addEventListener('submit', function(event) {
+        event.preventDefault();
+    
+        var form = this;
+        var formData = new FormData(form);
+    
+        fetch(form.action, {
+            method: form.method,
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => {
+            if (response.headers.get('content-type')?.includes('application/json')) {
+                return response.json();
+            } else {
+                return response.text().then(text => { throw new Error(text) });
+            }
+        })
+        .then(data => {
+            if (data.success) {
+                form.reset();
+                closeAddModal();
+                location.reload();
+            } else {
+                var errorMessage = document.getElementById("error-message");
+                errorMessage.textContent = data.error;
+                errorMessage.style.display = "block";
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            document.getElementById("error-message").textContent = 'An error occurred: ' + error.message;
+            document.getElementById("error-message").style.display = "block";
+        });
+    });
+    
+    
+</script>
+
+
+
+<script>// edit form
+
+    $(document).ready(function() {
+        var modal = $('#editModal');
+        var span = $('.close');
+        var cancelBtn = $('#cancelBtn');
+    
+        $.ajaxSetup({
+            beforeSend: function(xhr, settings) {
+                if (!this.crossDomain) {
+                    xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+                }
+            }
+        });
+    
+        function getCookie(name) {
+            var cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+    
+        // Close the modal
+        span.on('click', function() {
+            modal.hide();
+        });
+    
+        cancelBtn.on('click', function() {
+            modal.hide();
+        });
+    
+        function convertToDate(dateStr) {
+            const date = new Date(dateStr);
+            const pad = (num) => (num < 10 ? '0' + num : num);
+            const localDate = pad(date.getDate()) + '-' +  // Day first
+                              pad(date.getMonth() + 1) + '-' +  // Month second
+                              date.getFullYear();  // Year last
+            return localDate;
+        }
+    
+        function openModal(ent_id) {
+            if (ent_id) {
+                $.ajax({
+                    url: '/get_entertainment_data/' + ent_id + '/',
+                    method: 'GET',
+                    success: function(data) {
+                        $('#editForm').attr('data-edit-id', ent_id); // Set the edit code
+                        $('#editdate').val(convertToDate(data.date));
+                        $('#edittype').val(data.type);
+                        $('#editlanguage').val(data.language);
+                        $('#editrating').val(data.rating);  // Corrected to match field name
+                        
+                        modal.show();
+                    },
+                    error: function() {
+                        alert('Failed to fetch data. Please try again.');
+                    }
+                });
+            } else {
+                $('#editForm').removeAttr('data-edit-id'); // Clear the edit code for new projects
+                modal.show();
+            }
+        }
+    
+        // Attach click event to edit buttons
+        $('.action-btn').on('click', function(event) {
+            event.preventDefault(); // Prevent default link behavior
+            event.stopPropagation();
+            var id = $(this).data('id'); // Get the project code from the button
+            openModal(id);
+        });
+    
+        $('#editForm').on('submit', function(event) {
+            event.preventDefault();
+
+            // Convert the date from dd-mm-yyyy to yyyy-mm-dd
+            var dateField = $('#editdate');  // Select the date field
+            var dateValue = dateField.val();
+            var convertedDate = convertToBackendDate(dateValue);
+            dateField.val(convertedDate);  // Set the new converted date value back to the field
+
+            var id = $('#editForm').attr('data-edit-id'); // Get the edit code
+            var url = '/edit_entertainment/' + (id ? id + '/' : ''); // Ensure URL includes code if available
+            
+            $.ajax({
+                url: url,
+                method: 'POST',
+                data: $(this).serialize(),
+                success: function(response) {
+                    if (response.success) {
+                        alert('Form submitted successfully!');
+                        modal.hide();
+                        location.reload();  // Reload the page to reflect changes
+                    } else {
+                        alert('Failed to submit form: ' + response.error);
+                    }
+                },
+                error: function() {
+                    alert('An error occurred. Please try again.');
+                }
+            });
+        });
+    });
+    
+</script>
+
+
+<script>
+    function convertToBackendDate(dateStr) {
+        const parts = dateStr.split('-');
+        return `${parts[2]}-${parts[1]}-${parts[0]}`;  // Rearrange to yyyy-mm-dd
+    }
+</script>
+
+<script> // deletion 
+
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.delete-btn').forEach(button => {
+            button.addEventListener('click', function(event) {
+                event.preventDefault();
+                event.stopPropagation();
+                const entId = this.getAttribute('data-id');
+                if (confirm('Are you sure you want to delete this entertainment?')) {
+                    fetch(`/delete_entertainment/${entId}/`, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRFToken': getCookie('csrftoken'),
+                        },
+                    }).then(response => {
+                        if (response.ok) {
+                            window.location.reload();  // Refresh the page to reflect changes
+                        } else {
+                            alert('Failed to delete the entertainment.');
+                        }
+                    }).catch(error => {
+                        console.error('Error:', error);
+                        alert('An error occurred while deleting the project.');
+                    });
+                }
+            });
+        });
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+    });
+</script>
+
+<script>
+    // page navigation from div
+    function moveToDetailPage(ent_id) {
+        window.location.href = "/entertainmentd/" + ent_id + "/";
+    }
+</script>
+
+<script>
+    document.querySelector('.options-btn').addEventListener('click', function(event) {
+        event.stopPropagation();
+    });
+
+</script>
+
+<script>
+    const sidebar = document.querySelector('.sidebar');
+        const toggleIcon = document.getElementById('toggle-icon');
+        
+        toggleIcon.addEventListener('click', function() {
+          if (sidebar.classList.contains('closed')) {
+            sidebar.classList.remove('closed');
+            toggleIcon.src = "{% static 'images/menuleft.png' %}";  // Change to the "left-chevron" when open
+          } else {
+            sidebar.classList.add('closed');
+            toggleIcon.src = "{% static 'images/menuright.png' %}";  // Change to the "chevron" when closed
+          }
+        });
+
+</script>
+
+<script>
+    // Toggle function to allow only one checkbox selection within the same group
+    function toggleStatus(checkbox, group) {
+        var buttons = document.querySelectorAll(`#${group}Buttons .btn-check`);
+
+        // Deselect other buttons when one is selected
+        buttons.forEach(function(btn) {
+            if (btn !== checkbox) {
+                btn.checked = false;
+            }
+        });
+
+        // Apply active class based on the checked state
+        buttons.forEach(function(btn) {
+            var label = document.querySelector('label[for="' + btn.id + '"]');
+            if (btn.checked) {
+                label.classList.add('active');
+            } else {
+                label.classList.remove('active');
+            }
+        });
+    }
+
+    // Function to close modal
+    function closeAddModal() {
+        document.getElementById('addModal').style.display = 'none';
+    }
+</script>
+
+<!-- Bootstrap JS and CSS -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/5.3.0/js/bootstrap.min.js"></script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script>
+    config={
+        enableTime:false,
+        dateFormat: "d-m-Y"
+
+    }
+    flatpickr("input[type=date]",config);
+</script>
+    <script>
+        // user icon
+        const username = document.getElementById('name').textContent; 
+        document.querySelector('#userIcon').innerText = username.charAt(0);
+      </script>
+      <script>
+        // JavaScript to handle dropdown visibility
+        const profileMenu = document.getElementById('profileMenu');
+        const profileDropdown = document.getElementById('profileDropdown');
+    
+        profileMenu.addEventListener('click', function () {
+            // Toggle dropdown visibility
+            if (profileDropdown.style.display === 'none' || profileDropdown.style.display === '') {
+                profileDropdown.style.display = 'block';
+            } else {
+                profileDropdown.style.display = 'none';
+            }
+        });
+    
+        // Close dropdown if clicked outside
+        window.addEventListener('click', function (event) {
+            if (!profileMenu.contains(event.target)) {
+                profileDropdown.style.display = 'none';
+            }
+        });
+    </script>
+    </body>
+</html>

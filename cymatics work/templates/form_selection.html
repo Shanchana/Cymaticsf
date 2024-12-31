@@ -1,0 +1,109 @@
+<!-- form_selection.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Form Selection</title>
+    <script>
+        // Dictionary mapping form sections to spreadsheet IDs
+        const spreadsheetMapping = {
+            "projects": "1uby_xYmiXdwJ-uDeNbLKQLpqSJtwFe2RPUH-jQFhczs",
+            "new_form": "1zJ1oFrVmtJVAW7JJL2zCsvpOVaaFMe-uQIh3wBkYZ_w",
+            "income": "1OaGbnzMxv51DVuQfDOcz6n3-ZoV1e6ORwtP_SrnM-1Y",
+            "budget": "1EWt-MTz7DQYjQeUGqxO40K5C6qV3EXWlNOeUUOkFncg",
+            "expense": "1NdFEYiI_Yl3pg9byKud9bVQd0Vu6dWa3hajY5pAsz30",
+            "report": "1uZmu43qsnV8BAu83zy-bT1mOsMgQ_SqKMJ_UNWNc0V8",
+            "item_required": "1C999Fm_XaQ7MODtoplRIG_cRFmIUWtetpL0B6sT54A4",
+            "chat": "1yq3N0w99JbEtfhjIu1T0tTJjhRNqzJ-GEjAYbNla4R4",
+            "contact": "1evRuSLgOecvtnNH8SQ8u5MGjduyhEttopRsIY5a6YKE",
+            "assets": "1sUfqO21BV7iz96LjHHCS1Zhp7QQRwVJmjF9EPRWl6OI",
+            "entertainment": "18vZ5vcmc47Pfnz5Y7Qv7hQt3iegi9Up1iDu1A0uzVGA",
+            "quote": "1b_T384mAYuNcjtUpKR1l1HugOZWKJ0Q4cH-e0-bPJgE",
+            "choice": "13LqiPwcvMewqBZSXWoWbdKi-gkI80IcvMwg0OoAhie0",
+            "invoice": "1RKgI7Ls7aJpoRDPwi_12__ioH4a0zcljRtQ_I1iUj7Q",
+            "formula": "1JukBZqKcGQPSONc4ob5J5_z-ZBf_kw9-6YobyYxVjvE",
+            "app_metadata": "1biIZ4s2OCDpdzbcTZFiwZ6gTYyD3YioI3uxk3qKhQlI",
+            "app_logins": "1aSEVnwh6LyENI3ZopwyC7-XnHyAXeTk3FLK2lkduGoQ"
+        }
+        
+
+        // Function to handle form section click
+        function handleFormClick(formKey) {
+            const spreadsheetId = spreadsheetMapping[formKey];
+            if (spreadsheetId) {
+                // Pass the spreadsheet ID to the server
+                fetch('/update-spreadsheet-id/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': '{{ csrf_token }}'  // Ensure CSRF token is included
+                    },
+                    body: JSON.stringify({ spreadsheet_id: spreadsheetId })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Redirect to the embed sheet page if needed
+                    window.location.href = `/embed-sheet/?spreadsheet_id=${spreadsheetId}`;
+                })
+                .catch(error => console.error('Error:', error));
+            } else {
+                alert("Invalid form selection");
+            }
+        }
+    </script>
+</head>
+<body>
+    <div class="form-section" id="projects" onclick="handleFormClick('projects')">
+        Projects
+    </div>
+    <div class="form-section" id="new_form" onclick="handleFormClick('new_form')">
+        New form
+    </div>
+    <div class="form-section" id="income" onclick="handleFormClick('income')">
+        Income
+    </div>
+    <div class="form-section" id="budget" onclick="handleFormClick('budget')">
+        Budget
+    </div>
+    <div class="form-section" id="expense" onclick="handleFormClick('expense')">
+        Expense
+    </div>
+    <div class="form-section" id="report" onclick="handleFormClick('report')">
+        Report
+    </div>
+    <div class="form-section" id="item_required" onclick="handleFormClick('item_required')">
+        Item required
+    </div>
+    <div class="form-section" id="chat" onclick="handleFormClick('chat')">
+        Chat
+    </div>
+    <div class="form-section" id="contact" onclick="handleFormClick('contact')">
+        Contact
+    </div>
+    <div class="form-section" id="assets" onclick="handleFormClick('assets')">
+        Assets
+    </div>
+    <div class="form-section" id="entertainment" onclick="handleFormClick('entertainment')">
+        Entertainment
+    </div>
+    <div class="form-section" id="quote" onclick="handleFormClick('quote')">
+        Quote
+    </div>
+    <div class="form-section" id="choice" onclick="handleFormClick('choice')">
+        Choice
+    </div>
+    <div class="form-section" id="invoice" onclick="handleFormClick('invoice')">
+        Invoice
+    </div>
+    <div class="form-section" id="formula" onclick="handleFormClick('formula')">
+        Formula
+    </div>
+    <div class="form-section" id="app_metadata" onclick="handleFormClick('app_metadata')">
+        App Metadata
+    </div>
+    <div class="form-section" id="app_logins" onclick="handleFormClick('app_logins')">
+        App Logins
+    </div>
+</body>
+
+</html>

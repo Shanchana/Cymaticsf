@@ -1,0 +1,380 @@
+{% load static %}
+{% static "images" as baseurl %}
+<!doctype html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+	    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	    <title>Status</title>
+    </head>
+
+    <body>
+
+        <div class="container">
+          <aside class="sidebar">
+            <div class="toggle-icon">
+                <img src="{% static 'images/menuleft.png' %}" alt="icon" id="toggle-icon" width="16" height="16">
+            </div>
+            <div class="logo">
+                <img src="{% static 'images/logowhite.png' %}" alt="logo" width="50" height="50">
+            </div>
+            <nav>
+              <ul>
+                <li class="menu-item"><a href="{% url 'dashboard' %}"><img src="{% static 'images/dashboard.png' %}" class="menu-icon"><span class="menu-text">Dashboard</span></a></li>
+                <li class="menu-item"><a href="{% url 'projects' %}"><img src="{% static 'images/project.png' %}" class="menu-icon"><span class="menu-text">Project</span></a></li>
+                <li class="menu-item"><a href="{% url 'incomef_view' %}"><img src="{% static 'images/income.png' %}" class="menu-icon"><span class="menu-text">Income</span></a></li>
+                <li class="menu-item"><a href="{% url 'expense' %}"><img src="{% static 'images/expenses.png' %}" class="menu-icon"><span class="menu-text">Expense</span></a></li>
+                <li class="menu-item"><a href="{% url 'calendar' %}"><img src="{% static 'images/calendar.png' %}" class="menu-icon"><span class="menu-text">Calendar</span></a></li>
+                <li class="menu-item"><a href="{% url 'allproject' %}"><img src="{% static 'images/All projects.png' %}" class="menu-icon"><span class="menu-text">All Projects</span></a></li>
+                <li class="menu-item"><a href="{% url 'clientsbook' %}"><img src="{% static 'images/clientsbook.png' %}" class="menu-icon"><span class="menu-text">Clients Book</span></a></li>
+                <li class="menu-item"><a href="{% url 'clients' %}"><img src="{% static 'images/Clients.png' %}" class="menu-icon"><span class="menu-text">Clients</span></a></li>
+                <li class="menu-item"><a href="{% url 'status' %}"><img src="{% static 'images/status.png' %}" class="menu-icon"><span class="menu-text">Status</span></a></li>
+                <li class="menu-item active"><a href="{% url 'pending_pay' %}"><img src="{% static 'images/pending.png' %}" class="menu-icon"><span class="menu-text">Pending Payments</span></a></li>
+                <li class="menu-item"><a href="{% url 'project_map' %}"><img src="{% static 'images/map.png' %}" class="menu-icon"><span class="menu-text">Map</span></a></li>
+                <li class="menu-item"><a href="{% url 'assets' %}"><img src="{% static 'images/Assets.png' %}" class="menu-icon"><span class="menu-text">Assets</span></a></li>
+                <li class="menu-item"><a href="{% url 'budget' %}"><img src="{% static 'images/budget.png' %}" class="menu-icon"><span class="menu-text">Budget</span></a></li>
+                <li class="menu-item"><a href="{% url 'entertainment' %}"><img src="{% static 'images/Entertainment.png' %}" class="menu-icon"><span class="menu-text">Entertainment</span></a></li>
+            </ul>
+            </nav>
+            <div class="profile-section" id="profileMenu">
+              <div class="user-icon" id="userIcon">
+                <!-- Default content in case JS is not available -->
+                U
+            </div>
+
+              <span class="menu-text" id="name">{{ user.username }}</span>
+              <div class="dropdown" id="profileDropdown">
+                  <ul>
+                      <li><a href="{% url 'profile' %}">View Profile</a></li>
+                      <li><a href="{% url 'logout_view' %}">Sign Out</a></li>
+                  </ul>
+              </div>
+            </div>
+        </aside>
+            
+
+
+    <main class="main-content">
+    <div class="header">
+    <h1>Project Status</h1>  
+
+    <!-- search box -->
+    <form method="get" action="{% url 'status' %}">
+        {% csrf_token %}
+        <input type="text" name="q" class="search-bar" placeholder="Search" value="{{ query }}">
+        
+    </form>
+
+</div>
+
+    <div class="status-grid">
+       
+            {% for status , projects in objs.items %}
+            <div class="status-column" >
+            <h2>{{ status }}</h2>
+                {% for project in projects %}
+
+                <div class="project-card" onclick="moveToProjectPage('{{ project.code }}')" style="cursor: pointer;">
+                    <div class="project-box"></div>
+                    <span>{{ project.name }}</span> 
+
+                    {% if is_admin %}
+                    <span>{{ project.amount }}</span>
+                    {% endif %}
+                    
+                  </div>
+
+                {% endfor %}
+            </div>
+            {% endfor %}
+      </div>      
+        </main>
+        
+
+          <script>
+            // page navigation from div
+            function moveToProjectPage(code) {
+                window.location.href = "/project/" + code + "/";
+            }
+
+        </script>
+<script>
+        const sidebar = document.querySelector('.sidebar');
+        const toggleIcon = document.getElementById('toggle-icon');
+        
+        toggleIcon.addEventListener('click', function() {
+          if (sidebar.classList.contains('closed')) {
+            sidebar.classList.remove('closed');
+            toggleIcon.src = "{% static 'images/menuleft.png' %}";  // Change to the "left-chevron" when open
+          } else {
+            sidebar.classList.add('closed');
+            toggleIcon.src = "{% static 'images/menuright.png' %}";  // Change to the "chevron" when closed
+          }
+        });
+        document.getElementById('profileMenu').addEventListener('click', function(event) {
+          event.stopPropagation(); // Prevents the click from bubbling up
+          const dropdown = document.getElementById('profileDropdown');
+          dropdown.style.display = dropdown.style.display === 'none' || dropdown.style.display === '' ? 'block' : 'none';
+      });
+      
+      // Hide dropdown when clicking outside
+      document.addEventListener('click', function() {
+          const dropdown = document.getElementById('profileDropdown');
+          dropdown.style.display = 'none';
+      });
+    </script>
+      <script>
+        // user icon
+        const username = document.getElementById('name').textContent; 
+        document.querySelector('#userIcon').innerText = username.charAt(0);
+      </script>
+     
+    </body>
+</html>
+<style>
+  .user-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #ddd;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    font-size: 18px;
+    color: #0e0e0e;
+    background-color: #e1ecb8;
+
+}
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        height: 100vh;
+        flex-direction: column;
+      }
+      .container {
+        display: flex;
+        width: 100%;
+        flex-grow: 1;
+      }
+        .sidebar {
+          background-color: #1e1e1e;
+          color: white;
+          width: 250px;
+          display: flex;
+          flex-direction: column;
+          justify-content: flex-start;
+          align-items: center;
+          transition: width 0.3s;
+          position: relative;
+      }
+      
+      .sidebar.closed {
+          width: 60px;
+      }
+      
+      /* Icon visibility and border */
+      .sidebar .toggle-icon {
+          position: absolute;
+          top: 25px !important; /* Aligned near the top */
+          right: -8px; /* Adjusted to be right on the edge line */
+          cursor: pointer;
+          visibility: hidden;
+          border: 3px solid rgba(78, 27, 231, 0.5); /* Light border */
+          border-radius: 8px;
+          padding: 1px;
+          transition: visibility 0.3s ease-in-out, top 0.3s ease-in-out; /* Smooth transitions */
+          z-index: 2;
+      }
+      #toggle-icon {
+          width: 20px;
+          height: 20px;
+      }
+      
+      
+      /* Adjust position for closed state to avoid overlap */
+      .sidebar.closed .toggle-icon {
+          top: 10px;
+          right: -8px; /* Keep it on the edge even when closed */
+      }
+      
+      /* Show icon when hovering near the sidebar or over the icon */
+      .sidebar:hover .toggle-icon, .toggle-icon:hover {
+          visibility: visible;
+      }
+      
+      .sidebar .logo {
+          padding: 20px;
+          text-align: center;
+      }
+      
+      .sidebar.closed .logo {
+          display: none;
+      }
+      
+      .sidebar nav ul {
+          list-style: none;
+          padding: 0;
+          width: 100%;
+          text-align: center;
+      }
+      
+      .sidebar nav ul li {
+          padding: 12px 20px;
+          cursor: pointer;
+          transition: background-color 0.3s, border-left 0.3s;
+          display: flex;
+          justify-content: flex-start;
+          align-items: center;
+      }
+      
+      .sidebar.closed nav ul li {
+          justify-content: center;
+      }
+      
+      .sidebar nav ul li a {
+          display: flex;
+          align-items: center;
+          text-decoration: none;
+          color: white;
+          width: 100%;
+          font-family: Arial, sans-serif;
+      }
+      
+      .sidebar nav ul li a:hover {
+          background-color: #555;
+          border-left: 4px solid #ffcc00;
+      }
+      
+      .menu-icon {
+          margin-right: 10px;
+          width: 24px;
+          height: 24px;
+      }
+      
+      .menu-text {
+          transition: opacity 0.3s, visibility 0.3s;
+          font-family: Arial, sans-serif;
+      }
+      
+      .sidebar.closed .menu-text {
+          display: none;
+      }
+      
+      .sidebar.closed nav ul li:hover {
+          background-color: inherit;
+      }
+      
+      
+      .main-content {
+        flex-grow: 1;
+        background-color: #f1f1f1;
+        padding: 20px;
+        position: relative; /* Required for positioning the form */
+      }
+      .profile-section {
+        position: relative; /* Allows positioning of the dropdown */
+        padding: 12px 20px; /* Match padding with other menu items */
+        cursor: pointer; /* Change cursor on hover */
+        transition: background-color 0.3s, border-left 0.3s; /* Smooth transition */
+      }
+      
+      .profile-section:hover {
+        background-color: #555; /* Background color on hover */
+        border-left: 4px solid #ffcc00; /* Left border on hover */
+      }
+      
+      .dropdown {
+        position: absolute; /* Position relative to the profile section */
+        bottom: 100%; /* Position above the profile section */
+        left: 0; /* Align to the left */
+        background-color: white; /* Background color of the dropdown */
+        border: 1px solid #ccc; /* Border for the dropdown */
+        border-radius: 4px; /* Rounded corners */
+        z-index: 1000; /* Ensure it appears above other elements */
+        width: 160px; /* Set width for the dropdown */
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Shadow for a floating effect */
+        display: none; /* Initially hidden */
+      }
+      
+      .dropdown ul {
+        list-style: none; /* Remove default list styles */
+        padding: 0; /* Remove padding */
+        margin: 0; /* Remove margin */
+      }
+      
+      .dropdown li {
+        padding: 10px; /* Padding for each item */
+        color: black; /* Set text color to black */
+        cursor: pointer; /* Change cursor on hover */
+      }
+      
+      .dropdown li:hover {
+        background-color: #f1f1f1; /* Background on hover */
+      }
+      
+        .header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 20px;
+        }
+        .search-bar {
+          width: 250px;
+          padding: 8px 12px;
+          font-size: 14px;
+          border: 1px solid #ccc;
+          outline: none;
+          transition: box-shadow 0.3s ease;
+          background-color: white;
+          color: #333;
+          font-family: Arial, sans-serif;
+      }
+      .search-bar:focus {
+        border: 2px solid black; /* Bold black border when focused */
+    }
+      
+
+        .status-grid {
+          display: flex;
+          justify-content: space-between;
+        }
+      
+        .status-column {
+          width: 30%;
+          border: 1px solid #ccc; /* Add a subtle border */
+          border-radius: 5px; /* Optional: round the corners slightly */
+          padding: 10px;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Optional: add a subtle shadow */
+        }
+      
+        .status-column h2 {
+          text-align: center;
+          margin-bottom: 20px;
+        }
+      
+        .project-card {
+          background-color: #f4f4f4;
+          padding: 10px;
+          margin-bottom: 10px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          border-radius: 5px;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+      
+        .project-box {
+          width: 20px;
+          height: 20px;
+          background-color: #ccc;
+          margin-right: 10px;
+          border: 1px solid #aaa;
+        }
+      
+        .project-card span {
+          font-weight: Medium;
+        }
+      
+</style>

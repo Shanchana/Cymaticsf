@@ -1,0 +1,1131 @@
+{% load static %}
+{% static "images" as baseurl %}
+<!doctype html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+	    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	    <title>Expense</title>
+        <link rel="stylesheet" type="text/css" href="https://npmcdn.com/flatpickr/dist/themes/dark.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
+        <link rel="stylesheet" href="{% static './css/expense.css' %}">
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    </head>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            height: 100vh;
+            flex-direction: column;
+        }
+        .container {
+            display: flex;
+            width: 100%;
+            flex-grow: 1;
+        }
+            .sidebar {
+              background-color: #1e1e1e;
+              color: white;
+              width: 250px;
+              display: flex;
+              flex-direction: column;
+              justify-content: flex-start;
+              align-items: center;
+              transition: width 0.3s;
+              position: relative;
+          }
+          .sidebar.closed {
+            width: 60px;
+        }
+        
+        /* Icon visibility and border */
+        .sidebar .toggle-icon {
+            position: absolute;
+            top: 25px !important; /* Aligned near the top */
+            right: -8px; /* Adjusted to be right on the edge line */
+            cursor: pointer;
+            visibility: hidden;
+            border: 3px solid rgba(78, 27, 231, 0.5); /* Light border */
+            border-radius: 8px;
+            padding: 1px;
+            transition: visibility 0.3s ease-in-out, top 0.3s ease-in-out; /* Smooth transitions */
+            z-index: 2;
+        }
+        #toggle-icon {
+            width: 20px;
+            height: 20px;
+        }
+        
+        
+        /* Adjust position for closed state to avoid overlap */
+        .sidebar.closed .toggle-icon {
+            top: 10px;
+            right: -8px; /* Keep it on the edge even when closed */
+        }
+        
+        /* Show icon when hovering near the sidebar or over the icon */
+        .sidebar:hover .toggle-icon, .toggle-icon:hover {
+            visibility: visible;
+        }
+        
+        .sidebar .logo {
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .sidebar.closed .logo {
+            display: none;
+        }
+        
+        .sidebar nav ul {
+            list-style: none;
+            padding: 0;
+            width: 100%;
+            text-align: center;
+        }
+        
+        .sidebar nav ul li {
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: background-color 0.3s, border-left 0.3s;
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+        }
+        
+        .sidebar.closed nav ul li {
+            justify-content: center;
+        }
+        
+        .sidebar nav ul li a {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: white;
+            width: 100%;
+            font-family: Arial, sans-serif;
+        }
+        
+        .sidebar nav ul li a:hover {
+            background-color: #555;
+            border-left: 4px solid #ffcc00;
+        }
+        
+        .menu-icon {
+            margin-right: 10px;
+            width: 24px;
+            height: 24px;
+        }
+        
+        .menu-text {
+            transition: opacity 0.3s, visibility 0.3s;
+            font-family: Arial, sans-serif;
+            white-space:nowrap;
+        }
+        
+        .sidebar.closed .menu-text {
+            display: none;
+        }
+        
+        .sidebar.closed nav ul li:hover {
+            background-color: inherit;
+        }
+        
+        .profile-section {
+            position: relative; /* Allows positioning of the dropdown */
+            padding: 12px 20px; /* Match padding with other menu items */
+            cursor: pointer; /* Change cursor on hover */
+            transition: background-color 0.3s, border-left 0.3s; /* Smooth transition */
+        }
+        
+        .profile-section:hover {
+            background-color: #555; /* Background color on hover */
+            border-left: 4px solid #ffcc00; /* Left border on hover */
+        }
+        
+        .dropdown {
+            position: absolute; /* Position relative to the profile section */
+            bottom: 100%; /* Position above the profile section */
+            left: 0; /* Align to the left */
+            background-color: white; /* Background color of the dropdown */
+            border: 1px solid #ccc; /* Border for the dropdown */
+            border-radius: 4px; /* Rounded corners */
+            z-index: 1000; /* Ensure it appears above other elements */
+            width: 160px; /* Set width for the dropdown */
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Shadow for a floating effect */
+            display: none; /* Initially hidden */
+        }
+        
+        .dropdown ul {
+            list-style: none; /* Remove default list styles */
+            padding: 0; /* Remove padding */
+            margin: 0; /* Remove margin */
+        }
+        
+        .dropdown li {
+            padding: 10px; /* Padding for each item */
+            color: black; /* Set text color to black */
+            cursor: pointer; /* Change cursor on hover */
+        }
+        
+        .dropdown li:hover {
+            background-color: #f1f1f1; /* Background on hover */
+        }
+        
+        .main-content {
+          flex-grow: 1;
+          background-color: #f1f1f1;
+          padding: 20px;
+          position: relative; /* Required for positioning the form */
+        }
+        .user-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #ddd;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 18px;
+            color: #0e0e0e;
+            background-color: #e1ecb8;
+        
+        }
+  
+  .top-banner {
+    display: flex;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+    background-color: #1e1e1e;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 20px;
+    padding-top: 40px;
+    color: #cacaca;
+    position: relative;
+    top: -20px;
+    left: -20px;
+    right: -20px;
+    width: calc(100% + 41px);
+    padding-left: 30px;
+}
+
+.banner-item {
+    text-align: center;
+    font-size: 16px;
+    min-width: 160px;
+}
+
+
+.banner-item span {
+    color: #ffffff;
+}
+
+.banner-item br + span {
+    color: #dddbdb;
+}
+
+/* First row items */
+.banner-item:nth-child(-n+3) {
+    flex: 0 0 33.33%;
+    text-align: left;
+    
+}
+
+/* Second row items */
+.banner-item:nth-child(n+4) {
+    flex: 0 0 33.33%;
+    margin-top: 20px;
+    text-align: left;
+}
+
+
+.banner-item:nth-child(4) {
+    margin-left: 0;
+    text-align: left;
+   
+}
+
+
+.banner-item:nth-child(5) {
+    margin-right: 33.33%; 
+    text-align: left;
+}
+
+
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+  }
+  
+  .search-bar {
+    display: flex;
+    align-items: right;
+    margin-left:1100px;
+    
+
+  }
+  
+  .search-bar input {
+    padding: 10px;
+    border: 1px solid #e1dfdf;
+    border-radius: 5px;
+    margin-right: 10px;
+    padding-left:20px;
+    padding-right:10px;
+    background-color: #ffffff;
+  }
+  
+  .add-btn {
+    padding: 10px 20px;
+    background-color: black;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .income-table {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+  }
+  
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  th, td {
+    text-align: left;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  th {
+    background-color: #f4f4f4;
+  }
+  
+  .action-btn {
+    background-color: white; 
+    border: none; 
+    font-size: 28px; 
+    color: black; 
+    padding: 8px; 
+    cursor: pointer; 
+  }
+  
+  .footer {
+ display: flex;
+ justify-content: center;
+ padding: 20px;
+ background-color: white;
+ margin-top: auto;
+ border-top: 1px solid #ddd;
+}
+
+.footer .btn {
+ padding: 8px 290px;
+ background-color: #000000;
+ color: white;
+ border:None;
+ width: 100px;
+ border-radius: 10px;
+ cursor: pointer;
+ font-size: 26px;
+
+}
+  .modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.4);
+  }
+  
+  .modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 400px;
+    border-radius: 10px;
+  }
+  
+  .close {
+color: #aaa;
+float: right;
+font-size: 28px;
+font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+color: black;
+text-decoration: none;
+cursor: pointer;
+}
+.modal-content h3 {
+ text-align: center;
+ font-size: 20px; /* Adjust as needed */
+ margin-bottom: 20px; 
+}
+  
+  .modal-content form {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .modal-content form label {
+    margin-top: 10px;
+  }
+  
+  .modal-content form input,
+  .modal-content form select,
+  .modal-content form button {
+    padding: 10px;
+    margin-top: 5px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+  }
+  
+  .form-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 20px;
+  }
+  
+  .form-actions button {
+    margin-left: 10px;
+  }
+  form button[type="submit"],
+  form button[type="button"] {
+    flex: 1;
+ padding: 10px;
+ border: none;
+ border-radius: 5px;
+ cursor: pointer;
+ margin: 0 5px; 
+  }
+  
+  form button[type="submit"] {
+    background-color: black;
+    color: white;
+  }
+  
+  form button[type="button"] {
+    background-color: #ffffff;
+    color: black;
+    border: 1px solid #888 !important;
+  }
+  #projectIncomeWrapper {
+ display: flex;
+ align-items: center;
+ justify-content: space-between; 
+ margin-top: 10px;
+}
+
+#projectIncomeWrapper label {
+ margin: 0; 
+ font-weight: medium;
+}
+  
+  /* Outsourcing Section Styles */
+  #outsourcingDetails {
+         margin-top: 10px;
+     }
+
+     #outsourcingDetails label {
+         display: block;
+         margin-top: 10px;
+         font-weight: medium;
+     }
+
+     #outsourcingDetails select,
+     #outsourcingDetails input[type="number"] {
+         width: 100%;
+         padding: 8px;
+         margin-top: 5px;
+         border: 1px solid #ccc;
+         border-radius: 4px;
+     }
+
+     #addOutsourcingDetails,#editOutsourcingDetails {
+         margin-top: 10px;
+     }
+
+     #addOutsourcingDetails label,#editOutsourcingDetails label {
+         display: block;
+         margin-top: 10px;
+         font-weight: medium;
+     }
+
+     #addOutsourcingDetails select,
+     #addOutsourcingDetails input[type="number"],
+     #editOutsourcingDetails select,
+     #editOutsourcingDetails input[type="number"] {
+         width: 100%;
+         padding: 8px;
+         margin-top: 5px;
+         border: 1px solid #ccc;
+         border-radius: 4px;
+     }
+
+     .switch {
+         position: relative;
+         display: inline-block;
+         width: 34px;
+         height: 20px;
+     }
+
+     .switch input {
+         opacity: 0;
+         width: 0;
+         height: 0;
+     }
+
+     .slider {
+         position: absolute;
+         cursor: pointer;
+         top: 0;
+         left: 0;
+         right: 0;
+         bottom: 0;
+         background-color: #ccc;
+         transition: .4s;
+         border-radius: 20px;
+     }
+
+     .slider:before {
+         position: absolute;
+         content: "";
+         height: 16px;
+         width: 16px;
+         left: 2px;
+         bottom: 2px;
+         background-color: white;
+         border-radius: 50%;
+         transition: .4s;
+     }
+
+     input:checked + .slider {
+         background-color: #000000;
+     }
+
+     input:checked + .slider:before {
+         transform: translateX(14px);
+     }
+     
+.add-expense {
+ margin-bottom: 20px;
+ display: flex;
+ justify-content: center;
+ margin-top: -20px;  /* Move the button slightly upwards */
+}
+
+.add-expense-btn {
+ padding: 1px 250px;  /* Decrease height, increase width */
+ background-color: #e7e4e4;
+ border: none;
+ border-radius: 10px;
+ cursor: pointer;
+ font-size: 14px;  /* Decrease font size for "Add Income" */
+ display: flex;
+ flex-direction: column;
+ align-items: center;
+ justify-content: center;
+ line-height: 1.2; /* Adjust line height for better spacing */
+ position: relative;  /* Ensure correct positioning */
+}
+
+.add-expense-btn::before {
+ content: "+";  /* Display the "+" */
+ font-size: 30px;  /* Increase the size of the "+" */
+ display: block;
+ margin-bottom: -8px;  /* Reduce gap between + and text */
+}
+
+.add-expense-btn:hover {
+ background-color: #d0d0d0;
+}
+    </style>
+    <body>
+
+        <div class="container">
+            <aside class="sidebar">
+                <div class="toggle-icon">
+                    <img src="{% static './images/menuleft.png' %}" alt="icon" id="toggle-icon" width="16" height="16">
+                </div>
+                <div class="logo">
+                    <img src="{% static './images/logowhite.png' %}" alt="logo" width="50" height="50">
+                </div>
+                <nav>
+                    <ul>
+                        <li class="menu-item"><a href="{% url 'dashboard' %}"><img src="{% static 'images/dashboard.png' %}" class="menu-icon"><span class="menu-text">Dashboard</span></a></li>
+                        <li class="menu-item"><a href="{% url 'projects' %}"><img src="{% static 'images/project.png' %}" class="menu-icon"><span class="menu-text">Project</span></a></li>
+                        <li class="menu-item"><a href="{% url 'incomef_view' %}"><img src="{% static 'images/income.png' %}" class="menu-icon"><span class="menu-text">Income</span></a></li>
+                        <li class="menu-item"><a href="{% url 'expense' %}"><img src="{% static 'images/expenses.png' %}" class="menu-icon"><span class="menu-text">Expense</span></a></li>
+                        <li class="menu-item"><a href="{% url 'calendar' %}"><img src="{% static 'images/calendar.png' %}" class="menu-icon"><span class="menu-text">Calendar</span></a></li>
+                        <li class="menu-item"><a href="{% url 'allproject' %}"><img src="{% static 'images/All projects.png' %}" class="menu-icon"><span class="menu-text">All Projects</span></a></li>
+                        <li class="menu-item"><a href="{% url 'clientsbook' %}"><img src="{% static 'images/clientsbook.png' %}" class="menu-icon"><span class="menu-text">Clients Book</span></a></li>
+                        <li class="menu-item"><a href="{% url 'clients' %}"><img src="{% static 'images/Clients.png' %}" class="menu-icon"><span class="menu-text">Clients</span></a></li>
+                        <li class="menu-item"><a href="{% url 'status' %}"><img src="{% static 'images/status.png' %}" class="menu-icon"><span class="menu-text">Status</span></a></li>
+                        <li class="menu-item active"><a href="{% url 'pending_pay' %}"><img src="{% static 'images/pending.png' %}" class="menu-icon"><span class="menu-text">Pending Payments</span></a></li>
+                        <li class="menu-item"><a href="{% url 'project_map' %}"><img src="{% static 'images/map.png' %}" class="menu-icon"><span class="menu-text">Map</span></a></li>
+                        <li class="menu-item"><a href="{% url 'assets' %}"><img src="{% static 'images/Assets.png' %}" class="menu-icon"><span class="menu-text">Assets</span></a></li>
+                        <li class="menu-item"><a href="{% url 'budget' %}"><img src="{% static 'images/budget.png' %}" class="menu-icon"><span class="menu-text">Budget</span></a></li>
+                        <li class="menu-item"><a href="{% url 'entertainment' %}"><img src="{% static 'images/Entertainment.png' %}" class="menu-icon"><span class="menu-text">Entertainment</span></a></li>
+                    </ul>
+                </nav>
+                <div class="profile-section" id="profileMenu">
+                    <div class="user-icon" id="userIcon">
+                      <!-- Default content in case JS is not available -->
+                      U
+                  </div>
+      
+                    <span class="menu-text" id="name">{{ user.username }}</span>
+                    <div class="dropdown" id="profileDropdown">
+                        <ul>
+                            <li><a href="{% url 'profile' %}">View Profile</a></li>
+                            <li><a href="{% url 'logout_view' %}">Sign Out</a></li>
+                        </ul>
+                    </div>
+                  </div>
+            </aside>
+            <main class="main-content">
+                <div class="top-banner">
+                    <div class="banner-item">
+                        <span>Current Balance</span><br>₹{{ curbal }}
+                    </div>
+                    <div class="banner-item">
+                        <span>Total Income</span><br>₹{{ tincome }}
+                    </div>
+                    <div class="banner-item">
+                        <span>Total Expense</span><br>₹{{ texpense }}
+                    </div>
+                    <div class="banner-item">
+                        <span>Outsourcing Amount</span><br>₹{{ tout }}
+                    </div>
+                    <div class="banner-item">
+                        <span>Total Project Value</span><br>₹{{ tproamt }}
+                    </div>
+                </div>
+
+                 <!-- Add Expense Button -->
+                 <section class="add-expense">
+                    <button class="add-expense-btn" onclick="openForm()"> Add Expense</button>
+                </section>
+
+                <header class="header">
+                    <!-- search box -->
+                     <form method="GET" action="{% url 'expense' %}">
+                     {% csrf_token %}
+                     <div class="search-bar">
+                     <input type="text" name="q" placeholder="Search" value="{{ query }}" >
+                    <!-- <button type="submit">search</button> -->
+                     </div>
+                     </form>
+                    </header>
+                     
+
+                    
+               
+                <section class="income-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Description</th>
+                                <th>Amount</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in objs %}
+                            <tr onclick="moveToDetailPage('{{ item.id }}')" style="cursor: pointer;">
+                                <td>{{item.date}}</td>
+                                <td>{{item.description}}</td>
+                                <td>₹{{item.amount}}</td>    
+                                <td><button class="action-btn" onclick="openEditForm()" data-id = "{{ item.id }}"> <i class="bi bi-three-dots"></i></button></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </section>
+
+                <footer class="footer">
+                    <button class="btn" onclick="openForm()">+</button>
+                </footer>
+            </main>
+        </div>
+    
+        <!-- Add Item Form -->
+        <div id="addModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeForm()">&times;</span>
+                <h3>Add Expense</h3>
+                <form id = "addForm" action="{% url 'expense' %}" method="post">
+                    {% csrf_token %}
+                    <label for="date">Date</label>
+                    <input type="date" id="date" name="date">
+                    <label for="description">Description</label>
+                    <input type="text" id="description" name="description">
+
+                    <label for="category">Category</label>
+                    <select id="category" name="category">
+                        <option value="">---- </option>
+                        <!-- Options will be dynamically populated -->
+                    </select>
+
+                    <label for="amount">Amount</label>
+                    <input type="number" id="amount" name="amount">
+                    <label for="note">Note</label>
+                    <input type="text" id="note" name="note">
+
+                    <!-- Wrap the label and switch in a div -->
+            <div id="projectIncomeWrapper">
+                <label for="addOutsourcing">Project Expense</label>
+                <label class="switch">
+                    <input type="checkbox" id="addOutsourcing" name="addoutsourcing" onchange="toggleAddOutsourcingDetails()">
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div id="addOutsourcingDetails" style="display: none; margin-top: 10px; align-items: center;">
+                <label for="projectCode" style="font-size:small;">Project Code</label>
+                <select id="projectCode" name="projectCode">
+                    <option value="">Select Project Code</option>
+                    <!-- Options will be dynamically populated -->
+                </select>
+            </div>
+            <script>
+                function toggleAddOutsourcingDetails() {
+                    const outsourcingDetails = document.getElementById("addOutsourcingDetails");
+                    const toggle = document.getElementById("addOutsourcing");
+                    outsourcingDetails.style.display = toggle.checked ? "block" : "none";
+                }
+            
+                // Ensure that the correct display status is set based on the checkbox's state when the page loads.
+                document.addEventListener('DOMContentLoaded', function() {
+                    toggleAddOutsourcingDetails();  // Check the state of the checkbox and adjust the display accordingly
+                });
+            </script>
+
+                    <div class="form-actions">
+                        <button type="submit" id="addBtn">Submit</button>
+                        <button type="button" onclick="closeForm()">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    
+<!-- Edit Item Form -->
+<div id="editModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h3>Edit </h3>
+        <form method="post" id="editform">
+            {% csrf_token %}
+            <label for="editdate">Date</label>
+            <input type="date" id="editdate" name="editdate">
+
+            <label for="editcategory">Category</label>
+            <select id="editcategory" name="editcategory">
+                <option value="">---- </option>
+                <!-- Options will be dynamically populated -->
+            </select>
+            
+            <label for="editdescription">Description</label>
+            <input type="text" id="editdescription" name="editdescription">
+
+            
+            <label for="editamount">Amount</label>
+            <input type="number" id="editamount" name="editamount">
+            
+             <!-- Wrap the label and switch in a div -->
+             <div id="projectIncomeWrapper">
+                <label for="editOutsourcing">Project Expense</label>
+                <label class="switch">
+                    <input type="checkbox" id="editOutsourcing" name="outsourcing" onchange="toggleEditOutsourcingDetails()">
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div id="editOutsourcingDetails" style="display: none; margin-top: 10px; align-items: center;">
+                <label for="editprojectCode" style="font-size:small;">Project Code</label>
+                <select id="editProjectCode" name="projectCode">
+                    <option value="">Select Project Code</option>
+                    <!-- Options will be dynamically populated -->
+                </select>
+            </div>
+            
+            <script>
+                function toggleEditOutsourcingDetails() {
+                    const outsourcingDetails = document.getElementById("editOutsourcingDetails");
+                    const toggle = document.getElementById("editOutsourcing");
+                    outsourcingDetails.style.display = toggle.checked ? "block" : "none";
+                }
+            
+                // Ensure that the correct display status is set based on the checkbox's state when the page loads.
+                document.addEventListener('DOMContentLoaded', function() {
+                    toggleAddOutsourcingDetails();  // Check the state of the checkbox and adjust the display accordingly
+                });
+            </script>
+            
+            
+            <div class="form-actions">
+                <button type="submit">Submit</button>
+                <button type="button" id="cancelBtn">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+        <div id="error-message" style="display:none; color:red;"></div>
+        <script>
+            // JavaScript to handle dropdown visibility
+            const profileMenu = document.getElementById('profileMenu');
+            const profileDropdown = document.getElementById('profileDropdown');
+        
+            profileMenu.addEventListener('click', function () {
+                // Toggle dropdown visibility
+                if (profileDropdown.style.display === 'none' || profileDropdown.style.display === '') {
+                    profileDropdown.style.display = 'block';
+                } else {
+                    profileDropdown.style.display = 'none';
+                }
+            });
+        
+            // Close dropdown if clicked outside
+            window.addEventListener('click', function (event) {
+                if (!profileMenu.contains(event.target)) {
+                    profileDropdown.style.display = 'none';
+                }
+            });
+        </script>
+        <script>
+            const sidebar = document.querySelector('.sidebar');
+            const toggleIcon = document.getElementById('toggle-icon');
+            
+            toggleIcon.addEventListener('click', function() {
+              if (sidebar.classList.contains('closed')) {
+                sidebar.classList.remove('closed');
+                toggleIcon.src = "{% static 'images/menuleft.png' %}";  // Change to the "left-chevron" when open
+              } else {
+                sidebar.classList.add('closed');
+                toggleIcon.src = "{% static 'images/menuright.png' %}";  // Change to the "chevron" when closed
+              }
+            });
+          </script>
+
+        <script>
+            // user icon
+            const username = document.getElementById('name').textContent; 
+            document.querySelector('#userIcon').innerText = username.charAt(0);
+          </script>
+          
+        <script> // instant display front end code
+            function openForm() {
+                document.getElementById("addModal").style.display = "block";
+            }
+    
+            function closeForm() {
+                document.getElementById("addModal").style.display = "none";
+            }
+    
+            function openEditForm() {
+                document.getElementById("editModal").style.display = "block";
+            }
+            
+            function closeEditForm() {
+                document.getElementById("editModal").style.display = "none";
+            }
+
+            // project code dynamic dropdown
+            document.addEventListener('DOMContentLoaded', function() {
+                var projectCodeDropdown = document.getElementById('projectCode');
+            
+                // Fetch project codes when the page loads
+                fetch('/get_project_codes/')
+                    .then(response => response.json())
+                    .then(data => {
+                        data.forEach(function(item) {
+                            var option = document.createElement('option');
+                            option.value = item.id;
+                            option.text = item.name;
+                            projectCodeDropdown.appendChild(option);
+                        });
+                    })
+                    .catch(error => console.error('Error fetching project codes:', error));
+            });
+
+            //////////////////////////////
+
+            // project code dynamic dropdown
+            document.addEventListener('DOMContentLoaded', function() {
+                var projectCodeDropdown = document.getElementById('editProjectCode');
+            
+                // Fetch project codes when the page loads
+                fetch('/get_project_codes/')
+                    .then(response => response.json())
+                    .then(data => {
+                        data.forEach(function(item) {
+                            var option = document.createElement('option');
+                            option.value = item.id;
+                            option.text = item.name;
+                            projectCodeDropdown.appendChild(option);
+                        });
+                    })
+                    .catch(error => console.error('Error fetching project codes:', error));
+            });
+
+            // expense category dynamic dropdown for add form
+            document.addEventListener('DOMContentLoaded', function() {
+                var expense_category = document.getElementById('category');
+            
+                // Fetch project codes when the page loads
+                fetch('/get-unique-category/')
+                    .then(response => response.json())
+                    .then(data => {
+                        data.forEach(function(category) {
+                            var option = document.createElement('option');
+                            option.value = category;
+                            option.text = category;
+                            expense_category.appendChild(option);
+                        });
+                    })
+                    .catch(error => console.error('Error fetching category:', error));
+            });
+
+
+            // expense category dynamic dropdown for edit form
+            document.addEventListener('DOMContentLoaded', function() {
+                var expense_category = document.getElementById('editcategory');
+            
+                // Fetch project codes when the page loads
+                fetch('/get-unique-category/')
+                    .then(response => response.json())
+                    .then(data => {
+                        data.forEach(function(category) {
+                            var option = document.createElement('option');
+                            option.value = category;
+                            option.text = category;
+                            expense_category.appendChild(option);
+                        });
+                    })
+                    .catch(error => console.error('Error fetching category:', error));
+            });
+
+        </script>
+
+        <script>
+            function convertToBackendDate(dateStr) {
+                const parts = dateStr.split('-');
+                return `${parts[2]}-${parts[1]}-${parts[0]}`;  // Rearrange to yyyy-mm-dd
+            }
+        </script>
+
+
+        <script>// add form
+            document.getElementById('addBtn').addEventListener('submit', function(event) {
+                event.preventDefault();
+            
+                var form = this;
+                var formData = new FormData(form);
+            
+                fetch(form.action, {
+                    method: form.method,
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Hide the form and reset its fields
+                        form.reset();
+                        document.getElementById("addForm").style.display = "none";
+            
+                        // Reload the page to update the expense list
+                        location.reload();
+                    } else {
+                        // Display error message
+                        var errorMessage = document.getElementById("error-message");
+                        errorMessage.textContent = data.error;
+                        errorMessage.style.display = "block";
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+            });
+            
+        </script>
+
+
+        <script> // edit form
+            $(document).ready(function() {
+                var modal = $('#editModal');
+                var span = $('.close');
+                var cancelBtn = $('#cancelBtn');
+            
+                $.ajaxSetup({
+                    beforeSend: function(xhr, settings) {
+                        if (!this.crossDomain) {
+                            xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+                        }
+                    }
+                });
+            
+                function getCookie(name) {
+                    var cookieValue = null;
+                    if (document.cookie && document.cookie !== '') {
+                        var cookies = document.cookie.split(';');
+                        for (var i = 0; i < cookies.length; i++) {
+                            var cookie = cookies[i].trim();
+                            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                                break;
+                            }
+                        }
+                    }
+                    return cookieValue;
+                }
+            
+                // Close the modal
+                span.on('click', function() {
+                    modal.hide();
+                });
+            
+                cancelBtn.on('click', function() {
+                    modal.hide();
+                });
+            
+                function convertToDate(dateStr) {
+                    const date = new Date(dateStr);
+                    const pad = (num) => (num < 10 ? '0' + num : num);
+                    const localDate = pad(date.getDate()) + '-' +  // Day first
+                                      pad(date.getMonth() + 1) + '-' +  // Month second
+                                      date.getFullYear();  // Year last
+                    return localDate;
+                }
+            
+                function openModal(exp_id) {
+                    if (exp_id) {
+                        $.ajax({
+                            url: '/get_expense_data/' + exp_id + '/',
+                            method: 'GET',
+                            success: function(data) {
+                                $('#editform').attr('data-edit-id', exp_id); // Set the edit code
+                                $('#editdate').val(convertToDate(data.editdate));
+                                $('#editcategory').val(data.editcategory).change();
+                                $('#editdescription').val(data.editdescription);
+                                $('#editamount').val(data.editamount);  // Corrected to match field name
+                                $('#editOutsourcing').prop('checked', data.editProjectExpense);  // Set checkbox checked state
+
+                                if (data.editProjectExpense) {
+                                    $('#editOutsourcingDetails').show(); // Show the outsourcing details if the checkbox is checked
+                                } else {
+                                    $('#editOutsourcingDetails').hide(); // Hide the outsourcing details if not checked
+                                }
+
+                                if (data.project_code) {
+                                    $('#editProjectCode').val(data.project_code.id);  // Set the selected value
+                                } else {
+                                    $('#editProjectCode').val('');  // Set to empty if no project is associated
+                                }
+                                modal.show();
+                            },
+                            error: function() {
+                                alert('Failed to fetch data. Please try again.');
+                            }
+                        });
+                    } else {
+                        $('#editform').removeAttr('data-edit-id'); // Clear the edit code for new projects
+                        modal.show();
+                    }
+                }
+            
+                // Attach click event to edit buttons
+                $('.action-btn').on('click', function(event) {
+                    event.preventDefault(); // Prevent default link behavior
+                    event.stopPropagation();
+                    var id = $(this).data('id'); // Get the project code from the button
+                    openModal(id);
+                });
+            
+                $('#editform').on('submit', function(event) {
+                    event.preventDefault();
+
+                    // Convert the date from dd-mm-yyyy to yyyy-mm-dd
+                    var dateField = $('#editdate');  // Select the date field
+                    var dateValue = dateField.val();
+                    var convertedDate = convertToBackendDate(dateValue);
+                    dateField.val(convertedDate);  // Set the new converted date value back to the field
+    
+                    var id = $('#editform').attr('data-edit-id'); // Get the edit code
+                    var url = '/edit_expense/' + (id ? id + '/' : ''); // Ensure URL includes code if available
+                    
+                    var serializedData = $(this).serialize();
+
+                    $.ajax({
+                        url: url,
+                        method: 'POST',
+                        data: $(this).serialize(),
+                        success: function(response) {
+                            if (response.success) {
+                                alert('Form submitted successfully!');
+                                modal.hide();
+                                location.reload();  // Reload the page to reflect changes
+                            } else {
+                                alert('Failed to submit form: ' + response.error);
+                            }
+                        },
+                        error: function() {
+                            alert('An error occurred. Please try again.');
+                        }
+                    });
+                });
+            });
+            </script>
+            
+
+<script>
+    // page navigation from div
+    function moveToDetailPage(exp_id) {
+        window.location.href = "/expense/" + exp_id + "/";
+    }
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script>
+        config={
+            enableTime:false,
+            dateFormat: "d-m-Y"
+
+        }
+        flatpickr("input[type=date]",config);
+    </script>
+
+    <script>
+        function toggleOutsourcingDetails() {
+            const outsourcingDetails = document.getElementById("outsourcingDetails");
+            const toggle = document.getElementById("outsourcing");
+            outsourcingDetails.style.display = toggle.checked ? "block" : "none";
+        }
+    </script>
+     
+    </body>
+</html>

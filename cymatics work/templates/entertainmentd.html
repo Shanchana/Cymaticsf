@@ -1,0 +1,461 @@
+{% load static %}
+{% static "images" as baseurl %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Entertainment page2.0</title>
+    
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            height: 100vh;
+            flex-direction: column;
+        }
+        .container {
+            display: flex;
+            width: 100%;
+            flex-grow: 1;
+        }
+            .sidebar {
+              background-color: #1e1e1e;
+              color: white;
+              width: 250px;
+              display: flex;
+              flex-direction: column;
+              justify-content: flex-start;
+              align-items: center;
+              transition: width 0.3s;
+              position: relative;
+          }
+          
+          .sidebar.closed {
+              width: 60px;
+          }
+          
+          /* Icon visibility and border */
+          .sidebar .toggle-icon {
+              position: absolute;
+              top: 25px !important; /* Aligned near the top */
+              right: -8px; /* Adjusted to be right on the edge line */
+              cursor: pointer;
+              visibility: hidden;
+              border: 3px solid rgba(78, 27, 231, 0.5); /* Light border */
+              border-radius: 8px;
+              padding: 1px;
+              transition: visibility 0.3s ease-in-out, top 0.3s ease-in-out; /* Smooth transitions */
+              z-index: 2;
+          }
+          #toggle-icon {
+              width: 20px;
+              height: 20px;
+          }
+          
+          
+          /* Adjust position for closed state to avoid overlap */
+          .sidebar.closed .toggle-icon {
+              top: 10px;
+              right: -8px; /* Keep it on the edge even when closed */
+          }
+          
+          /* Show icon when hovering near the sidebar or over the icon */
+          .sidebar:hover .toggle-icon, .toggle-icon:hover {
+              visibility: visible;
+          }
+          
+          .sidebar .logo {
+              padding: 20px;
+              text-align: center;
+          }
+          
+          .sidebar.closed .logo {
+              display: none;
+          }
+          
+          .sidebar nav ul {
+              list-style: none;
+              padding: 0;
+              width: 100%;
+              text-align: center;
+          }
+          
+          .sidebar nav ul li {
+              padding: 12px 20px;
+              cursor: pointer;
+              transition: background-color 0.3s, border-left 0.3s;
+              display: flex;
+              justify-content: flex-start;
+              align-items: center;
+          }
+          
+          .sidebar.closed nav ul li {
+              justify-content: center;
+          }
+          
+          .sidebar nav ul li a {
+              display: flex;
+              align-items: center;
+              text-decoration: none;
+              color: white;
+              width: 100%;
+              font-family: Arial, sans-serif;
+          }
+          
+          .sidebar nav ul li a:hover {
+              background-color: #555;
+              border-left: 4px solid #ffcc00;
+          }
+          
+          .menu-icon {
+              margin-right: 10px;
+              width: 24px;
+              height: 24px;
+          }
+          
+          .menu-text {
+              transition: opacity 0.3s, visibility 0.3s;
+              font-family: Arial, sans-serif;
+          }
+          
+          .sidebar.closed .menu-text {
+              display: none;
+          }
+          
+          .sidebar.closed nav ul li:hover {
+              background-color: inherit;
+          }
+        
+        
+        .main-content {
+            flex-grow: 1;
+            background-color: #f1f1f1;
+            padding: 20px;
+            position: relative; /* Required for positioning the form */
+        }
+        .dropdown {
+            position: absolute; /* Position relative to the profile section */
+            bottom: 100%; /* Position above the profile section */
+            left: 0; /* Align to the left */
+            background-color: white; /* Background color of the dropdown */
+            border: 1px solid #ccc; /* Border for the dropdown */
+            border-radius: 4px; /* Rounded corners */
+            z-index: 1000; /* Ensure it appears above other elements */
+            width: 160px; /* Set width for the dropdown */
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Shadow for a floating effect */
+            display: none; /* Initially hidden */
+        }
+        .profile-section {
+            position: relative; /* Allows positioning of the dropdown */
+            padding: 12px 20px; /* Match padding with other menu items */
+            cursor: pointer; /* Change cursor on hover */
+            transition: background-color 0.3s, border-left 0.3s; /* Smooth transition */
+        }
+        
+        .profile-section:hover {
+            background-color: #555; /* Background color on hover */
+            border-left: 4px solid #ffcc00; /* Left border on hover */
+        }
+        .dropdown ul {
+            list-style: none; /* Remove default list styles */
+            padding: 0; /* Remove padding */
+            margin: 0; /* Remove margin */
+        }
+        
+        .dropdown li {
+            padding: 10px; /* Padding for each item */
+            color: black; /* Set text color to black */
+            cursor: pointer; /* Change cursor on hover */
+        }
+        .dropdown li:hover {
+            background-color: #f1f1f1; /* Background on hover */
+        }
+        
+                .left-side {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 20px;
+                    padding-left: 20px;
+                    padding-top: 20px;
+                }
+                .movie-info {
+                    display: flex;
+                    flex-direction: column; /* Stack title and details */
+                    justify-content: flex-start;
+                }
+                
+                .movie-title {
+                    font-size: 24px;
+                    font-weight: bold;
+                    text-align: center;
+                    padding-left: 50px;
+                    padding-top: 20px;
+
+                }
+                .details{
+                    text-align: center;
+                    padding-left: 50px;
+                    padding-top: 20px;
+                }
+        
+                .language {
+                    color: #888;
+                    font-size: 14px;
+                    padding-left:11px;
+                }
+        
+                .rating {
+                    display: flex;
+                    align-items: center;
+                    font-size: 24px;
+                    padding-top: 350px;
+                }
+               
+        
+                .rating span {
+                    color: rgb(0, 0, 0);
+                    cursor: pointer;
+                }
+        
+                .rating span.inactive {
+                    color: #ccc;
+                }
+        
+                
+                .content-wrapper {
+                    display: flex;
+                    margin-left: 20px; 
+                    flex-grow: 1;
+                }
+                .user-icon {
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    background-color: #ddd;
+                    border-radius: 50%;
+                    width: 40px;
+                    height: 40px;
+                    font-size: 18px;
+                    color: #0e0e0e;
+                    background-color: #e1ecb8;
+                
+                }
+              
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <aside class="sidebar">
+            <div class="toggle-icon">
+                <img src="{% static 'images/menuleft.png' %}" alt="icon" id="toggle-icon" width="16" height="16">
+            </div>
+            <div class="logo">
+                <img src="{% static './images/logowhite.png' %}" alt="logo" width="50" height="50">
+            </div>
+            <nav>
+                <ul>
+                    <li class="menu-item"><a href="{% url 'dashboard' %}"><img src="{% static 'images/dashboard.png' %}" class="menu-icon"><span class="menu-text">Dashboard</span></a></li>
+                    <li class="menu-item"><a href="{% url 'projects' %}"><img src="{% static 'images/project.png' %}" class="menu-icon"><span class="menu-text">Project</span></a></li>
+                    <li class="menu-item"><a href="{% url 'incomef_view' %}"><img src="{% static 'images/income.png' %}" class="menu-icon"><span class="menu-text">Income</span></a></li>
+                    <li class="menu-item"><a href="{% url 'expense' %}"><img src="{% static 'images/expenses.png' %}" class="menu-icon"><span class="menu-text">Expense</span></a></li>
+                    <li class="menu-item"><a href="{% url 'calendar' %}"><img src="{% static 'images/calendar.png' %}" class="menu-icon"><span class="menu-text">Calendar</span></a></li>
+                    <li class="menu-item"><a href="{% url 'allproject' %}"><img src="{% static 'images/All projects.png' %}" class="menu-icon"><span class="menu-text">All Projects</span></a></li>
+                    <li class="menu-item"><a href="{% url 'clientsbook' %}"><img src="{% static 'images/clientsbook.png' %}" class="menu-icon"><span class="menu-text">Clients Book</span></a></li>
+                    <li class="menu-item"><a href="{% url 'clients' %}"><img src="{% static 'images/Clients.png' %}" class="menu-icon"><span class="menu-text">Clients</span></a></li>
+                    <li class="menu-item"><a href="{% url 'status' %}"><img src="{% static 'images/status.png' %}" class="menu-icon"><span class="menu-text">Status</span></a></li>
+                    <li class="menu-item active"><a href="{% url 'pending_pay' %}"><img src="{% static 'images/pending.png' %}" class="menu-icon"><span class="menu-text">Pending Payments</span></a></li>
+                    <li class="menu-item"><a href="{% url 'project_map' %}"><img src="{% static 'images/map.png' %}" class="menu-icon"><span class="menu-text">Map</span></a></li>
+                    <li class="menu-item"><a href="{% url 'assets' %}"><img src="{% static 'images/Assets.png' %}" class="menu-icon"><span class="menu-text">Assets</span></a></li>
+                    <li class="menu-item"><a href="{% url 'budget' %}"><img src="{% static 'images/budget.png' %}" class="menu-icon"><span class="menu-text">Budget</span></a></li>
+                    <li class="menu-item"><a href="{% url 'entertainment' %}"><img src="{% static 'images/Entertainment.png' %}" class="menu-icon"><span class="menu-text">Entertainment</span></a></li>
+                </ul>
+            </nav>
+            <div class="profile-section" id="profileMenu">
+                <div class="user-icon" id="userIcon">
+                  <!-- Default content in case JS is not available -->
+                  U
+              </div>
+  
+                <span class="menu-text" id="name">{{ user.username }}</span>
+                <div class="dropdown" id="profileDropdown">
+                    <ul>
+                        <li><a href="#">View Profile</a></li>
+                        <li><a href="#">Sign Out</a></li>
+                    </ul>
+                </div>
+              </div>
+        </aside>
+    <div class="content-wrapper">
+            <div class="left-side">
+                <img src="{{objs.image.url}}" alt="movie" width="300" height="300">
+                <p><b>Rating</b></p>
+            </div>
+            <div class="movie-info">
+                <div class="movie-title">{{ objs.name }}</div>
+                <div class="details">{{ objs.language }} | {{ objs.type }}</div>
+            </div>
+            <div class="rating-section">
+                
+                <div class="item" data-item-id="{{ objs.id }}" data-rating="{{ objs.rating }}">
+                    <div class="rating">
+                        <span class="star {% if objs.rating >= 1 %}active{% else %}inactive{% endif %}" data-rating="1"> <i class="fa fa-star fs-1"></i></span>
+                        <span class="star {% if objs.rating >= 2 %}active{% else %}inactive{% endif %}" data-rating="2"> <i class="fa fa-star fs-1"></i></span>
+                        <span class="star {% if objs.rating >= 3 %}active{% else %}inactive{% endif %}" data-rating="3"> <i class="fa fa-star fs-1"></i></span>
+                        <span class="star {% if objs.rating >= 4 %}active{% else %}inactive{% endif %}" data-rating="4"> <i class="fa fa-star fs-1"></i></span>
+                        <span class="star {% if objs.rating >= 5 %}active{% else %}inactive{% endif %}" data-rating="5"> <i class="fa fa-star fs-1"></i></span>
+                    </div>
+                </div>
+            </div>
+
+
+        
+    </div>
+
+
+
+   
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            function updateStars(itemElement, rating) {
+                itemElement.querySelectorAll('.star').forEach(star => {
+                    if (parseInt(star.getAttribute('data-rating'), 10) <= rating) {
+                        star.classList.remove('inactive');
+                        star.classList.add('active');
+                    } else {
+                        star.classList.add('inactive');
+                        star.classList.remove('active');
+                    }
+                });
+            }
+        
+            // Set initial star display based on the rating from the data-rating attribute
+            document.querySelectorAll('.item').forEach(item => {
+                const rating = parseInt(item.getAttribute('data-rating'), 10);
+                updateStars(item, rating);
+            });
+        
+            // Add click event listener to each star
+            document.querySelectorAll('.star').forEach(star => {
+                star.addEventListener('click', () => {
+                    const itemElement = star.closest('.item');
+                    const currentRating = parseInt(itemElement.getAttribute('data-rating'), 10);
+                    const clickedRating = parseInt(star.getAttribute('data-rating'), 10);
+        
+                    // Toggle the rating (reset to 0 if the clicked star is part of the current rating)
+                    const newRating = (currentRating === clickedRating) ? 0 : clickedRating;
+                    updateStars(itemElement, newRating);
+        
+                    // Update the data-rating attribute on the item
+                    itemElement.setAttribute('data-rating', newRating);
+        
+                    // Fetch the item ID
+                    const itemId = itemElement.getAttribute('data-item-id');
+                    
+        
+                    // Send the new rating to the server via AJAX
+                    updateRating(itemId, newRating);
+                });
+            });
+        
+            // Function to send updated rating to the server
+            function updateRating(itemId, rating) {
+                const csrftoken = getCookie('csrftoken');
+        
+                $.ajax({
+                    url: '/update_rating/',  // Replace with your Django URL
+                    type: 'POST',
+                    headers: {
+                        'X-CSRFToken': csrftoken  // Include CSRF token
+                    },
+                    data: {
+                        item_id: itemId,
+                        rating: rating
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            window.location.reload();
+                        } else {
+                            alert('Failed to update rating: ' + response.error);
+                        }
+                    },
+                    error: function() {
+                        alert('An error occurred. Please try again.');
+                    }
+                });
+            }
+        
+            // Function to get CSRF token
+            function getCookie(name) {
+                let cookieValue = null;
+                if (document.cookie && document.cookie !== '') {
+                    const cookies = document.cookie.split(';');
+                    for (let i = 0; i < cookies.length; i++) {
+                        const cookie = cookies[i].trim();
+                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
+            }
+        });
+        </script>
+
+
+    
+        <script>
+            // user icon
+            const username = document.getElementById('name').textContent; 
+            document.querySelector('#userIcon').innerText = username.charAt(0);
+          </script>
+          <script>
+            // JavaScript to handle dropdown visibility
+            const profileMenu = document.getElementById('profileMenu');
+            const profileDropdown = document.getElementById('profileDropdown');
+        
+            profileMenu.addEventListener('click', function () {
+                // Toggle dropdown visibility
+                if (profileDropdown.style.display === 'none' || profileDropdown.style.display === '') {
+                    profileDropdown.style.display = 'block';
+                } else {
+                    profileDropdown.style.display = 'none';
+                }
+            });
+        
+            // Close dropdown if clicked outside
+            window.addEventListener('click', function (event) {
+                if (!profileMenu.contains(event.target)) {
+                    profileDropdown.style.display = 'none';
+                }
+            });
+        </script>
+        <script>
+            const sidebar = document.querySelector('.sidebar');
+            const toggleIcon = document.getElementById('toggle-icon');
+            
+            toggleIcon.addEventListener('click', function() {
+              if (sidebar.classList.contains('closed')) {
+                sidebar.classList.remove('closed');
+                toggleIcon.src = "{% static 'images/menuleft.png' %}";  // Change to the "left-chevron" when open
+              } else {
+                sidebar.classList.add('closed');
+                toggleIcon.src = "{% static 'images/menuright.png' %}";  // Change to the "chevron" when closed
+              }
+            });
+          </script>
+
+
+
+ 
+</body>
+</html>

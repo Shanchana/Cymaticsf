@@ -1,0 +1,788 @@
+{% load static %}
+{% static "images" as baseurl %}
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>Client Book</title>
+  
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            height: 100vh;
+            flex-direction: column;
+          }
+          .container {
+            display: flex;
+            width: 100%;
+            flex-grow: 1;
+          }
+            .sidebar {
+              background-color: #1e1e1e;
+              color: white;
+              width: 250px;
+              display: flex;
+              flex-direction: column;
+              justify-content: flex-start;
+              align-items: center;
+              transition: width 0.3s;
+              position: relative;
+          }
+          
+          .sidebar.closed {
+              width: 60px;
+          }
+          
+          /* Icon visibility and border */
+          .sidebar .toggle-icon {
+              position: absolute;
+              top: 25px !important; /* Aligned near the top */
+              right: -8px; /* Adjusted to be right on the edge line */
+              cursor: pointer;
+              visibility: hidden;
+              border: 3px solid rgba(78, 27, 231, 0.5); /* Light border */
+              border-radius: 8px;
+              padding: 1px;
+              transition: visibility 0.3s ease-in-out, top 0.3s ease-in-out; /* Smooth transitions */
+              z-index: 2;
+          }
+          #toggle-icon {
+              width: 20px;
+              height: 20px;
+          }
+          
+          
+          /* Adjust position for closed state to avoid overlap */
+          .sidebar.closed .toggle-icon {
+              top: 10px;
+              right: -8px; /* Keep it on the edge even when closed */
+          }
+          
+          /* Show icon when hovering near the sidebar or over the icon */
+          .sidebar:hover .toggle-icon, .toggle-icon:hover {
+              visibility: visible;
+          }
+          
+          .sidebar .logo {
+              padding: 20px;
+              text-align: center;
+          }
+          
+          .sidebar.closed .logo {
+              display: none;
+          }
+          
+          .sidebar nav ul {
+              list-style: none;
+              padding: 0;
+              width: 100%;
+              text-align: center;
+          }
+          
+          .sidebar nav ul li {
+              padding: 12px 20px;
+              cursor: pointer;
+              transition: background-color 0.3s, border-left 0.3s;
+              display: flex;
+              justify-content: flex-start;
+              align-items: center;
+          }
+          
+          .sidebar.closed nav ul li {
+              justify-content: center;
+          }
+          
+          .sidebar nav ul li a {
+              display: flex;
+              align-items: center;
+              text-decoration: none;
+              color: white;
+              width: 100%;
+              font-family: Arial, sans-serif;
+          }
+          
+          .sidebar nav ul li a:hover {
+              background-color: #555;
+              border-left: 4px solid #ffcc00;
+          }
+          
+          .menu-icon {
+              margin-right: 10px;
+              width: 24px;
+              height: 24px;
+          }
+          
+          .menu-text {
+              transition: opacity 0.3s, visibility 0.3s;
+              font-family: Arial, sans-serif;
+          }
+          
+          .sidebar.closed .menu-text {
+              display: none;
+          }
+          
+          .sidebar.closed nav ul li:hover {
+              background-color: inherit;
+          }
+          
+          
+          .main-content {
+            flex-grow: 1;
+            background-color: #f1f1f1;
+            padding: 20px;
+            position: relative; /* Required for positioning the form */
+          }
+          .profile-section {
+            position: relative; /* Allows positioning of the dropdown */
+            padding: 12px 20px; /* Match padding with other menu items */
+            cursor: pointer; /* Change cursor on hover */
+            transition: background-color 0.3s, border-left 0.3s; /* Smooth transition */
+        }
+        
+        .profile-section:hover {
+            background-color: #555; /* Background color on hover */
+            border-left: 4px solid #ffcc00; /* Left border on hover */
+        }
+        
+        .dropdown {
+            position: absolute; /* Position relative to the profile section */
+            bottom: 100%; /* Position above the profile section */
+            left: 0; /* Align to the left */
+            background-color: white; /* Background color of the dropdown */
+            border: 1px solid #ccc; /* Border for the dropdown */
+            border-radius: 4px; /* Rounded corners */
+            z-index: 1000; /* Ensure it appears above other elements */
+            width: 160px; /* Set width for the dropdown */
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Shadow for a floating effect */
+            display: none; /* Initially hidden */
+        }
+        
+        .dropdown ul {
+            list-style: none; /* Remove default list styles */
+            padding: 0; /* Remove padding */
+            margin: 0; /* Remove margin */
+        }
+        
+        .dropdown li {
+            padding: 10px; /* Padding for each item */
+            color: black; /* Set text color to black */
+            cursor: pointer; /* Change cursor on hover */
+        }
+        
+        .dropdown li:hover {
+            background-color: #f1f1f1; /* Background on hover */
+        }
+      
+          .filter-btn, .back-btn {
+            padding: 10px 15px;
+            background-color: #000;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            margin-left: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+          }
+          
+          .filter-btn img, .back-btn img {
+            margin-right: 5px;
+            height: 24px;
+            width:24px;
+          }
+          
+          .client-book {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+          }
+          
+          .client-book h2 {
+            margin-top: 0;
+          }
+          
+          .client-list {
+            margin-top: 20px;
+          }
+          
+          .client-item {
+            display: flex;
+            padding: 15px;
+            border-bottom: 1px solid #ddd;
+            justify-content: space-between;
+            align-items: center;
+          }
+          
+          .client-item:last-child {
+            border-bottom: none;
+          }
+          
+          .client-info {
+            display: flex;
+            align-items: center;
+          }
+          
+          .client-id {
+            font-size: 1.2em;
+            margin-right: 10px;
+            color: #555;
+          }
+          
+          .client-details {
+            display: flex;
+            flex-direction: column;
+          }
+          
+          .client-name {
+            font-weight: bold;
+          }
+          
+          .client-detail {
+            color: #777;
+          }
+          
+          .client-arrow img {
+            width: 15px;
+            height: 15px;
+          }
+          
+          @media (max-width: 768px) {
+            .container {
+              flex-direction: column;
+            }
+          
+            .sidebar {
+              width: 100%;
+              height: auto;
+            }
+          
+            .menu-title {
+              text-align: center;
+            }
+          
+            .menu-title h3 {
+              margin: 0;
+              padding: 10px;
+            }
+          
+            .sidebar nav ul {
+              display: flex;
+              flex-wrap: wrap;
+              justify-content: space-around;
+            }
+          
+            .sidebar nav ul li {
+              padding: 10px;
+              width: 48%;
+            }
+          
+           
+          }
+          .user-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #ddd;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 18px;
+            color: #0e0e0e;
+            background-color: #e1ecb8;
+        
+          }
+          .search-bar {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end; 
+            width: 100%;
+        }
+        
+        .search-bar input {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-right: 10px; 
+            width: 200px;      
+        }
+        .main-content {
+          flex-grow: 1;
+          background-color: #f1f1f1;
+          padding: 20px;
+        }
+        
+        .header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 20px;
+        }
+        /* Filter Button */
+.filter-btn {
+    background-color: rgb(248, 248, 248);
+    color: rgb(92, 90, 90);
+    border: 1px solid #ccc;
+    padding: 8px 16px;
+    margin-left: 10px;  /* Adjust spacing between filter and new button */
+    border-radius: 4px;
+    cursor: pointer;
+    position: relative;
+    padding-left: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 130px;
+    font-size: medium;
+    font-style: normal;
+}
+
+.filter-btn .filter-text {
+    flex-grow: 1;
+    margin-left: 10px;
+}
+
+.filter-btn .dropdown-icon {
+    margin-left: 10px; /* Adjust icon spacing */
+    width: 15px;
+    height: 15px;
+    margin-top: -2px;
+}
+       
+.dropdown-section .side-arrow {
+    width: 20px;
+    height: 12px;
+    flex-shrink: 0;
+    transition: transform 0.3s ease;
+}
+.side-arrow {
+            color: #5d5d5d; 
+        }
+
+
+.filter-dropdown {
+    background-color: white;
+    border: 1px solid #ddd;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    position: absolute;
+    top: 80px; /* Position below the filter button */
+    right: 20px;
+    width: 280px;
+    padding: 10px;
+    display: none; /* Initially hidden */
+    z-index: 10;
+}
+
+
+
+         
+.dropdown-section {
+   
+    justify-content:space-between;
+    align-items: center;
+    cursor: pointer;
+    position: relative;  
+    padding: 8px 0;
+}
+
+        .filter-dropdown .dropdown-section:hover{
+            background-color: #f1f1f1;
+            display:block;
+        }
+        .dropdown-section label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    font-weight: bold;
+    cursor: pointer;
+    padding: 0 16px; 
+    box-sizing: border-box; 
+    white-space:nowrap;
+}
+.dropdown-section label span {
+    flex-grow: 1;
+}
+
+        .dropdown-section input[type="checkbox"] {
+            width: 20px; 
+            height: 20px; 
+            margin-right: 10px; 
+
+        }
+
+      
+        .submenu {
+    display: none; 
+    padding: 10px 16px; 
+    color: #000000;
+}
+
+.submenu input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
+}
+
+.submenu.show {
+    display:block;
+}
+
+        .clear-btn {
+            padding: 5px;
+            padding-right: 40px;
+            padding-left: 40px;
+            margin-top: 10px;
+            background-color: #ffffff;
+            color: rgb(0, 0, 0);
+            border: 1px solid #888;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .done-btn {
+            padding: 5px;
+            padding-right: 40px;
+            padding-left: 40px;
+            margin-top: 10px;
+            background-color: #000000;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .clear-btn:hover, .done-btn:hover {
+            background-color: #555;
+        }
+
+    </style>
+</head>
+<body>
+    
+   
+
+    
+    <div class="container">
+        <aside class="sidebar">
+            <div class="toggle-icon">
+                <img src="{% static 'images/menuleft.png' %}" alt="icon" id="toggle-icon" width="16" height="16">
+            </div>
+            <div class="logo">
+                <img src="{% static 'images/logowhite.png' %}" alt="logo" width="50" height="50">
+            </div>
+            <nav>
+                <ul>
+                    <li class="menu-item"><a href="{% url 'dashboard' %}"><img src="{% static 'images/dashboard.png' %}" class="menu-icon"><span class="menu-text">Dashboard</span></a></li>
+                    <li class="menu-item"><a href="{% url 'projects' %}"><img src="{% static 'images/project.png' %}" class="menu-icon"><span class="menu-text">Project</span></a></li>
+                    <li class="menu-item"><a href="{% url 'incomef_view' %}"><img src="{% static 'images/income.png' %}" class="menu-icon"><span class="menu-text">Income</span></a></li>
+                    <li class="menu-item"><a href="{% url 'expense' %}"><img src="{% static 'images/expenses.png' %}" class="menu-icon"><span class="menu-text">Expense</span></a></li>
+                    <li class="menu-item"><a href="{% url 'calendar' %}"><img src="{% static 'images/calendar.png' %}" class="menu-icon"><span class="menu-text">Calendar</span></a></li>
+                    <li class="menu-item"><a href="{% url 'allproject' %}"><img src="{% static 'images/All projects.png' %}" class="menu-icon"><span class="menu-text">All Projects</span></a></li>
+                    <li class="menu-item"><a href="{% url 'clientsbook' %}"><img src="{% static 'images/clientsbook.png' %}" class="menu-icon"><span class="menu-text">Clients Book</span></a></li>
+                    <li class="menu-item"><a href="{% url 'clients' %}"><img src="{% static 'images/Clients.png' %}" class="menu-icon"><span class="menu-text">Clients</span></a></li>
+                    <li class="menu-item"><a href="{% url 'status' %}"><img src="{% static 'images/status.png' %}" class="menu-icon"><span class="menu-text">Status</span></a></li>
+                    <li class="menu-item active"><a href="{% url 'pending_pay' %}"><img src="{% static 'images/pending.png' %}" class="menu-icon"><span class="menu-text">Pending Payments</span></a></li>
+                    <li class="menu-item"><a href="{% url 'project_map' %}"><img src="{% static 'images/map.png' %}" class="menu-icon"><span class="menu-text">Map</span></a></li>
+                    <li class="menu-item"><a href="{% url 'assets' %}"><img src="{% static 'images/Assets.png' %}" class="menu-icon"><span class="menu-text">Assets</span></a></li>
+                    <li class="menu-item"><a href="{% url 'budget' %}"><img src="{% static 'images/budget.png' %}" class="menu-icon"><span class="menu-text">Budget</span></a></li>
+                    <li class="menu-item"><a href="{% url 'entertainment' %}"><img src="{% static 'images/Entertainment.png' %}" class="menu-icon"><span class="menu-text">Entertainment</span></a></li>
+                </ul>
+            </nav>
+            <div class="profile-section" id="profileMenu">
+              <div class="user-icon" id="userIcon">
+                <!-- Default content in case JS is not available -->
+                U
+            </div>
+
+              <span class="menu-text" id="name">{{ user.username }}</span>
+              <div class="dropdown" id="profileDropdown">
+                  <ul>
+                      <li><a href="{% url 'profile' %}">View Profile</a></li>
+                      <li><a href="{% url 'logout_view' %}">Sign Out</a></li>
+                  </ul>
+              </div>
+            </div>
+        </aside>
+        <main class="main-content">
+          <header class="header">
+          <div class="search-bar">
+            <!--search and filter-->
+
+<!-- search box-->
+<form method="get" action="{% url 'clientsbook' %}">
+{% csrf_token %}
+<input type="text" name="q" placeholder="search..." value="{{ query }}"> </div>
+       
+
+ <!-- filter box -->        
+       
+
+ <button id="filter-btn" onclick="toggleFilterDropdown(event)" class="filter-btn">
+    <span class="filter-text">Filter</span>
+    <img src="{% static 'images/filter.png' %}" alt="Filter Icon" class="dropdown-icon">
+</button>  
+
+
+    <div class="filter-dropdown" id="filterDropdown">
+
+        <div class="dropdown-section">
+            <label class="toggle-status"onclick="toggleDropdown('status-dropdown1', this)">
+                <span>Total Projects</span>
+                <i class="fa-solid fa-chevron-right side-arrow"></i>
+            </label>
+            <div class="submenu" id="status-dropdown1">
+                <label><input type="checkbox" onclick="setFilter('project_count', '1')" {% if '1' in project_count|default:'' %}checked{% endif %} >1 <br></label>
+                <label><input type="checkbox" onclick="setFilter('project_count', '2')" {% if '2' in project_count|default:'' %}checked{% endif %} >2 <br></label>
+                <label><input type="checkbox" onclick="setFilter('project_count', '3')" {% if '3' in project_count|default:'' %}checked{% endif %} >3 <br></label>
+                <label><input type="checkbox" onclick="setFilter('project_count', '4')" {% if '4' in project_count|default:'' %}checked{% endif %} >4 <br></label>
+                <label><input type="checkbox" onclick="setFilter('project_count', '5')" {% if '5' in project_count|default:'' %}checked{% endif %} >5 <br></label>
+                <label><input type="checkbox" onclick="setFilter('project_count', 'greater_than_5')" {% if 'greater_than_5' in project_count|default:'' %}checked{% endif %} > > 5<br></label>
+            </div>
+        </div>
+
+
+<div class="dropdown-section">
+<label class="toggle-type"onclick="toggleDropdown('company-dropdown', this)">
+<span>Customer company</span>
+<i class="fa-solid fa-chevron-right side-arrow"></i>
+</label>
+<div class="submenu" id="company-dropdown">
+<!-- Dynamic content will be inserted here -->
+</div>
+</div>
+
+<div class="filter-actions">
+<button class="clear-btn" onclick="clearFilters()">Clear All</button>
+<button class="done-btn" onclick="toggleFilterDropdown()">Done</button>
+</div>
+
+</div>
+
+
+
+
+<!-- hidden fields for filters-->
+<input type="hidden" name="company" id="company" value="{{ company }}">
+<input type="hidden" name="project_count" id="project_count" value="{{ project_count }}">
+
+
+</form>            
+
+        </header>
+            <section class="client-book">
+                <h2>Client Book</h2>
+                <div class="client-list">
+                    {% for item in objs %}
+                    <div class="client-item" onclick="moveToDpage('{{ item.company }}')" style="cursor: pointer;">
+                        <div class="client-info">
+                            <div class="client-id">{{ item.count }}</div>
+                            <div class="client-details">
+                                <div class="client-name">{{ item.company }}</div>
+                                <div class="client-detail">{{ item.client__name }}</div>
+                            </div>
+                        </div>
+                        <div class="client-arrow"><img src="{% static 'images/left.png' %}" alt="Right Arrow"></div>
+                    </div>
+                    {% endfor %}
+
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        const sidebar = document.querySelector('.sidebar');
+        const toggleIcon = document.getElementById('toggle-icon');
+        
+        toggleIcon.addEventListener('click', function() {
+          if (sidebar.classList.contains('closed')) {
+            sidebar.classList.remove('closed');
+            toggleIcon.src = "{% static 'images/menuleft.png' %}";  // Change to the "left-chevron" when open
+          } else {
+            sidebar.classList.add('closed');
+            toggleIcon.src = "{% static 'images/menuright.png' %}";  // Change to the "chevron" when closed
+          }
+        });
+      </script>
+      <script>
+        // JavaScript to handle dropdown visibility
+        const profileMenu = document.getElementById('profileMenu');
+        const profileDropdown = document.getElementById('profileDropdown');
+    
+        profileMenu.addEventListener('click', function () {
+            // Toggle dropdown visibility
+            if (profileDropdown.style.display === 'none' || profileDropdown.style.display === '') {
+                profileDropdown.style.display = 'block';
+            } else {
+                profileDropdown.style.display = 'none';
+            }
+        });
+    
+        // Close dropdown if clicked outside
+        window.addEventListener('click', function (event) {
+            if (!profileMenu.contains(event.target)) {
+                profileDropdown.style.display = 'none';
+            }
+        });
+    </script>
+    <script>
+      // user icon
+      const username = document.getElementById('name').textContent; 
+      document.querySelector('#userIcon').innerText = username.charAt(0);
+  </script>
+
+  <!-- script for dropdown style-->
+
+  
+  <script> // dropdown
+
+    document.querySelector('input[name="q"]').addEventListener('keypress', function(event) {
+               if (event.key === 'Enter') {
+                   event.preventDefault(); 
+                   this.form.submit(); 
+               }
+           });
+
+
+           function toggleFilterDropdown(event) {
+               event.preventDefault(); 
+               const filterDropdown = document.getElementById('filterDropdown');
+               filterDropdown.style.display = filterDropdown.style.display === 'block' ? 'none' : 'block';
+           }
+
+document.addEventListener('click', function(event) {
+   const filterDropdown = document.getElementById('filterDropdown');
+   const filterBtn = document.getElementById('filter-btn');
+   
+  
+   if (!filterDropdown.contains(event.target) && !filterBtn.contains(event.target)) {
+            event.stopPropagation();
+   }
+});
+
+
+
+           // Ensure clicking inside the dropdown does not close it
+           const dropdownSections = document.querySelectorAll('.dropdown-section');
+           dropdownSections.forEach(section => {
+               section.addEventListener('click', function(event) {
+                   event.stopPropagation(); 
+               });
+           });
+
+          
+// JavaScript to clear filters
+function clearFilters() {
+document.getElementById('project_count').value = '';
+document.getElementById('company').value ='';
+
+document.forms[0].submit();
+}
+
+document.querySelector('.done-btn').addEventListener('click', function() {
+       filterDropdown.style.display = 'none'; 
+   });
+
+// Ensure clear button closes the filter dropdown
+document.querySelector('.clear-btn').addEventListener('click', function(event) {
+   event.preventDefault();
+   clearFilters(); 
+});
+
+          
+           dropdownSections.forEach(section => {
+               section.addEventListener('click', function() {
+                   const submenu = this.querySelector('.submenu');
+                   submenu.style.display = submenu.style.display === 'block' ? 'none' : 'block';
+               });
+           });
+
+</script>
+
+<script>
+
+function setFilter(field, value) {
+    const fieldElement = document.getElementById(field);
+    if (fieldElement) {
+        const currentValues = fieldElement.value ? fieldElement.value.split(',') : [];
+        if (currentValues.includes(value)) {
+            // Remove the value if it's already checked (uncheck scenario)
+            fieldElement.value = currentValues.filter(item => item !== value).join(',');
+        } else {
+            // Add the value if it's checked
+            currentValues.push(value);
+            fieldElement.value = currentValues.join(',');
+        }
+    }
+}
+
+ // Fetch unique companies from the server and populate the dropdown
+function fetchUniqueCompany() {
+fetch('/get-unique-company/')
+    .then(response => response.json())
+    .then(data => {
+        const dropdown = document.getElementById('company-dropdown');
+        dropdown.innerHTML = '';  // Clear existing content
+
+        const selectedCompanies = document.getElementById('company').value.split(',');
+
+        // Loop through the companies and create checkboxes
+        data.forEach(company => {
+            const label = document.createElement('label');
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.setAttribute('onchange', `setFilter('company', '${company}')`);
+
+            // Check if the current company is selected and mark the checkbox as checked
+            if (selectedCompanies.includes(company)) {
+                checkbox.checked = true;
+            }
+
+            label.appendChild(checkbox);
+            label.append(company);
+            dropdown.appendChild(label);
+            dropdown.appendChild(document.createElement('br'));
+        });
+    });
+}
+
+window.onload = function(){
+fetchUniqueCompany();
+}
+
+</script>
+
+
+
+
+<script>
+    function moveToDpage(company){
+        window.location.href = "/bookd/" + company + "/";
+    }
+</script>
+<script>
+    function toggleDropdown(dropdownId, element) {
+        var dropdown = document.getElementById(dropdownId);
+        var icon = element.querySelector('.fa-solid');
+        dropdown.classList.toggle('show'); // Toggle 'show' class to control visibility
+        
+        // Toggle the icon between right and down
+        if (dropdown.classList.contains('show')) {
+            icon.classList.remove('fa-chevron-right');
+            icon.classList.add('fa-chevron-down');
+        } else {
+            icon.classList.remove('fa-chevron-down');
+            icon.classList.add('fa-chevron-right');
+        }
+    }
+</script>
+  
+
+</body>
+</html>

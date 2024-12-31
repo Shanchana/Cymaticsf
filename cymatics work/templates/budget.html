@@ -1,0 +1,688 @@
+{% load static %}
+{% static "images" as baseurl %}
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Budget</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            height: 100vh;
+            flex-direction: column;
+          }
+          .container {
+            display: flex;
+            width: 100%;
+            flex-grow: 1;
+          }
+            .sidebar {
+              background-color: #1e1e1e;
+              color: white;
+              width: 250px;
+              display: flex;
+              flex-direction: column;
+              justify-content: flex-start;
+              align-items: center;
+              transition: width 0.3s;
+              position: relative;
+          }
+          
+          .sidebar.closed {
+              width: 60px;
+          }
+          
+          /* Icon visibility and border */
+          .sidebar .toggle-icon {
+              position: absolute;
+              top: 25px !important; /* Aligned near the top */
+              right: -8px; /* Adjusted to be right on the edge line */
+              cursor: pointer;
+              visibility: hidden;
+              border: 3px solid rgba(78, 27, 231, 0.5); /* Light border */
+              border-radius: 8px;
+              padding: 1px;
+              transition: visibility 0.3s ease-in-out, top 0.3s ease-in-out; /* Smooth transitions */
+              z-index: 2;
+          }
+          #toggle-icon {
+              width: 20px;
+              height: 20px;
+          }
+          
+          
+          /* Adjust position for closed state to avoid overlap */
+          .sidebar.closed .toggle-icon {
+              top: 10px;
+              right: -8px; /* Keep it on the edge even when closed */
+          }
+          
+          /* Show icon when hovering near the sidebar or over the icon */
+          .sidebar:hover .toggle-icon, .toggle-icon:hover {
+              visibility: visible;
+          }
+          
+          .sidebar .logo {
+              padding: 20px;
+              text-align: center;
+          }
+          
+          .sidebar.closed .logo {
+              display: none;
+          }
+          
+          .sidebar nav ul {
+              list-style: none;
+              padding: 0;
+              width: 100%;
+              text-align: center;
+          }
+          
+          .sidebar nav ul li {
+              padding: 12px 20px;
+              cursor: pointer;
+              transition: background-color 0.3s, border-left 0.3s;
+              display: flex;
+              justify-content: flex-start;
+              align-items: center;
+          }
+          
+          .sidebar.closed nav ul li {
+              justify-content: center;
+          }
+          
+          .sidebar nav ul li a {
+              display: flex;
+              align-items: center;
+              text-decoration: none;
+              color: white;
+              width: 100%;
+              font-family: Arial, sans-serif;
+          }
+          
+          .sidebar nav ul li a:hover {
+              background-color: #555;
+              border-left: 4px solid #ffcc00;
+          }
+          
+          .menu-icon {
+              margin-right: 10px;
+              width: 24px;
+              height: 24px;
+          }
+          
+          .menu-text {
+              transition: opacity 0.3s, visibility 0.3s;
+              font-family: Arial, sans-serif;
+          }
+          
+          .sidebar.closed .menu-text {
+              display: none;
+          }
+          
+          .sidebar.closed nav ul li:hover {
+              background-color: inherit;
+          }
+          
+          
+          .main-content {
+            flex-grow: 1;
+            background-color: #f1f1f1;
+            padding: 20px;
+            position: relative; /* Required for positioning the form */
+          }
+          .profile-section {
+            position: relative; /* Allows positioning of the dropdown */
+            padding: 12px 20px; /* Match padding with other menu items */
+            cursor: pointer; /* Change cursor on hover */
+            transition: background-color 0.3s, border-left 0.3s; /* Smooth transition */
+          }
+          
+          .profile-section:hover {
+            background-color: #555; /* Background color on hover */
+            border-left: 4px solid #ffcc00; /* Left border on hover */
+          }
+          
+          .dropdown {
+            position: absolute; /* Position relative to the profile section */
+            bottom: 100%; /* Position above the profile section */
+            left: 0; /* Align to the left */
+            background-color: white; /* Background color of the dropdown */
+            border: 1px solid #ccc; /* Border for the dropdown */
+            border-radius: 4px; /* Rounded corners */
+            z-index: 1000; /* Ensure it appears above other elements */
+            width: 160px; /* Set width for the dropdown */
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Shadow for a floating effect */
+            display: none; /* Initially hidden */
+          }
+          
+          .dropdown ul {
+            list-style: none; /* Remove default list styles */
+            padding: 0; /* Remove padding */
+            margin: 0; /* Remove margin */
+          }
+          
+          .dropdown li {
+            padding: 10px; /* Padding for each item */
+            color: black; /* Set text color to black */
+            cursor: pointer; /* Change cursor on hover */
+          }
+          
+          .dropdown li:hover {
+            background-color: #f1f1f1; /* Background on hover */
+          }
+        .balance, .investment-container, .entertainment-container, .others-container, .yaso-container, .gopi-container, .adithyan-container {
+            padding: 20px;
+            width: 100%;
+            margin: 0;
+            border-radius: 0;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .balance {
+            background-color: black;
+            color: white;
+        }
+
+        .balance h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        .item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        .cymatics-container,
+        .investment-container,
+        .entertainment-container,
+        .others-container,
+        .yaso-container,
+        .gopi-container,
+        .adithyan-container {
+            padding: 20px;
+            width: 100%;
+            margin: 0;
+            border-radius: 0;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            height: 200px; /* Set a uniform height for all containers */
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between; /* Space between title, number, and other elements */
+        }
+        .cymatics-container {
+    background-color: white; /* Set background to white */
+    color: #1e1e1e;
+}
+
+        .investment-container {
+            background-color: #fafafa; /* Alternative color */
+            color: #1e1e1e;
+        }
+
+        .entertainment-container {
+            background-color: white;
+            color: #1e1e1e;
+        }
+
+        .others-container {
+            background-color: #fafafa;
+            color: #1e1e1e;
+        }
+
+        .yaso-container {
+            background-color: white;
+            color: #1e1e1e;
+        }
+
+        .gopi-container {
+            background-color: #fafafa;
+            color: #1e1e1e;
+        }
+
+        .adithyan-container {
+            background-color: white;
+            color: #1e1e1e;
+        }
+
+        .cy-title,.investment-title, .entertainment-title, .others-title, .yaso-title, .gopi-title, .adithyan-title {
+            font-size:16px;
+            font-weight: Medium;
+            margin: 0;
+        }
+
+        .cy-number,.investment-number, .entertainment-number, .others-number, .yaso-number, .gopi-number, .adithyan-number {
+            font-size: 12px;
+            color: gray;
+            
+        }
+
+        .header-row {
+           display: flex;
+           font-size:small;
+           font-style: normal;
+           font-weight:700;
+        }
+
+        .header-row div {
+            flex: 1;
+            text-align: center;
+        }
+
+        .separator {
+            border-top: 1px solid #ccc;
+            margin: 15px 0;
+        }
+
+        .value-row {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+
+        .value-row div {
+            flex: 1;
+            text-align: center;
+        }
+        .card {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            width: 200px;
+            text-align: center;
+            margin-right: 10px; /* Added gap between cards */
+        }
+        
+        .card h2 {
+            font-size: 16px;
+            color: #888;
+            margin: 0 0 5px 0; /* Reduced space below the title */
+        }
+        
+        .amount {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 0;
+            margin-bottom: 5px; /* Added margin to reduce space below amount */
+        }
+        
+        .container {
+            display: flex; /* Use flexbox to align cards horizontally */
+            height: auto; /* Changed to auto to fit card height */
+            margin-bottom: 10px; /* Reduced margin below the container */
+        }
+        .user-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #ddd;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 18px;
+            color: #0e0e0e;
+            background-color: #e1ecb8;
+        
+        }
+    </style>
+
+</head>
+<body>
+
+    <div class="container">
+        <aside class="sidebar">
+            <div class="toggle-icon">
+                <img src="{% static 'images/menuleft.png' %}" alt="icon" id="toggle-icon" width="16" height="16">
+            </div>
+            <div class="logo">
+                <img src="{% static 'images/logowhite.png' %}" alt="logo" width="50" height="50">
+            </div>
+            <nav>
+                <ul>
+                    <li class="menu-item"><a href="{% url 'dashboard' %}"><img src="{% static 'images/dashboard.png' %}" class="menu-icon"><span class="menu-text">Dashboard</span></a></li>
+                    <li class="menu-item"><a href="{% url 'projects' %}"><img src="{% static 'images/project.png' %}" class="menu-icon"><span class="menu-text">Project</span></a></li>
+                    <li class="menu-item"><a href="{% url 'incomef_view' %}"><img src="{% static 'images/income.png' %}" class="menu-icon"><span class="menu-text">Income</span></a></li>
+                    <li class="menu-item"><a href="{% url 'expense' %}"><img src="{% static 'images/expenses.png' %}" class="menu-icon"><span class="menu-text">Expense</span></a></li>
+                    <li class="menu-item"><a href="{% url 'calendar' %}"><img src="{% static 'images/calendar.png' %}" class="menu-icon"><span class="menu-text">Calendar</span></a></li>
+                    <li class="menu-item"><a href="{% url 'allproject' %}"><img src="{% static 'images/All projects.png' %}" class="menu-icon"><span class="menu-text">All Projects</span></a></li>
+                    <li class="menu-item"><a href="{% url 'clientsbook' %}"><img src="{% static 'images/clientsbook.png' %}" class="menu-icon"><span class="menu-text">Clients Book</span></a></li>
+                    <li class="menu-item"><a href="{% url 'clients' %}"><img src="{% static 'images/Clients.png' %}" class="menu-icon"><span class="menu-text">Clients</span></a></li>
+                    <li class="menu-item"><a href="{% url 'status' %}"><img src="{% static 'images/status.png' %}" class="menu-icon"><span class="menu-text">Status</span></a></li>
+                    <li class="menu-item active"><a href="{% url 'pending_pay' %}"><img src="{% static 'images/pending.png' %}" class="menu-icon"><span class="menu-text">Pending Payments</span></a></li>
+                    <li class="menu-item"><a href="{% url 'project_map' %}"><img src="{% static 'images/map.png' %}" class="menu-icon"><span class="menu-text">Map</span></a></li>
+                    <li class="menu-item"><a href="{% url 'assets' %}"><img src="{% static 'images/Assets.png' %}" class="menu-icon"><span class="menu-text">Assets</span></a></li>
+                    <li class="menu-item"><a href="{% url 'budget' %}"><img src="{% static 'images/budget.png' %}" class="menu-icon"><span class="menu-text">Budget</span></a></li>
+                    <li class="menu-item"><a href="{% url 'entertainment' %}"><img src="{% static 'images/Entertainment.png' %}" class="menu-icon"><span class="menu-text">Entertainment</span></a></li>
+                </ul>
+            </nav>
+            <div class="profile-section" id="profileMenu">
+                <div class="user-icon" id="userIcon">
+                  <!-- Default content in case JS is not available -->
+                  U
+              </div>
+  
+                <span class="menu-text" id="name">{{ user.username }}</span>
+                <div class="dropdown" id="profileDropdown">
+                    <ul>
+                        <li><a href="{% url 'profile' %}">View Profile</a></li>
+                        <li><a href="{% url 'logout_view' %}">Sign Out</a></li>
+                    </ul>
+                </div>
+              </div>
+        </aside>
+
+        <div class="main-content">
+            <div class="container">
+                <div class="card">
+                    <h2>Current Balance</h2>
+                    <p class="amount">{{ curbal }}</p>
+                </div>
+                <div class="card">
+                    <h2>Received Amt</h2>
+                    <p class="amount"> {{received}}</p>
+                    <p>This month</p>
+                </div>
+            </div>
+   
+
+
+    <!--line plot for received amount for all months of current year -->
+    <h3>Monthly Received Amounts</h3>
+    <canvas id="receivedamt" width="800" height="300"></canvas>
+
+    <div class="balance">
+        <h1>Current Balance</h1>
+        <div class="item"><span>Cymatics</span><span> {{cym}}</span></div>
+        <div class="item"><span>Entertainment</span><span> {{ent}}</span></div>
+        <div class="item"><span>Others</span><span>{{oth}}</span></div>
+        <div class="item"><span>Gopi</span><span>{{gopi}}</span></div>
+        <div class="item"><span>Gadgets</span><span>{{gad}}</span></div>
+        <div class="item"><span>Investments</span><span>{{inv}}</span></div>
+        <div class="item"><span>Yaso</span><span>{{yaso}}</span></div>
+        <div class="item"><span>Adithyan</span><span> {{adi}}</span></div>
+    </div>
+
+
+<!-- details -->
+
+           <!-- Cymatics Container -->
+           <div class="cymatics-container">
+            <h1 class="cy-title">Cymatics</h1>
+            <p class="cy-number"> {{cym}}</p>
+            <div class="header-row">
+                <div>EXPENSES</div>
+                <div>BUDGET</div>
+                <div>MONTH BALANCE</div>
+            </div>
+            <div class="separator"></div>
+            <div class="value-row" onclick="moveinside('Cymatics')" >
+                <div>{{cymexp}}</div>
+                <div> {{cymbud}} </div>
+                <div>{{cymcurbalm}}</div>
+            </div>
+        </div>
+
+       
+
+         <!-- Investment Container -->
+         <div class="investment-container">
+            <h1 class="investment-title">Investment</h1>
+            <p class="investment-number">{{inv}} </p>
+            <div class="header-row">
+                <div>EXPENSES</div>
+                <div>BUDGET</div>
+                <div>MONTH BALANCE</div>
+            </div>
+            <div class="separator"></div>
+            <div class="value-row" onclick="moveinside('Investments')">
+                <div>{{invexp}} </div>
+                <div> {{invbud}}</div>
+                <div>{{invcurbalm}}</div>
+            </div>
+        </div>
+
+        <!-- Entertainment Container -->
+        <div class="entertainment-container">
+            <h1 class="entertainment-title">Entertainment</h1>
+            <p class="entertainment-number">{{ent}} </p>
+            <div class="header-row">
+                <div>EXPENSES</div>
+                <div>BUDGET</div>
+                <div>MONTH BALANCE</div>
+            </div>
+            <div class="separator"></div>
+            <div class="value-row" onclick="moveinside('Entertainment')">
+                <div>{{entexp}}</div>
+                <div>{{entbud}}</div>
+                <div>{{entcurbalm}}</div>
+            </div>
+        </div>
+
+        <!-- Others Container -->
+        <div class="others-container">
+            <h1 class="others-title">Others</h1>
+            <p class="others-number">{{oth}} </p>
+            <div class="header-row">
+                <div>EXPENSES</div>
+                <div>BUDGET</div>
+                <div>MONTH BALANCE</div>
+            </div>
+            <div class="separator"></div>
+            <div class="value-row" onclick="moveinside('Others')">
+                <div>{{othexp}} </div>
+                <div>{{othbud}}</div>
+                <div>{{othcurbalm}}</div>
+            </div>
+        </div>
+
+        <!-- Yaso Salary Container -->
+        <div class="yaso-container">
+            <h1 class="yaso-title">Yaso Salary</h1>
+            <p class="yaso-number">{{yaso}} </p>
+            <div class="header-row">
+                <div>EXPENSES</div>
+                <div>BUDGET</div>
+                <div>MONTH BALANCE</div>
+            </div>
+            <div class="separator"></div>
+            <div class="value-row"  onclick="moveinside('Yaso')">
+                <div>{{yasoexp}}</div>
+                <div>{{yasobud}}</div>
+                <div>{{yasocurbalm}}</div>
+            </div>
+        </div>
+
+        <!-- Gopi Salary Container -->
+        <div class="gopi-container">
+            <h1 class="gopi-title">Gopi Salary</h1>
+            <p class="gopi-number">{{gopi}} </p>
+            <div class="header-row">
+                <div>EXPENSES</div>
+                <div>BUDGET</div>
+                <div>MONTH BALANCE</div>
+            </div>
+            <div class="separator"></div>
+            <div class="value-row" onclick="moveinside('Gopi')">
+                <div>{{gopiexp}}</div>
+                <div>{{gopibud}}</div>
+                <div> {{gopicurbalm}}</div>
+            </div>
+        </div>
+
+        <!-- Adithyan Container -->
+        <div class="adithyan-container">
+            <h1 class="adithyan-title">Adithyan</h1>
+            <p class="adithyan-number">{{adi}}</p>
+            <div class="header-row">
+                <div>EXPENSES</div>
+                <div>BUDGET</div>
+                <div>MONTH BALANCE</div>
+            </div>
+            <div class="separator"></div>
+            <div class="value-row" onclick="moveinside('Adithyan')">
+                <div>{{adiexp}}</div>
+                <div>{{adibud}}</div>
+                <div>{{adicurbalm}}</div>
+            </div>
+        </div>
+
+        <!-- Gopi Salary Container -->
+        <div class="gopi-container">
+            <h1 class="gopi-title">Gadgets</h1>
+            <p class="gopi-number">{{gad}} </p>
+            <div class="header-row">
+                <div>EXPENSES</div>
+                <div>BUDGET</div>
+                <div>MONTH BALANCE</div>
+            </div>
+            <div class="separator"></div>
+            <div class="value-row" onclick="moveinside('Gadgets')">
+                <div>{{gadexp}}</div>
+                <div>{{gadbud}}</div>
+                <div> {{gadcurbalm}}</div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+    <script> // received amount for all months - line plot
+        document.addEventListener('DOMContentLoaded', (event) => {
+            const ctx = document.getElementById('receivedamt').getContext('2d');
+            const months = JSON.parse('{{ months|escapejs }}');
+            const t_rec_a = JSON.parse('{{ receivedamt|escapejs }}');
+
+            const receivedamt = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: months,
+                    datasets: [
+                        {
+                            label: 'Total Received Amount',
+                            data: t_rec_a ,
+                            backgroundColor: 'rgba(0,0,0)',
+                            borderColor: 'rgba(0,0,0)',
+                            usePointStyle: true,
+                            pointStyle: 'rectRounded',
+                            borderWidth: 2,
+                            fill: false,
+                            tension: 0.1
+                            
+                        }
+                       
+                    ]
+                },
+                options: {
+                    interaction: {
+                        intersect : false
+
+                    },
+                    responsive: true,
+                    plugins: {
+                        legend: { // legend, display = false for removal
+                            position: 'top',
+                                align: 'start',
+                                labels: {
+                                    usePointStyle: true,
+                                    pointStyle: 'rectRounded',
+                                    color: 'black',
+                                    boxWidth: 10,
+                                    boxHeight: 10
+                                }
+                            
+                         },  
+                        tooltip: {
+                            backgroundColor: 'rgba(255, 255, 255,1)',  // Light background color
+                            titleColor: 'black',
+                            bodyColor: 'black',
+                            borderColor: '#ccc',     //  Add a border color for clarity
+                            borderWidth: 1,          // Set border width
+                            caretColor: '#000',      // Color of the caret (arrow) below the tooltip
+
+                            callbacks: {
+                                title: function(tooltipItems) {
+                                    // Show the month
+                                    return months[tooltipItems[0].dataIndex];
+                                },
+                                label: function(tooltipItem) {
+                                    // Show both values
+                                    const month = months[tooltipItem.dataIndex];
+                                    const re_amt = t_rec_a[tooltipItem.dataIndex];
+                                    return `Total Received Amount: ${re_amt}`;
+        
+                                }
+                                
+                            },
+                            displayColors: true,
+                            
+                        }
+                    },
+                    scales: {
+                        x: {
+                            ticks: {
+                                autoSkip: false,
+                                display : true
+                            },
+                       
+                        },
+                        
+                        y: {
+                            stacked: false,
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+
+    <!-- detail page navigation-->
+     <script>
+        function moveinside(budgetcat){
+            window.location.href = "budget/" + budgetcat + "/";
+        }
+
+     </script>
+
+     <script>
+        const sidebar = document.querySelector('.sidebar');
+        const toggleIcon = document.getElementById('toggle-icon');
+        
+        toggleIcon.addEventListener('click', function() {
+          if (sidebar.classList.contains('closed')) {
+            sidebar.classList.remove('closed');
+            toggleIcon.src = "{% static 'images/menuleft.png' %}";  // Change to the "left-chevron" when open
+          } else {
+            sidebar.classList.add('closed');
+            toggleIcon.src = "{% static 'images/menuright.png' %}";  // Change to the "chevron" when closed
+          }
+        });
+        document.getElementById('profileMenu').addEventListener('click', function(event) {
+          event.stopPropagation(); // Prevents the click from bubbling up
+          const dropdown = document.getElementById('profileDropdown');
+          dropdown.style.display = dropdown.style.display === 'none' || dropdown.style.display === '' ? 'block' : 'none';
+      });
+      
+      // Hide dropdown when clicking outside
+      document.addEventListener('click', function() {
+          const dropdown = document.getElementById('profileDropdown');
+          dropdown.style.display = 'none';
+      });
+    </script>
+    <script>
+        // user icon
+        const username = document.getElementById('name').textContent; 
+        document.querySelector('#userIcon').innerText = username.charAt(0);
+      </script>
+</body>
+</html>

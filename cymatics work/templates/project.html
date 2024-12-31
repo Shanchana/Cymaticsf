@@ -1,0 +1,2128 @@
+{% load static %}
+{% static "images" as baseurl %}
+<!doctype html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+	    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	    <title>Project</title>
+        <link rel="stylesheet" type="text/css" href="https://npmcdn.com/flatpickr/dist/themes/dark.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+       
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                margin: 0;
+                padding: 0;
+                display: flex;
+                height: 100vh;
+                flex-direction: column;
+            }
+            .container {
+                display: flex;
+                width: 100%;
+                flex-grow: 1;
+            }
+            .sidebar {
+                background-color: #1e1e1e;
+                color: white;
+                width: 250px;
+                display: flex;
+                flex-direction: column;
+                justify-content: flex-start;
+                align-items: center;
+                transition: width 0.3s;
+                position: relative;
+                
+            }
+            
+            .sidebar.closed {
+                width: 60px;
+            }
+            .sidebar .toggle-icon {
+                position: absolute;
+                top: 25px !important; /* Aligned near the top */
+                right: -8px; /* Adjusted to be right on the edge line */
+                cursor: pointer;
+                visibility: hidden;
+                border: 3px solid rgba(78, 27, 231, 0.5); /* Light border */
+                border-radius: 8px;
+                padding: 1px;
+                transition: visibility 0.3s ease-in-out, top 0.3s ease-in-out; /* Smooth transitions */
+                z-index: 2;
+            }
+            #toggle-icon {
+                width: 20px;
+                height: 20px;
+            }
+            
+            
+            /* Adjust position for closed state to avoid overlap */
+            .sidebar.closed .toggle-icon {
+                top: 10px;
+                right: -8px; /* Keep it on the edge even when closed */
+            }
+            
+            /* Show icon when hovering near the sidebar or over the icon */
+            .sidebar:hover .toggle-icon, .toggle-icon:hover {
+                visibility: visible;
+            }
+            
+            .sidebar .logo {
+                padding: 20px;
+                text-align: center;
+            }
+            .sidebar.closed .logo {
+                display: none;
+            }
+            
+            .sidebar nav ul {
+                list-style: none;
+                padding: 0;
+                width: 100%;
+                text-align: center;
+            }
+            
+            .sidebar nav ul li {
+                padding: 12px 20px;
+                cursor: pointer;
+                transition: background-color 0.3s, border-left 0.3s;
+                display: flex;
+                justify-content: flex-start;
+                align-items: center;
+            }
+            .sidebar.closed nav ul li {
+                justify-content: center;
+            }
+            
+            .sidebar nav ul li a {
+                display: flex;
+                align-items: center;
+                text-decoration: none;
+                color: white;
+                width: 100%;
+                font-family: Arial, sans-serif;
+            }
+            
+            .sidebar nav ul li a:hover {
+                background-color: #555;
+                border-left: 4px solid #ffcc00;
+            }
+            .menu-icon {
+                margin-right: 10px;
+                width: 24px;
+                height: 24px;
+            }
+            
+            .menu-text {
+                transition: opacity 0.3s, visibility 0.3s;
+                font-family: Arial, sans-serif;
+                white-space:nowrap;
+            }
+            
+            .sidebar.closed .menu-text {
+                display: none;
+                
+            }
+            
+            .sidebar.closed nav ul li:hover {
+                background-color: inherit;
+            }
+            .profile-section {
+                position: relative; /* Allows positioning of the dropdown */
+                padding: 12px 20px; /* Match padding with other menu items */
+                cursor: pointer; /* Change cursor on hover */
+                transition: background-color 0.3s, border-left 0.3s; /* Smooth transition */
+            }
+            
+            .profile-section:hover {
+                background-color: #555; /* Background color on hover */
+                border-left: 4px solid #ffcc00; /* Left border on hover */
+            }
+            
+            .dropdownp {
+                position: absolute; /* Position relative to the profile section */
+                bottom: 100%; /* Position above the profile section */
+                left: 0; /* Align to the left */
+                background-color: white; /* Background color of the dropdown */
+                border: 1px solid #ccc; /* Border for the dropdown */
+                border-radius: 4px; /* Rounded corners */
+                z-index: 1000; /* Ensure it appears above other elements */
+                width: 160px; /* Set width for the dropdown */
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Shadow for a floating effect */
+                display: none; /* Initially hidden */
+            }
+            
+            .dropdownp ul {
+                list-style: none; /* Remove default list styles */
+                padding: 0; /* Remove padding */
+                margin: 0; /* Remove margin */
+            }
+            
+            .dropdownp li {
+                padding: 10px; /* Padding for each item */
+                color: black; /* Set text color to black */
+                cursor: pointer; /* Change cursor on hover */
+            }
+            
+            .dropdownp li:hover {
+                background-color: #f1f1f1; /* Background on hover */
+            }
+
+          .main-content {
+              flex-grow: 1;
+              background-color: #f1f1f1;
+              padding: 20px;
+              position: relative; /* Required for positioning the form */
+          }    
+
+            .header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 20px;
+            }
+    
+            .header h1 {
+                font-size: 24px;
+            }
+    
+            .search-add {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;  /* Align everything to the right */
+    width: 100%;
+}
+
+.search-add input {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-right: 10px; /* Space between search bar and filter button */
+    width: 200px;       /* Adjust width of the search bar */
+}
+
+    
+            .add-btn {
+                padding: 10px 20px;
+                background-color: #000000;
+                color: #fff;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+                margin-left: 10px;
+            }
+    
+            .add-btn:hover {
+                background-color: #555;
+            }
+    
+            .content {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 20px;
+            }
+    
+            .project-card {
+                background-color: #ffffff;
+                border: 1px solid #ccc;
+                border-radius: 8px;
+                padding: 20px;
+                width: 340px;
+                text-align: center;
+                position: relative;
+            }
+    
+            .project-card img {
+                width: 100%;
+                height: 150px;
+                object-fit: cover;
+                margin-bottom: 10px;
+            }
+    
+            .project-card p {
+                margin-bottom: 10px;
+                font-size: 14px;
+                text-align: left;
+            }
+    
+            .card-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 10px;
+                text-align: left;
+            }
+    
+             /*three dot edit and delete buttons */
+    
+            .dropdown {
+                position: relative;
+                display: inline-block;
+            }
+    
+            .dropbtn {
+                background: none;
+                border: none;
+                font-size: 18px;
+                cursor: pointer;
+            }
+    
+            .dropdown-content {
+                display: none;
+                position: absolute;
+                right: 0;
+                background-color: #f9f9f9;
+                min-width: 100px;
+                box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+                z-index: 1;
+            }
+    
+            .dropdown-content a {
+                color: black;
+                padding: 12px 16px;
+                text-decoration: none;
+                display: block;
+            }
+            .dropdown-content a:hover {
+                background-color: #efeded;
+            }
+    
+            .dropdown-content1 a:hover {
+                background-color: #efeded;
+            }
+            .dropdown:hover > .dropdown-content {
+                display: block;
+            }
+            
+    
+            .files-btn {
+                padding: 3px;
+                padding-right: 40px;
+                padding-left: 40px;
+                margin-top: 10px;
+                background-color: #000000;
+                color: #f9f9f9;
+                border: none;
+                border-radius: 6px;
+                cursor: pointer;
+            }
+    
+            .share-btn {
+                padding: 3px;
+                padding-right: 40px;
+                padding-left: 40px;
+                margin-top: 10px;
+                background-color: #ffffff;
+                color: #000000;
+                border: 1px solid #888;
+                border-radius: 6px;
+                cursor: pointer;
+            }
+    
+            .files-btn img,
+            .share-btn img {
+                width: 20px;
+                height: 20px;
+                vertical-align: middle;
+                margin-right: 6px;
+                margin-top: 7px;
+            }
+    
+           
+    
+            .files-btn:hover {
+                background-color: #000000;
+            }
+    
+            .share-btn:hover {
+                background-color: #fdfafa;
+            }
+    
+            .filter-btn img {
+                width: 20px;
+                height: 20px;
+                vertical-align: middle;
+                margin-right: 6px;
+                margin-top: -2px;
+            }
+            .toggle-company img {
+                width: 15px;
+                height: 10px;
+                vertical-align: middle;
+                margin-right: 20px;
+                margin-top: -2px;
+            }
+    
+            .toggle-status img {
+                width: 15px;
+                height: 10px;
+                vertical-align: middle;
+                padding-right:100px;
+                margin-right: 50px;
+                margin-top: -2px;
+            }
+            .toggle-type img {
+                width: 15px;
+                height: 10px;
+                vertical-align: middle;
+                margin-right: 6px;
+                margin-top: -2px;
+            }
+    
+            .modal {
+                display: none;
+                position: fixed;
+                z-index: 1;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                overflow: auto;
+                background-color: rgba(0,0,0,0.4);
+            }
+    
+            .modal-content {
+                background-color: #ffffff;
+                margin: 10% auto;
+                padding: 20px;
+                border: 1px solid #888;
+                width: 420px;
+                border-radius: 8px;
+            }
+    
+            .close {
+                color: #aaa;
+                float: right;
+                font-size: 28px;
+                font-weight: bold;
+            }
+    
+            .close:hover,
+            .close:focus {
+                color: black;
+                text-decoration: none;
+                cursor: pointer;
+            }
+    
+            #editForm, #addForm {
+                display: flex;
+                flex-direction: column;
+            }
+    
+            #editForm label, #addForm label {
+                margin-top: 10px;
+            }
+    
+            #editForm input, #editForm select,
+            #addForm input, #addForm select {
+                padding: 8px;
+                margin-top: 5px;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+            }
+    
+            #editForm button, #addForm button {
+                padding: 10px;
+                margin-top: 20px;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+            }
+    
+            #editForm button:hover, #addForm button:hover {
+                background-color: #555;
+            }
+    
+            .form-actions {
+                display: flex;
+                justify-content: flex-end;
+                margin-top: 20px;
+            }
+    
+            .form-actions button {
+                margin-left: 10px;
+            }
+
+          .form-actions .submit {
+          background-color: rgb(0, 0, 0); 
+          color: white; 
+}
+
+ .form-actions .button {
+    background-color: #ffffff;
+    color: black;
+    border: 1px solid #888 !important;
+}
+    
+            /* Outsourcing Section Styles */
+            #outsourcingDetails {
+                margin-top: 10px;
+            }
+    
+            #outsourcingDetails label {
+                display: block;
+                margin-top: 10px;
+                font-weight: medium;
+            }
+    
+            #outsourcingDetails select,
+            #outsourcingDetails input[type="number"] {
+                width: 100%;
+                padding: 8px;
+                margin-top: 5px;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+            }
+    
+            #addOutsourcingDetails {
+                margin-top: 10px;
+            }
+    
+            #addOutsourcingDetails label {
+                display: block;
+                margin-top: 10px;
+                font-weight: medium;
+            }
+    
+            #addOutsourcingDetails select,
+            #addOutsourcingDetails input[type="number"] {
+                width: 100%;
+                padding: 8px;
+                margin-top: 5px;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+            }
+    
+            .switch {
+                position: relative;
+                display: inline-block;
+                width: 34px;
+                height: 20px;
+            }
+    
+            .switch input {
+                opacity: 0;
+                width: 0;
+                height: 0;
+            }
+    
+            .slider {
+                position: absolute;
+                cursor: pointer;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background-color: #ccc;
+                transition: .4s;
+                border-radius: 20px;
+            }
+    
+            .slider:before {
+                position: absolute;
+                content: "";
+                height: 16px;
+                width: 16px;
+                left: 2px;
+                bottom: 2px;
+                background-color: white;
+                border-radius: 50%;
+                transition: .4s;
+            }
+    
+            input:checked + .slider {
+                background-color: #000000;
+            }
+    
+            input:checked + .slider:before {
+                transform: translateX(14px);
+            }
+    
+
+
+
+            .modal-content h3 {
+ text-align: center;
+ font-size: 20px; /* Adjust as needed */
+ margin-bottom: 20px; 
+}
+
+#outsourcingAmount,#addOutsourcingAmount {
+    width: 100% !important; /* Ensure this width is applied */
+    max-width: 100% !important; /* Limit the width */
+    box-sizing: border-box; /* Ensure padding is included in the width */
+}
+ 
+/* Filter Button */
+.filter-btn {
+    background-color: rgb(248, 248, 248);
+    color: rgb(92, 90, 90);
+    border: 1px solid #ccc;
+    padding: 8px 16px;
+    margin-left: 10px;  /* Adjust spacing between filter and new button */
+    border-radius: 4px;
+    cursor: pointer;
+    position: relative;
+    padding-left: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 130px;
+    font-size: medium;
+    font-style: normal;
+}
+
+.filter-btn .filter-text {
+    flex-grow: 1;
+    margin-left: 10px;
+}
+
+.filter-btn .dropdown-icon {
+    margin-left: 10px; /* Adjust icon spacing */
+    width: 15px;
+    height: 15px;
+    margin-top: 3px;
+}
+       
+.dropdown-section .side-arrow {
+    width: 20px;
+    height: 12px;
+    flex-shrink: 0;
+    transition: transform 0.3s ease;
+}
+
+
+.filter-dropdown {
+    background-color: white;
+    border: 1px solid #ddd;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    position: absolute;
+    top: 80px; /* Position below the filter button */
+    right: 20px;
+    width: 280px;
+    padding: 10px;
+    display: none; /* Initially hidden */
+    z-index: 10;
+}
+
+
+
+         
+.dropdown-section {
+   
+    justify-content:space-between;
+    align-items: center;
+    cursor: pointer;
+    position: relative;  
+    padding: 8px 0;
+}
+
+        .filter-dropdown .dropdown-section:hover{
+            background-color: #f1f1f1;
+            display:block;
+        }
+        .dropdown-section label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    font-weight: bold;
+    cursor: pointer;
+    padding: 0 16px; 
+    box-sizing: border-box; 
+}
+.dropdown-section label span {
+    flex-grow: 1;
+}
+
+        .dropdown-section input[type="checkbox"] {
+            width: 20px; 
+            height: 20px; 
+            margin-right: 10px; 
+
+        }
+
+      
+        .submenu {
+    display: none; 
+    padding: 10px 16px; 
+    color: #000000;
+}
+
+.submenu input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
+}
+
+.submenu.show {
+    display:block;
+}
+
+        .clear-btn {
+            padding: 5px;
+            padding-right: 40px;
+            padding-left: 40px;
+            margin-top: 10px;
+            background-color: #ffffff;
+            color: rgb(0, 0, 0);
+            border: 1px solid #888;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .done-btn {
+            padding: 5px;
+            padding-right: 40px;
+            padding-left: 40px;
+            margin-top: 10px;
+            background-color: #000000;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .clear-btn:hover, .done-btn:hover {
+            background-color: #555;
+        }
+
+        .filter-btn img {
+            width: 20px;
+            height: 20px;
+            vertical-align: middle;
+            margin-right: 6px;
+            margin-top: -2px;
+        }
+        .toggle-company img {
+            width: 15px;
+            height: 10px;
+            vertical-align: middle;
+            margin-right: 20px;
+            margin-top: -2px;
+        }
+
+        .toggle-status img {
+            width: 15px;
+            height: 10px;
+            vertical-align: middle;
+            padding-right:100px;
+            margin-right: 50px;
+            margin-top: -2px;
+        }
+        .toggle-type img {
+            width: 15px;
+            height: 10px;
+            vertical-align: middle;
+            margin-right: 6px;
+            margin-top: -2px;
+        }
+
+      
+        .btn-check {
+            display: none; /* Hide the checkbox */
+        }
+        
+        .btn-primary {
+            background-color: #ffffff !important; /* Ensure white background */
+            color: black !important; /* Ensure black text */
+            border: 2px solid #ccc;
+            border-radius: 10px;
+            padding: 10px 15px;
+            cursor: pointer;
+            margin: 5px; /* Add margin to create gaps */
+            transition: background-color 0.3s, color 0.3s, border-color 0.3s, box-shadow 0.3s;
+            font-weight: bold;
+            font-size: 14px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        
+        .btn-primary.active {
+            background-color: #000000; /* Even darker blue */
+            border-color: #000000; /* Keep the border color */
+            color: white;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        
+        #statusButtons {
+            display: flex; /* Align buttons in a row */
+            justify-content: flex-start; /* Align to the start */
+        }
+        .user-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #ddd;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 18px;
+            color: #0e0e0e;
+            background-color: #e1ecb8;
+        
+        }
+
+        </style>
+    </head>
+    <body>
+        {% csrf_token %}
+        <div class="container">
+            <aside class="sidebar">
+                <div class="toggle-icon">
+                    <img src="{% static 'images/menuleft.png' %}" alt="icon" id="toggle-icon" width="16" height="16">
+                </div>
+                <div class="logo">
+                    <img src="{% static './images/logowhite.png' %}" alt="logo" width="50" height="50">
+                </div>
+                <nav>
+                    <ul>
+                        <li class="menu-item"><a href="{% url 'dashboard' %}"><img src="{% static 'images/dashboard.png' %}" class="menu-icon"><span class="menu-text">Dashboard</span></a></li>
+                        <li class="menu-item"><a href="{% url 'projects' %}"><img src="{% static 'images/project.png' %}" class="menu-icon"><span class="menu-text">Project</span></a></li>
+                        <li class="menu-item"><a href="{% url 'incomef_view' %}"><img src="{% static 'images/income.png' %}" class="menu-icon"><span class="menu-text">Income</span></a></li>
+                        <li class="menu-item"><a href="{% url 'expense' %}"><img src="{% static 'images/expenses.png' %}" class="menu-icon"><span class="menu-text">Expense</span></a></li>
+                        <li class="menu-item"><a href="{% url 'calendar' %}"><img src="{% static 'images/calendar.png' %}" class="menu-icon"><span class="menu-text">Calendar</span></a></li>
+                        <li class="menu-item"><a href="{% url 'allproject' %}"><img src="{% static 'images/All projects.png' %}" class="menu-icon"><span class="menu-text">All Projects</span></a></li>
+                        <li class="menu-item"><a href="{% url 'clientsbook' %}"><img src="{% static 'images/clientsbook.png' %}" class="menu-icon"><span class="menu-text">Clients Book</span></a></li>
+                        <li class="menu-item"><a href="{% url 'clients' %}"><img src="{% static 'images/Clients.png' %}" class="menu-icon"><span class="menu-text">Clients</span></a></li>
+                        <li class="menu-item"><a href="{% url 'status' %}"><img src="{% static 'images/status.png' %}" class="menu-icon"><span class="menu-text">Status</span></a></li>
+                        <li class="menu-item active"><a href="{% url 'pending_pay' %}"><img src="{% static 'images/pending.png' %}" class="menu-icon"><span class="menu-text">Pending Payments</span></a></li>
+                        <li class="menu-item"><a href="{% url 'project_map' %}"><img src="{% static 'images/map.png' %}" class="menu-icon"><span class="menu-text">Map</span></a></li>
+                        <li class="menu-item"><a href="{% url 'assets' %}"><img src="{% static 'images/Assets.png' %}" class="menu-icon"><span class="menu-text">Assets</span></a></li>
+                        <li class="menu-item"><a href="{% url 'budget' %}"><img src="{% static 'images/budget.png' %}" class="menu-icon"><span class="menu-text">Budget</span></a></li>
+                        <li class="menu-item"><a href="{% url 'entertainment' %}"><img src="{% static 'images/Entertainment.png' %}" class="menu-icon"><span class="menu-text">Entertainment</span></a></li>
+                    </ul>
+                </nav>
+                <div class="profile-section" id="profileMenu">
+                    <div class="user-icon" id="userIcon">
+                      <!-- Default content in case JS is not available -->
+                      U
+                  </div>
+      
+                    <span class="menu-text" id="name">{{ user.username }}</span>
+                    <div class="dropdownp" id="profileDropdown">
+                        <ul>
+                            <li><a href="{% url 'profile' %}">View Profile</a></li>
+                            <li><a href="{% url 'logout_view' %}">Sign Out</a></li>
+                        </ul>
+                    </div>
+                  </div>
+            </aside>
+           
+        <main class="main-content">
+            <header class="header">
+                <h1>Project</h1>
+                <div class="search-add">
+                    
+                   <!--search and filter-->
+
+
+        <form method = "get" action ="{% url 'projects' %}">
+            {% csrf_token %}
+            <input type="text" name="q" placeholder="Search projects..." , value="{{ query }}" ></div>
+        
+
+
+<!-- filter box -->        
+
+<button id="filter-btn" onclick="toggleFilterDropdown(event)" class="filter-btn">
+    <span class="filter-text">Filter</span>
+    <img src="{% static 'images/filter.png' %}" alt="Filter Icon" class="dropdown-icon">
+</button>  
+
+        
+<div class="filter-dropdown" id="filterDropdown">
+    <div class="dropdown-section">
+        <label class="toggle-status"onclick="toggleDropdown('status-dropdown1', this)">
+            <span>Status</span>
+            <i class="fa-solid fa-chevron-right side-arrow"></i>
+        </label>
+        <div class="submenu" id="status-dropdown1">
+            <input type="checkbox" id="status-completed">Completed <br>
+        </div>
+    </div>
+
+    <div class="dropdown-section">
+        <label class="toggle-type"onclick="toggleDropdown('type-dropdown1', this)">
+            <span>Type</span>
+            <i class="fa-solid fa-chevron-right side-arrow"></i>
+        </label>
+        <div class="submenu" id="type-dropdown1">
+            <input type="checkbox" id="type-govt"> Govt<br>
+        </div>
+    </div>
+    
+    <div class="dropdown-section">
+        <label class="toggle-company"onclick="toggleDropdown('company-dropdown1', this)">
+            <span>Customer Company</span>
+            <i class="fa-solid fa-chevron-right side-arrow"></i>
+        </label>
+        <div class="submenu" id="company-dropdown1">
+            <input type="checkbox" id="company-3monk"> 3 Monk<br>
+        </div>
+    </div>
+
+    <div class="filter-actions">
+        <button class="clear-btn" onclick="clearFilters()">Clear All</button>
+        <button class="done-btn" onclick="toggleFilterDropdown()">Done</button>
+    </div>
+</div>
+
+
+<!-- Hidden fields for filters -->
+<input type="hidden" name="company" id="company" value="{{ company }}">
+<input type="hidden" name="status" id="status" value="{{ status }}">
+<input type="hidden" name="type" id="type" value="{{ type }}">
+
+</form>
+
+                {% if is_admin %}
+                    <button class="add-btn"> New</button>
+                    {% endif %}
+                
+            </header>
+
+
+            <section class="content">
+                {% for item in objs %}
+                <div class="project-card" onclick="moveToDetailPage('{{ item.code }}')" style="cursor: pointer;">
+                    {% if item.image %}
+                    <img src="{{item.image.url}}" alt="Map" class="map">
+
+                    {% else %}                  
+                    <img src="./image.jpg" alt="Map" class="map">
+                    {% endif %}
+            
+                    <div class="card-header">
+                        <p><b>{{ item.code }}</b><br>{{ item.company }}<br>{{ item.name }}</p>
+
+                        {% if is_admin %}
+                        <div class="dropdown">
+                            <button class="dropbtn" onclick="toggleCardOptions(event)">⋮</button>
+                            <div class="dropdown-content">
+                                <a href="#" class="edit-btn" onclick="openEditModal()" data-code="{{ item.code }}">Edit</a>
+                                <a href="#" class="delete-btn" data-id="{{ item.id }}">Delete</a>
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                    </div>
+                    <button class="files-btn"><img src="{% static 'images/Files.png' %}" alt="Files Icon"> Files</button>
+                    <button class="share-btn"><img src="{% static 'images/share.png' %}" alt="Share Icon"> Share</button>
+                </div>
+                {% endfor %}
+            </section>
+            
+</main>
+</div>
+
+
+<!-- Modal for Edit Form -->
+<div id="editModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeEditModal()">&times;</span>
+        <h3>Edit</h3>
+        <form id="editForm" method="post">
+            {% csrf_token %}
+            <label for="projectType">Type</label>
+            <select id="projectType" name="projectType" required>
+                <option value="">---</option>
+                <!-- dynamic type dispaly -->
+            </select>
+
+            <label for="status">Status</label>
+            <div id="statusButtons">
+                <input type="checkbox" class="btn-check" id="completedBtn" autocomplete="off" name="editstatus" value="COMPLETED" onclick="toggleStatus(this)">
+                <label class="btn btn-primary" for="completedBtn">Completed</label>
+  
+                <input type="checkbox" class="btn-check" id="ongoingBtn" autocomplete="off"  name="editstatus" value="ONGOING" onclick="toggleStatus(this)">
+                <label class="btn btn-primary" for="ongoingBtn">Ongoing</label>
+  
+                <input type="checkbox" class="btn-check" id="pendingBtn" autocomplete="off"  name="editstatus" value="PENDING"  onclick="toggleStatus(this)">
+                <label class="btn btn-primary" for="pendingBtn">Pending</label>
+  
+                <input type="checkbox" class="btn-check" id="cancelledBtn" autocomplete="off" name="editstatus" value="CANCELLED" onclick="toggleStatus(this)">
+                <label class="btn btn-primary" for="cancelledBtn">Cancelled</label>
+            </div>
+
+            <label for="projectName">Project Name</label>
+            <input type="text" id="projectName" name="projectName" required>
+
+            <label for="customerCompany">Customer Company</label>
+            <input type="text" id="customerCompany" name="customerCompany" required>
+
+            <label for="shootStart">Shoot Start</label>
+            <input type="datetime-local" id="shootStart" name="shootStart" required>
+
+            <label for="shootEnd">Shoot End</label>
+            <input type="datetime-local" id="shootEnd" name="shootEnd" required>
+
+            <label for="projectAmount">Project Amount</label>
+            <input type="number" id="projectAmount" name="projectAmount" required>
+
+            <label for="projectLocation">Project Location</label>
+            <input type="text" id="projectLocation" name="projectLocation">
+             
+
+            <!--sandhiya-->
+            <div class="form-group">
+                <label for="locationLink">Location Link</label>
+                <input type="text" id="locationLink" name="locationLink" placeholder="Enter Google Maps link">
+                <button type="button" onclick="getAddressFromLink()" style="margin-top:8px">Get Address</button>
+            </div>
+            <div class="form-group">
+                <label for="address">Extracted Address</label>
+                <input type="text" id="address" name="address" readonly>
+            </div>
+
+            <label for="outsourcing" style="display: flex; align-items: center;">
+                Outsourcing
+                <label class="switch" style="margin-left: 290px;">
+                    <input type="checkbox" id="outsourcing" name="outsourcing" onchange="toggleOutsourcingDetails()">
+                    <span class="slider"></span>
+                </label>
+            </label>
+            
+            <div id="outsourcingDetails" style="display: none; margin-top: 10px;">
+                <label for="outsourcingFor">Outsourcing For</label>
+                <select id="outsourcingFor" name="outsourcingFor">
+                    <option >---</option>
+
+                    <option >Photo</option>
+                    <option >Video</option>
+                    <option >Editor</option>
+                    <option >Drone</option>
+                    <option >Pilot</option>
+                </select>
+            
+                <label for="outsourcingAmount" style="margin-top: 10px;">Outsourcing Amount</label>
+                <input type="number" id="outsourcingAmount" name="outsourcingAmount">
+            
+                <label for="outsourcingCustomer" style="margin-top: 10px;">Outsourcing Customer Name</label>
+                <select id="outsourcingCustomer" name="outsourcingCustomer">
+                    <option value="">---</option>
+                    <!-- dynamic clients display-->
+                </select>
+            
+                <label for="outsourcingPaid" style="display: flex; align-items: center; margin-top: 10px;white-space:nowrap;">
+                    Outsourcing Paid
+                    <label class="switch" style="margin-left: 240px;">
+                        <input type="checkbox" id="outsourcingPaid" name="outsourcingPaid">
+                        <span class="slider"></span>
+                    </label>
+                </label>
+            </div>
+            <label for="reference">Reference</label>
+            <input type="text" id="reference" name="reference">
+            <div class="form-actions">
+                <button type="submit"class="submit">Submit</button>
+                <button type="button" class="button" id="cancelBtn" onclick="closeEditModal()"class="cancel-btn">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+ <!-- Modal for Add Form -->
+ <div id="addModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeAddModal()">&times;</span>
+        <h3>New Project</h3>
+        <form id="addForm" action="{% url 'projects' %}" method="post">
+            {% csrf_token %}
+            <label for="addProjectType">Type</label>
+            <select id="addProjectType" name="addProjectType" required>
+                <option value="">---</option>
+                <!-- dynamic type dispaly -->
+            </select>
+
+           <label for="status">Status</label>
+           <div id="statusButtons">
+            <input type="checkbox" class="btn-check" id="addcompletedBtn" autocomplete="off" name="addstatus" value="COMPLETED" onclick="toggleStatus(this)">
+            <label class="btn btn-primary" for="addcompletedBtn">Completed</label>
+
+            <input type="checkbox" class="btn-check" id="addongoingBtn" autocomplete="off"   name="addstatus" value="ONGOING" onclick="toggleStatus(this)">
+            <label class="btn btn-primary" for="addongoingBtn">Ongoing</label>
+
+            <input type="checkbox" class="btn-check" id="addpendingBtn" autocomplete="off"  name="addstatus" value="PENDING" onclick="toggleStatus(this)">
+            <label class="btn btn-primary" for="addpendingBtn">Pending</label>
+
+            <input type="checkbox" class="btn-check" id="addcancelledBtn" autocomplete="off" name="addstatus" value="CANCELLED" onclick="toggleStatus(this)">
+            <label class="btn btn-primary" for="addcancelledBtn">Cancelled</label>
+        </div>
+
+            <label for="addProjectName">Project Name</label>
+            <input type="text" id="addProjectName" name="addProjectName" required>
+
+            <label for="addCustomerCompany">Customer Company</label>
+            <input type="text" id="addCustomerCompany" name="addCustomerCompany" required>
+
+            <label for="addShootStart">Shoot Start</label>
+            <input type="datetime-local" id="addShootStart" name="addShootStart" required>
+
+            <label for="addShootEnd">Shoot End</label>
+            <input type="datetime-local" id="addShootEnd" name="addShootEnd" required>
+
+            <label for="addProjectAmount">Project Amount</label>
+            <input type="number" id="addProjectAmount" name="addProjectAmount" required>
+
+            <label for="addProjectLocation">Project Location</label>
+            <input type="text" id="addProjectLocation" name="addProjectLocation" required>
+            
+            <!--sandhiya-->
+            <div class="form-group">
+                <label for="locationLink">Location Link</label>
+                <input type="text" id="locationLink" name="locationLink" placeholder="Enter Google Maps link">
+                <button type="button" onclick="getAddressFromLink()" style="margin-top:8px">Get Address</button>
+            </div>
+            <div class="form-group">
+                <label for="address">Extracted Address</label>
+                <input type="text" id="address" name="address" readonly>
+            </div>
+            
+            <!-- Hidden fields for Latitude and Longitude -->
+            <input type="hidden" id="latitude" name="latitude">
+            <input type="hidden" id="longitude" name="longitude">
+
+
+          
+
+            <label for="addOutsourcing" style="display: flex; align-items: center;">
+                Outsourcing
+                <label class="switch" style="margin-left: 290px;">
+                    <input type="checkbox" id="addOutsourcing" name="addoutsourcing" onchange="toggleAddOutsourcingDetails()">
+                    <span class="slider"></span>
+                </label>
+            </label>
+            
+            <div id="addOutsourcingDetails" style="display: none; margin-top: 10px;align-items: center;">
+                <label for="addOutsourcingFor">Outsourcing For</label>
+                <select id="addOutsourcingFor" name="addoutsourcingFor">
+                    <option value="">---</option>
+
+                    <option >Photo</option>
+                    <option >Video</option>
+                    <option >Editor</option>
+                    <option >Drone</option>
+                    <option >Pilot</option>
+                </select>
+            
+                <label for="addOutsourcingAmount" style="margin-top: 10px;align-items: center;">Outsourcing Amount</label>
+                <input type="number" id="addOutsourcingAmount" name="addoutsourcingAmount">
+            
+                <label for="addOutsourcingCustomer" style="margin-top: 10px;align-items: center;">Outsourcing Customer Name</label>
+                <select id="addOutsourcingCustomer" name="addOutsourcingCustomer">
+                    <option value="">---</option>
+                    <!-- dynamic clients display-->
+                </select>
+            
+                <label for="addOutsourcingPaid" style="display: flex; align-items: center; margin-top:10px;white-space:nowrap;">
+                    Outsourcing Paid
+                    <label class="switch" style="margin-left: 250px;">
+                        <input type="checkbox" id="addOutsourcingPaid" name="addoutsourcingPaid">
+                        <span class="slider"></span>
+                    </label>
+                </label>
+            </div>
+
+            
+
+            <label for="addReference">Reference</label>
+            <input type="text" id="addReference" name="addReference">
+            <div class="form-actions">
+                <button type="submit" class="submit" id="addProjectBtn">Submit</button>
+                <button type="button" class="button" id="addCancelBtn" class="addCancelBtn" onclick="closeForm()">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+  
+<script>
+    function toggleDropdown(dropdownId, element) {
+        var dropdown = document.getElementById(dropdownId);
+        var icon = element.querySelector('.fa-solid');
+        dropdown.classList.toggle('show'); // Toggle 'show' class to control visibility
+        
+        // Toggle the icon between right and down
+        if (dropdown.classList.contains('show')) {
+            icon.classList.remove('fa-chevron-right');
+            icon.classList.add('fa-chevron-down');
+        } else {
+            icon.classList.remove('fa-chevron-down');
+            icon.classList.add('fa-chevron-right');
+        }
+    }
+</script>
+
+<script>// add form
+
+    document.getElementById('addProjectBtn').addEventListener('submit', function(event) { 
+        event.preventDefault();
+    
+        var form = this;
+        var formData = new FormData(form);
+    
+        fetch(form.action, {
+            method: form.method,
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => {
+            if (response.headers.get('content-type')?.includes('application/json')) {
+                return response.json();
+            } else {
+                return response.text().then(text => { throw new Error(text) });
+            }
+        })
+        .then(data => {
+            if (data.success) {
+                form.reset();
+                closeAddModal();
+                location.reload();
+            } else {
+                var errorMessage = document.getElementById("error-message");
+                errorMessage.textContent = data.error;
+                errorMessage.style.display = "block";
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            document.getElementById("error-message").textContent = 'An error occurred: ' + error.message;
+            document.getElementById("error-message").style.display = "block";
+        });
+    });
+    
+    
+</script>
+<script>
+    // JavaScript to handle dropdown visibility
+    const profileMenu = document.getElementById('profileMenu');
+    const profileDropdown = document.getElementById('profileDropdown');
+
+    profileMenu.addEventListener('click', function () {
+        // Toggle dropdown visibility
+        if (profileDropdown.style.display === 'none' || profileDropdown.style.display === '') {
+            profileDropdown.style.display = 'block';
+        } else {
+            profileDropdown.style.display = 'none';
+        }
+    });
+
+    // Close dropdown if clicked outside
+    window.addEventListener('click', function (event) {
+        if (!profileMenu.contains(event.target)) {
+            profileDropdown.style.display = 'none';
+        }
+    });
+</script>
+<script>
+  // user icon
+  const username = document.getElementById('name').textContent; 
+  document.querySelector('#userIcon').innerText = username.charAt(0);
+</script>
+<script>
+    // page navigation from div
+    function moveToDetailPage(code) {
+        window.location.href = "/project/" + code + "/";
+    }
+</script>
+
+
+<script> // edit form
+    $(document).ready(function() {
+        var modal = $('#editModal');
+        var span = $('.close');
+        var cancelBtn = $('#cancelBtn');
+     
+    
+        $.ajaxSetup({
+            beforeSend: function(xhr, settings) {
+                if (!this.crossDomain) {
+                    xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+                }
+            }
+        });
+        
+        function getCookie(name) {
+            var cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        
+    
+    
+        // When the user clicks on <span> (x) or cancel button, close the modal
+        span.on('click', function() {
+            modal.hide();
+        });
+    
+        cancelBtn.on('click', function() {
+            modal.hide();
+        });
+    
+
+    
+        // Function to open modal and fetch data
+        function openModal(code) {
+    
+            function convertToDateTimeLocalDMY(dateStr) {
+                console.log("edit form function");
+                const date = new Date(dateStr);
+                const pad = (num) => (num < 10 ? '0' + num : num);
+            
+                // Ensure correct format for 'dd-mm-yyyyTHH:MM'
+                const localDateTime = pad(date.getDate()) + '-' +  // Day first
+                                      pad(date.getMonth() + 1) + '-' +  // Month second
+                                      date.getFullYear() + ' ' +  // Year third
+                                      pad(date.getHours()) + ':' +  // Hours
+                                      pad(date.getMinutes());  // Minutes
+            
+                return localDateTime;
+            }
+            
+            
+
+            
+            function setStatusForEditForm(status) {
+                console.log("Setting status for edit form:", status);
+                var buttons = document.querySelectorAll('#statusButtons .btn-check');
+            
+                buttons.forEach(function(btn) {
+                    if (btn.value === status) {
+                        btn.checked = true;  // Check the correct checkbox
+                        var label = document.querySelector('label[for="' + btn.id + '"]');
+                        label.classList.add('active');  // Highlight this button
+                        console.log("Checking button for status:", btn.value);
+                    } else {
+                        btn.checked = false;  // Uncheck other buttons
+                        var label = document.querySelector('label[for="' + btn.id + '"]');
+                        label.classList.remove('active');  // Remove highlight from others
+                        console.log("Unchecking button:", btn.value);
+                    }
+                });
+            }
+    
+    
+            if (code) {
+                $.ajax({
+                    url: '/get_model_data/' + code + '/',
+                    method: 'GET',
+                    success: function(data) {
+
+    
+                        $('#editForm').attr('data-edit-code', code); // Set the edit code
+                        $('#projectType').val(data.projectType).change();
+                        $('#projectName').val(data.projectName);
+                        $('#customerCompany').val(data.customerCompany);
+                        $('#shootStart').val(convertToDateTimeLocalDMY(data.shootStart));
+                        $('#shootEnd').val(convertToDateTimeLocalDMY(data.shootEnd));
+                        $('#projectAmount').val(data.projectAmount);
+                        $('#projectLocation').val(data.projectLocation);
+                        $('#address').val(data.address);
+                        $('#outsourcing').prop('checked', data.outsourcing);
+
+                        if (data.outsourcing) {
+                            $('#outsourcingDetails').show(); // Show the outsourcing details if the checkbox is checked
+                        } else {
+                            $('#outsourcingDetails').hide(); // Hide the outsourcing details if not checked
+                        }
+
+                        $('#reference').val(data.reference);
+                        $('#outsourcingFor').val(data.outfor).change();
+                        $('#outsourcingAmount').val(data.outamt);
+                        $('#outsourcingCustomer').val(data.outcus).change();
+                        $('#outsourcingPaid').prop('checked', data.outpaid);
+
+                        console.log("just before the function...")
+                        setStatusForEditForm(data.projectStatus);
+
+                        modal.show();
+                    },
+                    error: function() {
+                        alert('Failed to fetch data. Please try again.');
+                    }
+                });
+            } else {
+                $('#editForm').removeAttr('data-edit-code'); // Clear the edit code for new projects
+                modal.show();
+            }
+        }
+        // Attach click event to edit buttons
+        $('.edit-btn').on('click', function(event) {
+            event.stopPropagation();
+            event.preventDefault(); // Prevent default link behavior
+            var code = $(this).data('code'); // Get the project code from the button
+            openModal(code);
+        });
+    
+        $('#editForm').on('submit', function(event) {
+            event.preventDefault();
+
+            // Convert the date from dd-mm-yyyy to yyyy-mm-dd
+            var dateField = $('#shootStart');  // Select the date field
+            var dateValue = dateField.val();
+            var convertedDate = convertToBackendDateTime(dateValue);
+            dateField.val(convertedDate);  // Set the new converted date value back to the field
+
+
+            // Convert the date from dd-mm-yyyy to yyyy-mm-dd
+            var dateField = $('#shootEnd');  // Select the date field
+            var dateValue = dateField.val();
+            var convertedDate = convertToBackendDateTime(dateValue);
+            dateField.val(convertedDate);  // Set the new converted date value back to the field
+
+            var code = $('#editForm').attr('data-edit-code'); // Get the edit code
+            var url = '/edit_model/' + (code ? code + '/' : ''); // Ensure URL includes code if available
+            
+            var formData = $(this).serializeArray(); // Serialize the form data
+            var statusValue; // Variable to hold the selected status
+
+    // Find the checked checkbox for the status
+    $('#statusButtons .btn-check:checked').each(function() {
+        statusValue = $(this).val(); // Get the value of the checked checkbox
+    });
+  
+    if (statusValue) {
+        // Add the selected status to the form data
+        formData.push({ name: 'projectStatus', value: statusValue });
+    }
+    
+    
+            $.ajax({
+                url: url,
+                method: 'POST',
+                data: formData,
+    
+                
+                success: function(response) {
+                    if (response.success) {
+                        alert('Form submitted successfully!');
+                        modal.hide();
+                        location.reload();  // Reload the page to reflect changes
+                    } else {
+                        alert('Failed to submit form: ' + response.error);
+                    }
+                },
+                error: function() {
+                    alert('An error occurred. Please try again.');
+                }
+            });
+        });
+    });
+    
+</script>
+ 
+<script>
+    function convertToBackendDateTime(dateTimeStr) {
+        console.log("Input dateTimeStr:", dateTimeStr); // Log the input value
+        
+        // Split the datetime string into date and time parts using 'T' as the delimiter
+        const [datePart, timePart] = dateTimeStr.split(' ');  // Correctly splitting on 'T'
+        
+        console.log("After splitting - Date part:", datePart, "Time part:", timePart); // Log the split parts
+        
+        const parts = datePart.split('-');  // Split the date part (dd-mm-yyyy)
+        console.log("Split date parts - Day:", parts[0], "Month:", parts[1], "Year:", parts[2]); // Log the split date parts
+        
+        // Rearrange to yyyy-mm-dd and concatenate with the time part
+        const backendDateTime = `${parts[2]}-${parts[1]}-${parts[0]} ${timePart}`;  
+        
+        console.log("Converted backend datetime format:", backendDateTime); // Log the final converted value
+        
+        return backendDateTime;
+    }
+</script>
+
+
+
+ <script> // deletion 
+
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.delete-btn').forEach(button => {
+            button.addEventListener('click', function(event) {
+                event.preventDefault();
+                event.stopPropagation();
+                const projectId = this.getAttribute('data-id');
+                if (confirm('Are you sure you want to delete this project?')) {
+                    fetch(`/delete_project/${projectId}/`, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRFToken': getCookie('csrftoken'),
+                        },
+                    }).then(response => {
+                        if (response.ok) {
+                            window.location.reload();  // Refresh the page to reflect changes
+                        } else {
+                            alert('Failed to delete the project.');
+                        }
+                    }).catch(error => {
+                        console.error('Error:', error);
+                        alert('An error occurred while deleting the project.');
+                    });
+                }
+            });
+        });
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+    });
+</script> 
+
+
+
+
+<script>
+     document.querySelector('input[name="q"]').addEventListener('keypress', function(event) {
+                if (event.key === 'Enter') {
+                    event.preventDefault(); 
+                    this.form.submit(); 
+                }
+            });
+
+ 
+            function toggleFilterDropdown(event) {
+                event.preventDefault(); 
+                const filterDropdown = document.getElementById('filterDropdown');
+                filterDropdown.style.display = filterDropdown.style.display === 'block' ? 'none' : 'block';
+            }
+
+document.addEventListener('click', function(event) {
+    const filterDropdown = document.getElementById('filterDropdown');
+    const filterBtn = document.getElementById('filter-btn');
+    
+   
+    if (!filterDropdown.contains(event.target) && !filterBtn.contains(event.target)) {
+             event.stopPropagation();
+    }
+});
+
+            // Ensure clicking inside the dropdown does not close it
+document.querySelectorAll('.dropdown-section').forEach(section => {
+    section.addEventListener('click', function(event) {
+        event.stopPropagation(); // Prevent the dropdown from closing when interacting with it
+    });
+});
+
+            // Ensure clicking inside the dropdown does not close it
+            const dropdownSections = document.querySelectorAll('.dropdown-section');
+            dropdownSections.forEach(section => {
+                section.addEventListener('click', function(event) {
+                    event.stopPropagation(); 
+                });
+            });
+
+           
+function clearFilters() {
+    document.getElementById('company').value = '';
+    document.getElementById('status').value = '';
+    document.getElementById('type').value = '';
+    document.forms[0].submit(); 
+    toggleFilterDropdown(); 
+}
+
+document.querySelector('.done-btn').addEventListener('click', function() {
+        filterDropdown.style.display = 'none'; 
+    });
+
+// Ensure clear button closes the filter dropdown
+document.querySelector('.clear-btn').addEventListener('click', function(event) {
+    event.preventDefault();
+    clearFilters(); 
+});
+
+           
+            dropdownSections.forEach(section => {
+                section.addEventListener('click', function() {
+                    const submenu = this.querySelector('.submenu');
+                    submenu.style.display = submenu.style.display === 'block' ? 'none' : 'block';
+                });
+            });
+        
+// Functions to populate filters dynamically (no changes to these)
+function fetchUniqueTypes() {
+    fetch('/get-unique-types/')
+        .then(response => response.json())
+        .then(data => {
+            const dropdown = document.getElementById('type-dropdown1');
+            dropdown.innerHTML = ''; 
+            const selectedTypes = document.getElementById('type').value.split(',');
+
+            data.forEach(type => {
+                const label = document.createElement('label');
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.setAttribute('onchange', `setFilter('type', '${type}')`);
+
+                if (selectedTypes.includes(type)) {
+                    checkbox.checked = true;
+                }
+
+                label.appendChild(checkbox);
+                label.append(type);
+                dropdown.appendChild(label);
+                dropdown.appendChild(document.createElement('br'));
+            });
+        });
+}
+
+function fetchUniqueCompany() {
+    fetch('/get-unique-company/')
+        .then(response => response.json())
+        .then(data => {
+            const dropdown = document.getElementById('company-dropdown1');
+            dropdown.innerHTML = ''; 
+
+            const selectedCompanies = document.getElementById('company').value.split(',');
+
+            data.forEach(company => {
+                const label = document.createElement('label');
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.setAttribute('onchange', `setFilter('company', '${company}')`);
+
+                if (selectedCompanies.includes(company)) {
+                    checkbox.checked = true;
+                }
+
+                label.appendChild(checkbox);
+                label.append(company);
+                dropdown.appendChild(label);
+                dropdown.appendChild(document.createElement('br'));
+            });
+        });
+}
+
+function populateStatusDropdown() {
+    const statuses = ['COMPLETED', 'ONGOING', 'PENDING','CANCELLED'];
+    const dropdown = document.getElementById('status-dropdown1');
+    dropdown.innerHTML = ''; 
+
+    const selectedStatuses = document.getElementById('status').value.split(',');
+
+    statuses.forEach(status => {
+        const label = document.createElement('label');
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.setAttribute('onchange', `setFilter('status', '${status}')`);
+
+        if (selectedStatuses.includes(status)) {
+            checkbox.checked = true;
+        }
+
+        label.appendChild(checkbox);
+        label.append(status);
+        dropdown.appendChild(label);
+        dropdown.appendChild(document.createElement('br'));
+    });
+}
+
+// When page loads, populate the dropdowns
+window.onload = function() {
+    fetchUniqueTypes();
+    fetchUniqueCompany();
+    populateStatusDropdown();
+};
+
+</script>
+
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+     var editModal = document.getElementById("editModal");
+     var addModal = document.getElementById("addModal");
+     //var filterDropdown = document.getElementById('filterDropdown');
+
+     var editClose = document.querySelector("#editModal .close");
+     var addClose = document.querySelector("#addModal .close");
+     var editCancelBtn = document.getElementById("editCancelBtn");
+     var addCancelBtn = document.getElementById("addCancelBtn");
+     var addBtn = document.querySelector(".add-btn");
+
+     var editBtns = document.getElementsByClassName("edit-btn");
+     for (let btn of editBtns) {
+         btn.onclick = function () {
+             editModal.style.display = "block";
+         };
+     }
+
+     addBtn.onclick = function () {
+         addModal.style.display = "block";
+     };
+
+     editClose.onclick = function () {
+         editModal.style.display = "none";
+     };
+
+     addClose.onclick = function () {
+         addModal.style.display = "none";
+     };
+
+     editCancelBtn.onclick = function () {
+         editModal.style.display = "none";
+     };
+
+     addCancelBtn.onclick = function () {
+         addModal.style.display = "none";
+     };
+
+     window.onclick = function (event) {
+         if (event.target == editModal) {
+             // Do nothing to prevent closing the modal
+         }
+         if (event.target == addModal) {
+             // Do nothing to prevent closing the modal
+         }
+         
+     };
+
+   
+
+     var editForm = document.getElementById("editForm");
+     editForm.onsubmit = function (event) {
+         event.preventDefault();
+         editModal.style.display = "none";
+     };
+
+     var addForm = document.getElementById("addForm");
+     addForm.onsubmit = function (event) {
+         event.preventDefault();
+         var type = document.getElementById("addProjectType").value;
+         var status = document.getElementById("addProjectStatus").value;
+         var name = document.getElementById("addProjectName").value;
+         var company = document.getElementById("addCustomerCompany").value;
+
+         var newCard = document.createElement("div");
+         newCard.classList.add("project-card");
+         newCard.innerHTML = `
+             <img src="map1.png" alt="Map" class="map">
+             <div class="card-header">
+                 <p><b>${name}</b><br>${type}<br>${company}</p>
+                 <div class="dropdown">
+                     <button class="dropbtn">⋮</button>
+                     <div class="dropdown-content">
+                         <a href="#" class="edit-btn">Edit</a>
+                         <a href="#">Delete</a>
+                     </div>
+                 </div>
+             </div>
+             <button class="files-btn"><img src="folder (2).png" alt="Files Icon">Files</button>
+             <button class="share-btn"><img src="share (1).png" alt="Files Icon">Share</button>
+         `;
+
+         document.querySelector(".content").appendChild(newCard);
+         attachDropdownEvents(newCard);
+         addForm.reset();
+         addModal.style.display = "none";
+     };
+
+     window.addEventListener('click', function (event) {
+         var dropdowns = document.querySelectorAll(".dropdown-content");
+         dropdowns.forEach(function (dropdown) {
+             if (!event.target.closest('.dropdown')) {
+                 dropdown.style.display = 'none';
+             }
+         });
+     });
+
+     function attachDropdownEvents(card) {
+         var dropbtn = card.querySelector(".dropbtn");
+         var dropdownContent = card.querySelector(".dropdown-content");
+
+         dropbtn.onclick = function (event) {
+             dropdownContent.style.display = dropdownContent.style.display === "block" ? "none" : "block";
+             event.stopPropagation();
+         };
+     }
+
+     var projectCards = document.getElementsByClassName("project-card");
+     for (let card of projectCards) {
+         attachDropdownEvents(card);
+     }
+
+     var clearBtn = document.querySelector(".clear-btn");
+     clearBtn.onclick = function () {
+         var checkboxes = document.querySelectorAll("#filterDropdown input[type='checkbox']");
+         checkboxes.forEach(function (checkbox) {
+             checkbox.checked = false;
+         });
+     };
+
+     document.getElementById('filter-btn').addEventListener('click', function () {
+         filterDropdown.style.display = filterDropdown.style.display === 'block' ? 'none' : 'block';
+     });
+
+     document.querySelector('.toggle-status').addEventListener('click', function() {
+         const submenu = this.nextElementSibling;
+         submenu.style.display = submenu.style.display === 'block' ? 'none' : 'block';
+     });
+
+     document.querySelector('.toggle-type').addEventListener('click', function() {
+         const submenu = this.nextElementSibling;
+         submenu.style.display = submenu.style.display === 'block' ? 'none' : 'block';
+     });
+
+     document.querySelector('.toggle-company').addEventListener('click', function() {
+         const submenu = this.nextElementSibling;
+         submenu.style.display = submenu.style.display === 'block' ? 'none' : 'block';
+     });
+ });
+
+ function closeForm() {
+    document.getElementById("addModal").style.display = "none";
+}
+
+ </script>
+
+
+ <script> // outsourcing toogles  edit form
+    function toggleOutsourcingDetails() {
+        const outsourcingDetails = document.getElementById("outsourcingDetails");
+        const toggle = document.getElementById("outsourcing");
+        outsourcingDetails.style.display = toggle.checked ? "block" : "none";
+    }
+</script>
+
+<script>
+// add form
+    function toggleAddOutsourcingDetails() {
+        const outsourcingDetails = document.getElementById("addOutsourcingDetails");
+        const toggle = document.getElementById("addOutsourcing");
+        outsourcingDetails.style.display = toggle.checked ? "block" : "none";
+    }
+</script>
+
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var dropdownIds = ['outsourcingCustomer', 'addOutsourcingCustomer'];  // Add the IDs of all the dropdowns here
+    
+        // Fetch type when the page loads
+        fetch('/get-unique-client/')
+            .then(response => response.json())
+            .then(data => {
+                dropdownIds.forEach(function(dropdownId) {
+                    var dropdown = document.getElementById(dropdownId);
+                    dropdown.innerHTML = '';  // Clear existing options
+    
+                    // Populate each dropdown with the fetched types
+                    data.forEach(function(client) {
+                        var option = document.createElement('option');
+                        option.value = client;
+                        option.text = client;
+                        dropdown.appendChild(option);
+                    });
+                });
+            })
+            .catch(error => console.error('Error fetching type:', error));
+    });
+    
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var dropdownIds = ['projectType', 'addProjectType'];  // Add the IDs of all the dropdowns here
+
+    // Fetch type when the page loads
+    fetch('/get-unique-types/')
+        .then(response => response.json())
+        .then(data => {
+            dropdownIds.forEach(function(dropdownId) {
+                var dropdown = document.getElementById(dropdownId);
+                dropdown.innerHTML = '';  // Clear existing options
+
+                // Populate each dropdown with the fetched types
+                data.forEach(function(type) {
+                    var option = document.createElement('option');
+                    option.value = type;
+                    option.text = type;
+                    dropdown.appendChild(option);
+                });
+            });
+        })
+        .catch(error => console.error('Error fetching type:', error));
+});
+</script>
+<script>
+    const sidebar = document.querySelector('.sidebar');
+        const toggleIcon = document.getElementById('toggle-icon');
+        
+        toggleIcon.addEventListener('click', function() {
+          if (sidebar.classList.contains('closed')) {
+            sidebar.classList.remove('closed');
+            toggleIcon.src = "{% static 'images/menuleft.png' %}";  // Change to the "left-chevron" when open
+          } else {
+            sidebar.classList.add('closed');
+            toggleIcon.src = "{% static 'images/menuright.png' %}";  // Change to the "chevron" when closed
+          }
+        });
+
+</script>
+
+
+
+<script>
+    function toggleStatus(checkbox) {
+        var buttons = document.querySelectorAll('#statusButtons .btn-check');
+  
+        if (checkbox.checked) {
+            buttons.forEach(function(btn) {
+                if (btn !== checkbox) {
+                    btn.checked = false;
+                }
+            });
+        }
+  
+        buttons.forEach(function(btn) {
+            var label = document.querySelector('label[for="' + btn.id + '"]');
+            if (btn.checked) {
+                label.classList.add('active');
+            } else {
+                label.classList.remove('active');
+            }
+        });
+    }
+  
+    function closeEditModal() {
+        document.getElementById('editModal').style.display = 'none';
+    }
+  </script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/5.3.0/js/bootstrap.min.js"></script>
+  
+  
+  
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script>
+    config = {
+        enableTime: true,  // Enable time picker
+        dateFormat: "d-m-Y H:i",  // Format for datetime-local (ISO format without seconds)
+    };
+    flatpickr("input[type=datetime-local]", config);
+</script>
+
+
+<!-- Places Autocomplete -->
+
+<script>
+$.getScript("https://maps.googleapis.com/maps/api/js?key=AIzaSyAqIalCM0rqsXeHiyRP4ImBbVgqwMSv8D8&libraries=places")
+    .done(function(script, textStatus) {
+        google.maps.event.addDomListener(window, "load", initAutoComplete);
+    });
+
+let autocomplete;
+
+function initAutoComplete() {
+    // Check for both add and edit form elements
+    const addLocationElement = document.getElementById('addProjectLocation');
+    const editLocationElement = document.getElementById('projectLocation');
+
+    // Initialize autocomplete for the element that exists
+    if (addLocationElement) {
+        initializeAutocompleteForElement(addLocationElement);
+    }
+    if (editLocationElement) {
+        initializeAutocompleteForElement(editLocationElement);
+    }
+}
+
+function initializeAutocompleteForElement(element) {
+    autocomplete = new google.maps.places.Autocomplete(element, {
+        componentRestrictions: {'country': 'in'} // Restrict to India (or change country if needed)
+    });
+
+    // Add listener for when a place is selected
+    autocomplete.addListener('place_changed', function() {
+        onPlaceChanged(element);
+    });
+}
+
+function onPlaceChanged(element) {
+    var place = autocomplete.getPlace();
+
+    if (!place.geometry) {
+        element.placeholder = "*Begin typing address or place name";
+        return;
+    }
+
+    // Retrieve latitude and longitude
+    var latitude = place.geometry.location.lat();
+    var longitude = place.geometry.location.lng();
+
+    // Populate hidden fields with latitude and longitude
+    if (element.id === 'addProjectLocation') {
+        $('#addLatitude').val(latitude);
+        $('#addLongitude').val(longitude);
+    } else if (element.id === 'projectLocation') {
+        $('#editLatitude').val(latitude);
+        $('#editLongitude').val(longitude);
+    }
+
+    // Optionally, retrieve more address components as before
+    var num = '', route = '', town = '', county = '', country = '', postalCode = '';
+    for (var i = 0; i < place.address_components.length; i++) {
+        for (var j = 0; j < place.address_components[i].types.length; j++) {
+            if (place.address_components[i].types[j] === "street_number") {
+                num = place.address_components[i].long_name;
+            }
+            if (place.address_components[i].types[j] === "route") {
+                route = place.address_components[i].long_name;
+            }
+            if (place.address_components[i].types[j] === "locality") {
+                town = place.address_components[i].long_name;
+            }
+            if (place.address_components[i].types[j] === "administrative_area_level_2") {
+                county = place.address_components[i].long_name;
+            }
+            if (place.address_components[i].types[j] === "country") {
+                country = place.address_components[i].long_name;
+            }
+            if (place.address_components[i].types[j] === "postal_code") {
+                postalCode = place.address_components[i].long_name;
+            }
+        }
+    }
+
+    console.log(`Latitude: ${latitude}, Longitude: ${longitude}`);
+    console.log(`Address: ${num} ${route}, Town: ${town}, Country: ${country}`);
+}
+</script>
+<!--Location Link-->
+<script>
+    async function resolveShortUrl(shortUrl) {
+        try {
+            // Call the Django view to resolve the short URL
+            const response = await fetch(`/resolve-url?url=${encodeURIComponent(shortUrl)}`);
+            const data = await response.json();
+
+            if (data.resolved_url) {
+                return data.resolved_url; // Return the resolved URL
+            } else {
+                console.error('Error resolving URL:', data.error);
+                return null;
+            }
+        } catch (error) {
+            console.error('Error resolving short URL:', error);
+            return null;
+        }
+    }
+
+    function extractPlaceNameAndCoordinates(link) {
+        // Updated regex to correctly extract place name and latitude/longitude
+        const regex = /\/maps\/place\/([^\/]+)\/@(-?\d+\.\d+),(-?\d+\.\d+)/;
+        const match = link.match(regex);
+        if (match) {
+            const placeName = decodeURIComponent(match[1]).replace(/\+/g, ' '); // Decode and replace + with spaces
+            const lat = parseFloat(match[2]);
+            const lng = parseFloat(match[3]);
+            return { placeName, coordinates: { lat, lng } };
+        }
+        return null;
+    }
+
+    async function getAddressFromLink() {
+        const locationLink = document.getElementById("locationLink").value;
+        const addressField = document.getElementById("address");
+
+        try {
+            // Resolve the URL if it is a short URL
+            const resolvedUrl = locationLink.includes('goo.gl') ? await resolveShortUrl(locationLink) : locationLink;
+
+            if (resolvedUrl) {
+                // Extract the place name and coordinates from the resolved link
+                const placeInfo = extractPlaceNameAndCoordinates(resolvedUrl);
+                console.log("ex co: ",placeInfo);
+                if (placeInfo) {
+                    // Call initMap with the coordinates
+                    //initMap(placeInfo.coordinates);
+                    addressField.value = 'Fetching address...'; // Optional: Indicate address fetching
+                    const address = await geocodeLatLng(placeInfo.coordinates);
+                    addressField.value = address; // Update the address field with the fetched address
+                } else {
+                    addressField.value = 'Invalid link or no coordinates found';
+                }
+            } else {
+                addressField.value = 'Failed to resolve URL';
+            }
+        } catch (error) {
+            console.error('Error fetching address:', error);
+            addressField.value = 'Error fetching address: ' + error.message;
+        }
+    }
+
+    function geocodeLatLng(latlng) {
+        return new Promise((resolve, reject) => {
+            const geocoder = new google.maps.Geocoder();
+            const { lat, lng } = latlng;
+
+            const latlngObj = { 
+                lat: parseFloat(latlng.lat), 
+                lng: parseFloat(latlng.lng) 
+            };
+            geocoder.geocode({ location: latlngObj }, (results, status) => {
+                if (status === 'OK') {
+                    if (results[0]) {
+                        resolve(results[0].formatted_address); // Resolve with formatted address
+                    } else {
+                        reject('No results found');
+                    }
+                } else {
+                    reject('Geocoder failed due to: ' + status);
+                }
+            });
+        });
+    }
+
+</script>
+
+<script>
+    // dropdown 
+let selectedStatus = [];
+let selectedType = [];
+let selectedCompany = [];
+
+function setFilter(field, value) {
+ const fieldElement = document.getElementById(field);
+ if (fieldElement) {
+     const currentValues = fieldElement.value ? fieldElement.value.split(',') : [];
+     if (currentValues.includes(value)) {
+         // Remove the value if it's already checked (uncheck scenario)
+         fieldElement.value = currentValues.filter(item => item !== value).join(',');
+     } else {
+         // Add the value if it's checked
+         currentValues.push(value);
+         fieldElement.value = currentValues.join(',');
+     }
+ }
+}
+</script>
+</body>
+</html>

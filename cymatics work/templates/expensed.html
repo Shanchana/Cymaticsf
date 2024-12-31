@@ -1,0 +1,1285 @@
+{% load static %}
+{% static "images" as baseurl %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="https://npmcdn.com/flatpickr/dist/themes/dark.css">
+    <title>Expense inside</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            height: 100vh;
+            flex-direction: column;
+        }
+        .container {
+            display: flex;
+            width: 100%;
+            flex-grow: 1;
+        }
+            .sidebar {
+              background-color: #1e1e1e;
+              color: white;
+              width: 250px;
+              display: flex;
+              flex-direction: column;
+              justify-content: flex-start;
+              align-items: center;
+              transition: width 0.3s;
+              position: relative;
+          }
+          .sidebar.closed {
+            width: 60px;
+        }
+        
+        /* Icon visibility and border */
+        .sidebar .toggle-icon {
+            position: absolute;
+            top: 25px !important; /* Aligned near the top */
+            right: -8px; /* Adjusted to be right on the edge line */
+            cursor: pointer;
+            visibility: hidden;
+            border: 3px solid rgba(78, 27, 231, 0.5); /* Light border */
+            border-radius: 8px;
+            padding: 1px;
+            transition: visibility 0.3s ease-in-out, top 0.3s ease-in-out; /* Smooth transitions */
+            z-index: 2;
+        }
+        #toggle-icon {
+            width: 20px;
+            height: 20px;
+        }
+        
+        
+        /* Adjust position for closed state to avoid overlap */
+        .sidebar.closed .toggle-icon {
+            top: 10px;
+            right: -8px; /* Keep it on the edge even when closed */
+        }
+        
+        /* Show icon when hovering near the sidebar or over the icon */
+        .sidebar:hover .toggle-icon, .toggle-icon:hover {
+            visibility: visible;
+        }
+        
+        .sidebar .logo {
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .sidebar.closed .logo {
+            display: none;
+        }
+        
+        .sidebar nav ul {
+            list-style: none;
+            padding: 0;
+            width: 100%;
+            text-align: center;
+        }
+        
+        .sidebar nav ul li {
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: background-color 0.3s, border-left 0.3s;
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+        }
+        
+        .sidebar.closed nav ul li {
+            justify-content: center;
+        }
+        
+        .sidebar nav ul li a {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: white;
+            width: 100%;
+            font-family: Arial, sans-serif;
+        }
+        
+        .sidebar nav ul li a:hover {
+            background-color: #555;
+            border-left: 4px solid #ffcc00;
+        }
+        
+        .menu-icon {
+            margin-right: 10px;
+            width: 24px;
+            height: 24px;
+        }
+        
+        .menu-text {
+            transition: opacity 0.3s, visibility 0.3s;
+            font-family: Arial, sans-serif;
+        }
+        
+        .sidebar.closed .menu-text {
+            display: none;
+        }
+        
+        .sidebar.closed nav ul li:hover {
+            background-color: inherit;
+        }
+        
+        .profile-section {
+            position: relative; /* Allows positioning of the dropdown */
+            padding: 12px 20px; /* Match padding with other menu items */
+            cursor: pointer; /* Change cursor on hover */
+            transition: background-color 0.3s, border-left 0.3s; /* Smooth transition */
+        }
+        
+        .profile-section:hover {
+            background-color: #555; /* Background color on hover */
+            border-left: 4px solid #ffcc00; /* Left border on hover */
+        }
+        
+        .dropdown {
+            position: absolute; /* Position relative to the profile section */
+            bottom: 100%; /* Position above the profile section */
+            left: 0; /* Align to the left */
+            background-color: white; /* Background color of the dropdown */
+            border: 1px solid #ccc; /* Border for the dropdown */
+            border-radius: 4px; /* Rounded corners */
+            z-index: 1000; /* Ensure it appears above other elements */
+            width: 160px; /* Set width for the dropdown */
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Shadow for a floating effect */
+            display: none; /* Initially hidden */
+        }
+        
+        .dropdown ul {
+            list-style: none; /* Remove default list styles */
+            padding: 0; /* Remove padding */
+            margin: 0; /* Remove margin */
+        }
+        
+        .dropdown li {
+            padding: 10px; /* Padding for each item */
+            color: black; /* Set text color to black */
+            cursor: pointer; /* Change cursor on hover */
+        }
+        
+        .dropdown li:hover {
+            background-color: #f1f1f1; /* Background on hover */
+        }
+        
+        .main-content {
+          flex-grow: 1;
+          background-color: #f1f1f1;
+          padding: 20px;
+          position: relative; /* Required for positioning the form */
+        }
+        .user-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #ddd;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 18px;
+            color: #0e0e0e;
+            background-color: #e1ecb8;
+        
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 20px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .header img {
+            width: 50px;
+            height: 70px;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+            flex-grow: 1;
+            margin-left: 20px;
+        }
+
+        .date {
+            font-size: 17px;
+            color: #5e5d5d;
+            font-weight: lighter;
+        }
+
+        .note {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            position: relative;
+        }
+
+        .note textarea {
+            width: 100%;
+            border: none;
+            padding: 10px;
+            font-size: 16px;
+            resize: none;
+            height: 100px;
+        }
+
+        .note .note-edit-button {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background-color: white;
+            color: black;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+        }
+
+        .note .note-edit-button:hover {
+            background-color: #ddd;
+        }
+
+        /* Formatting Options Styles */
+        .formatting-options {
+            display: none; /* Initially hidden */
+            align-items: center;
+            justify-content: space-around;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            z-index: 10; /* Make sure it appears above other elements */
+        }
+
+        .formatting-options button {
+            background: none;
+            border: none;
+            color: black;
+            cursor: pointer;
+            margin: 0 5px;
+            padding: 5px;
+            text-align: center;
+            font-size: 18px;
+        }
+
+        .formatting-options button:hover {
+            background-color: #f0f0f0;
+            border-radius: 5px;
+        }
+
+        .done-button {
+            padding: 8px 16px;
+            background-color: black;
+            color: white;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+
+        .done-button:hover {
+            background-color: #555;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;  /* Enable scrolling if content exceeds modal height */
+            background-color: rgba(0,0,0,0.4);
+        }
+          
+        .modal-content {
+            background-color: #fefefe;
+            margin: 6% auto;  /* Adjusted margin to give more space at the top */
+            padding: 20px;
+            border: 1px solid #888;
+            width: 400px;
+            border-radius: 8px;
+            
+        }
+          
+         
+          
+          .form-actions {
+           display: flex;
+           justify-content:flex-end;
+           margin-top: 10px;
+           gap:10px;
+          }
+          
+          .submit-btn,
+          .cancel-btn {
+           flex: 1;
+           padding: 10px;
+           border: none;
+           border-radius: 5px;
+           cursor: pointer;
+           margin: 0 5px; 
+           
+          
+          }
+          /* Make the buttons static at the bottom */
+          .modal-content .form-actions {
+              margin-top: 20px; /* Push the buttons to the bottom */
+          }
+          
+          
+          
+          
+          .modal-content h3 {
+ text-align: center;
+ font-size: 20px; /* Adjust as needed */
+ margin-bottom: 20px; 
+}
+          
+          
+          .modal-content form label {
+              margin-bottom: 5px; /* Adjusted for better spacing */
+          }
+          
+          .modal-content form input,
+          .modal-content form button {
+              padding: 10px;
+              margin-bottom: 10px;
+              border: 1px solid #ddd;
+              border-radius: 5px;
+              box-sizing: border-box; 
+          }
+          
+          
+          
+          .form-actions button {
+              margin: 0; /* Remove all margins */
+              padding: 8px 12px;
+              border: none;
+              cursor: pointer;
+          }
+          
+          .modal .form-actions button[type="submit"] {
+              background-color: rgb(0, 0, 0);
+              color: white;
+          }
+          
+          .modal .form-actions button[type="button"] {
+            background-color: #ffffff;
+            color: black;
+            border: 1px solid #888 !important;
+          }
+          
+          #projectIncomeWrapper {
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              margin-top: 10px;
+          }
+          
+          #projectIncomeWrapper label {
+              margin: 0;
+              font-weight: medium;
+          }
+          
+          /* Additional styles for input and select */
+          #addForm input, #addForm select,
+          #editform input, #editform select {
+              padding: 8px;
+              margin-top: 5px;
+              border: 1px solid #ccc;
+              border-radius: 4px;
+              width: 100%; 
+          }
+          
+          /* Switch styles */
+          .switch {
+              position: relative;
+              display: inline-block;
+              width: 34px;
+              height: 20px;
+          }
+          
+          .switch input {
+              opacity: 0;
+              width: 0;
+              height: 0;
+          }
+          
+          .slider {
+              position: absolute;
+              cursor: pointer;
+              top: 0;
+              left: 0;
+              right: 0;
+              bottom: 0;
+              background-color: #ccc;
+              transition: .4s;
+              border-radius: 20px;
+          }
+          
+          .slider:before {
+              position: absolute;
+              content: "";
+              height: 16px;
+              width: 16px;
+              left: 2px;
+              bottom: 2px;
+              background-color: white;
+              border-radius: 50%;
+              transition: .4s;
+          }
+          
+          input:checked + .slider {
+              background-color: #000000;
+          }
+          
+          input:checked + .slider:before {
+              transform: translateX(14px);
+          }
+          .close {
+                color: #aaa;
+                float: right !important;
+                font-size: 28px;
+                font-weight: bold;
+            }
+    
+            .close:hover,
+            .close:focus {
+                color: black;
+                text-decoration: none;
+                cursor: pointer;
+            }
+          
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        .modal-body label {
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .modal-body input,
+        .modal-body select,
+        .modal-body textarea {
+            margin-bottom: 15px;
+            padding: 10px;
+            font-size: 16px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .modal-footer button {
+            padding: 10px 20px;
+            margin-left: 10px;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .modal-footer .submit-btn {
+            background-color: #000000;
+            color: white;
+        }
+
+        .modal-footer .cancel-btn {
+            background-color: #868484;
+            color: rgb(0, 0, 0);
+        }
+
+        .edit-btn {
+    padding: 1px 200px;  /* Adjust padding for better appearance */
+    background-color: #000000;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 17px;  
+    display: flex;  /* Use flexbox to align content */
+    align-items: center;  /* Align items vertically in the center */
+    justify-content: center;  /* Center the content horizontally */
+    line-height: 1.2;  /* Adjust line height for better spacing */
+    height: 35px;
+    width: 150px;  /* Increased width for better spacing */
+    margin-left: 330px;
+    color: white;
+    position: relative;
+}
+
+.edit-btn:hover {
+    background-color: #555;
+}
+
+.btn-icon {
+    width: 20px;  /* Set size of the icon */
+    height: 20px;  /* Set size of the icon */
+    margin-left: 8px;  /* Space between label and icon */
+}
+
+
+      
+        .amount-box, .note-box {
+            margin-top: 20px;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 35%;
+        }
+        .amount-box h2, .note-box h2 {
+            margin-bottom: 10px;
+            font-size: 20px;
+        }
+        .amount-value {
+            font-size: 18px;
+            font-weight: Medium;
+        }
+
+        #noteTextarea {
+    min-height: 100px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    outline: none;
+    overflow-y: auto;
+    font-family: Arial, sans-serif;
+    line-height: 1.4;
+    background-color: white;
+}
+
+#noteTextarea:empty:before {
+    content: attr(placeholder);
+    color: #888;
+}
+
+#noteTextarea h1 {
+    font-size: 1.5em;
+    margin: 0.5em 0;
+}
+
+#noteTextarea h2 {
+    font-size: 1.3em;
+    margin: 0.5em 0;
+}
+
+#noteTextarea ul, 
+#noteTextarea ol {
+    margin: 0.5em 0;
+    padding-left: 2em;
+}
+
+#noteTextarea[contenteditable]:focus {
+    border-color: #000;
+}
+
+.formatting-options .color-button {
+    min-width: 35px;
+    padding: 0 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.formatting-options .color-button span {
+    font-weight: bold;
+    font-size: 16px;
+}
+
+/* Hover effect for color buttons */
+.formatting-options .color-button:hover {
+    background-color: #f0f0f0;
+    border-color: #999;
+}
+
+/* Active state for color buttons */
+.formatting-options .color-button:active {
+    background-color: #e0e0e0;
+}
+.n{
+    font-size: bold;
+    font: weight 500px;
+}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <aside class="sidebar">
+            <div class="toggle-icon">
+                <img src="{% static './images/menuleft.png' %}" alt="icon" id="toggle-icon" width="16" height="16">
+            </div>
+            <div class="logo">
+                <img src="{% static './images/logowhite.png' %}" alt="logo" width="50" height="50">
+            </div>
+            <nav>
+                <ul>
+                    <li class="menu-item"><a href="{% url 'dashboard' %}"><img src="{% static 'images/dashboard.png' %}" class="menu-icon"><span class="menu-text">Dashboard</span></a></li>
+                    <li class="menu-item"><a href="{% url 'projects' %}"><img src="{% static 'images/project.png' %}" class="menu-icon"><span class="menu-text">Project</span></a></li>
+                    <li class="menu-item"><a href="{% url 'incomef_view' %}"><img src="{% static 'images/income.png' %}" class="menu-icon"><span class="menu-text">Income</span></a></li>
+                    <li class="menu-item"><a href="{% url 'expense' %}"><img src="{% static 'images/expenses.png' %}" class="menu-icon"><span class="menu-text">Expense</span></a></li>
+                    <li class="menu-item"><a href="{% url 'calendar' %}"><img src="{% static 'images/calendar.png' %}" class="menu-icon"><span class="menu-text">Calendar</span></a></li>
+                    <li class="menu-item"><a href="{% url 'allproject' %}"><img src="{% static 'images/All projects.png' %}" class="menu-icon"><span class="menu-text">All Projects</span></a></li>
+                    <li class="menu-item"><a href="{% url 'clientsbook' %}"><img src="{% static 'images/clientsbook.png' %}" class="menu-icon"><span class="menu-text">Clients Book</span></a></li>
+                    <li class="menu-item"><a href="{% url 'clients' %}"><img src="{% static 'images/Clients.png' %}" class="menu-icon"><span class="menu-text">Clients</span></a></li>
+                    <li class="menu-item"><a href="{% url 'status' %}"><img src="{% static 'images/status.png' %}" class="menu-icon"><span class="menu-text">Status</span></a></li>
+                    <li class="menu-item active"><a href="{% url 'pending_pay' %}"><img src="{% static 'images/pending.png' %}" class="menu-icon"><span class="menu-text">Pending Payments</span></a></li>
+                    <li class="menu-item"><a href="{% url 'project_map' %}"><img src="{% static 'images/map.png' %}" class="menu-icon"><span class="menu-text">Map</span></a></li>
+                    <li class="menu-item"><a href="{% url 'assets' %}"><img src="{% static 'images/Assets.png' %}" class="menu-icon"><span class="menu-text">Assets</span></a></li>
+                    <li class="menu-item"><a href="{% url 'budget' %}"><img src="{% static 'images/budget.png' %}" class="menu-icon"><span class="menu-text">Budget</span></a></li>
+                    <li class="menu-item"><a href="{% url 'entertainment' %}"><img src="{% static 'images/Entertainment.png' %}" class="menu-icon"><span class="menu-text">Entertainment</span></a></li>
+                </ul>
+            </nav>
+            <div class="profile-section" id="profileMenu">
+                <div class="user-icon" id="userIcon">
+                  <!-- Default content in case JS is not available -->
+                  U
+              </div>
+  
+                <span class="menu-text" id="name">{{ user.username }}</span>
+                <div class="dropdown" id="profileDropdown">
+                    <ul>
+                        <li><a href="{% url 'profile' %}">View Profile</a></li>
+                        <li><a href="{% url 'logout_view' %}">Sign Out</a></li>
+                    </ul>
+                </div>
+              </div>
+        </aside>
+        
+            <div class="main-content">
+                <div class="header">
+                {% if expense.category == "Fuel & Travel" %}
+                    <img src="{% static 'images/fuel.jpg' %}" alt="Fuel icon"><br>
+                {% elif expense.category == "Gadgets" %}
+                    <img src="{% static 'images/gadgets.jpg' %}" alt="Gadgets icon"><br>
+                {% elif expense.category == "Entertainment" %}
+                    <img src="{% static 'images/entertainment.jpg' %}" alt="Entertainment icon"><br>
+                {% elif expense.category == "Investments" %}
+                    <img src="{% static 'images/investment.jpg' %}" alt="Investment icon"><br>
+                {% elif expense.category == "Yaso" %}
+                    <img src="{% static 'images/foods.jpg' %}" alt="Yaso icon"><br>
+                {% elif expense.category == "Gopi" %}
+                    <img src="{% static 'images/foods.jpg' %}" alt="Gopi icon"><br>
+                {% elif expense.category == "Adithyan" %}
+                    <img src="{% static 'images/foods.jpg' %}" alt="Adithyan icon"><br>
+                {% elif expense.category == "Food & Snacks" %}
+                    <img src="{% static 'images/foods.jpg' %}" alt="Food & Snacks icon"><br>
+                {% elif expense.category == "Others" %}
+                    <img src="{% static 'images/investment.jpg' %}" alt="Others icon"><br>
+                {% elif expense.category == "Asset" %}
+                    <img src="{% static 'images/assets.jpg' %}" alt="Asset icon"><br>
+                {% elif expense.category == "Cymatics" %}
+                    <img src="{% static 'images/investment.jpg' %}" alt="Cymatics icon"><br>
+                {% elif expense.category == "Salary" %}
+                    <img src="{% static 'images/salary.jpg' %}" alt="Salary icon"><br>
+                {% elif expense.category == "Loan Repayment" %}
+                    <img src="{% static 'images/loan.jpg' %}" alt="Loan Repayment icon"><br>
+                {% elif expense.category == "Outsourcing" %}
+                    <img src="{% static 'images/out.jpg' %}" alt="Outsourcing icon"><br>
+                {% else %}
+                    <img src="{% static 'images/foods.jpg' %}" alt="Default icon"><br> <!-- Fallback image -->
+                {% endif %}                    <h1>{{expense.description}}<br>
+                        <div class="date">{{expense.date}}</div>
+                    </h1>
+                </div>
+
+                <button class="edit-btn" onclick="openModal()" data-id = "{{expense.id}}"> 
+                    <img src="{% static 'images/editicon.png' %}" alt="Edit Icon" class="btn-icon">
+                    <span class="btn-label">Edit</span>
+                </button>
+
+                <div class="project-info">
+                    <h2>{{expense.project_code.code}}</h2>
+                    <p>{{expense.project_code.name}}</p>
+                </div>
+        
+                <!-- Amount Box -->
+                <div class="amount-box">
+                    <h2>Amount</h2>
+                    <div class="amount-value">{{expense.amount}}</div>
+                </div>
+                    
+                   
+                <h4 class="n">Note</h4>
+                <div class="note">
+                    <textarea id="noteTextarea" placeholder="Write something ..." data-expense-id = "{{ expense.id }}"> {{ expense.notes }} </textarea>
+                    <button class="note-edit-button" onclick="toggleFormattingOptions()">Edit</button>
+                    <div class="formatting-options" id="formattingOptions">
+                        <button onclick="formatText('bold')" title="Bold">
+                            <b>B</b>
+                        </button>
+                        <button onclick="formatText('italic')" title="Italic">
+                            <i>I</i>
+                        </button>
+                        <button onclick="formatText('h1')" title="Heading 1">
+                            <b>H1</b>
+                        </button>
+                        <button onclick="formatText('h2')" title="Heading 2">
+                            <b>H2</b>
+                        </button>
+                        <button onclick="formatText('color')" title="Red Text">
+                            <span style="color: red;">A</span>
+                        </button>
+                        <button onclick="formatText('blackColor')" title="Black Text" class="color-button">
+                            <span style="color: black;">A</span>
+                        </button>
+                        <button onclick="formatText('numberedList')" title="Numbered List">
+                            1.
+                        </button>
+                        <button onclick="formatText('points')" title="Bullet Points">
+                            •
+                        </button>
+                        <button class="done-button" onclick="closeFormattingOptions()">Done</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+    
+        <!-- Modal -->
+        <div id="editModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal()">&times;</span> 
+            <h3>Edit</h3>
+                 
+                <form method="post" id="editform">
+                    {% csrf_token %}
+                    <label for="editdate">Date</label>
+                    <input type="date" id="editdate" name="editdate">
+    
+                    <label for="editcategory">Category</label>
+                    <select id="editcategory" name="editcategory">
+                        <option value="">---- </option>
+                        <!-- Options will be dynamically populated -->
+                    </select>
+    
+                    <label for="editdescription">Description</label>
+                    <input type="text" id="editdescription" name="editdescription">
+    
+                    <label for="editamount">Amount</label>
+                    <input type="number" id="editamount"name="editamount">
+
+
+                 <!-- Wrap the label and switch in a div -->
+                 <div id="projectIncomeWrapper">
+                    <label for="addOutsourcing">Project Income</label>
+                    <label class="switch">
+                        <input type="checkbox" id="addOutsourcing" name="outsourcing" onchange="toggleAddOutsourcingDetails()">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <div id="addOutsourcingDetails" style="display: none; margin-top: 10px; align-items: center;">
+                    <label for="editProjectCode" style="font-size:small;">Project Code</label>
+                    <select id="editProjectCode" name="projectCode">
+                        <option value="">Select Project Code</option>
+                        <!-- Options will be dynamically populated -->
+                    </select>
+                </div>
+
+                <script>
+                    function toggleAddOutsourcingDetails() {
+                        const outsourcingDetails = document.getElementById("addOutsourcingDetails");
+                        const toggle = document.getElementById("addOutsourcing");
+                        outsourcingDetails.style.display = toggle.checked ? "block" : "none";
+                    }
+                </script>
+
+                    <div class="form-actions">
+                        <button id="editBtn" class="submit-btn" type="submit">Submit</button>
+                        <button id="cancelBtnEdit" class="cancel-btn" type="button" onclick="closeModal()">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <script>
+            // JavaScript to handle dropdown visibility
+            const profileMenu = document.getElementById('profileMenu');
+            const profileDropdown = document.getElementById('profileDropdown');
+        
+            profileMenu.addEventListener('click', function () {
+                // Toggle dropdown visibility
+                if (profileDropdown.style.display === 'none' || profileDropdown.style.display === '') {
+                    profileDropdown.style.display = 'block';
+                } else {
+                    profileDropdown.style.display = 'none';
+                }
+            });
+        
+            // Close dropdown if clicked outside
+            window.addEventListener('click', function (event) {
+                if (!profileMenu.contains(event.target)) {
+                    profileDropdown.style.display = 'none';
+                }
+            });
+        </script>
+        <script>
+            const sidebar = document.querySelector('.sidebar');
+            const toggleIcon = document.getElementById('toggle-icon');
+            
+            toggleIcon.addEventListener('click', function() {
+              if (sidebar.classList.contains('closed')) {
+                sidebar.classList.remove('closed');
+                toggleIcon.src = "{% static 'images/menuleft.png' %}";  // Change to the "left-chevron" when open
+              } else {
+                sidebar.classList.add('closed');
+                toggleIcon.src = "{% static 'images/menuright.png' %}";  // Change to the "chevron" when closed
+              }
+            });
+          </script>
+          <script>
+            // user icon
+            const username = document.getElementById('name').textContent; 
+            document.querySelector('#userIcon').innerText = username.charAt(0);
+          </script>
+        <script>
+            // Open Modal
+            function openModal() {
+                document.getElementById('editModal').style.display = 'flex';
+            }
+    
+            // Close Modal
+            function closeModal() {
+                document.getElementById('editModal').style.display = 'none';
+            }
+
+            // project code dynamic dropdown
+            document.addEventListener('DOMContentLoaded', function() {
+                var projectCodeDropdown = document.getElementById('projectCode');
+            
+                // Fetch project codes when the page loads
+                fetch('/get_project_codes/')
+                    .then(response => response.json())
+                    .then(data => {
+                        data.forEach(function(item) {
+                            var option = document.createElement('option');
+                            option.value = item.id;
+                            option.text = item.name;
+                            projectCodeDropdown.appendChild(option);
+                        });
+                    })
+                    .catch(error => console.error('Error fetching project codes:', error));
+            });
+
+            ////////////////////////////////////////////////////////
+
+            // project code dynamic dropdown
+            document.addEventListener('DOMContentLoaded', function() {
+                var projectCodeDropdown = document.getElementById('editProjectCode');
+            
+                // Fetch project codes when the page loads
+                fetch('/get_project_codes/')
+                    .then(response => response.json())
+                    .then(data => {
+                        data.forEach(function(item) {
+                            var option = document.createElement('option');
+                            option.value = item.id;
+                            option.text = item.name;
+                            projectCodeDropdown.appendChild(option);
+                        });
+                    })
+                    .catch(error => console.error('Error fetching project codes:', error));
+            });
+
+             // expense category dynamic dropdown for edit form
+             document.addEventListener('DOMContentLoaded', function() {
+                var expense_category = document.getElementById('editcategory');
+            
+                // Fetch project codes when the page loads
+                fetch('/get-unique-category/')
+                    .then(response => response.json())
+                    .then(data => {
+                        data.forEach(function(category) {
+                            var option = document.createElement('option');
+                            option.value = category;
+                            option.text = category;
+                            expense_category.appendChild(option);
+                        });
+                    })
+                    .catch(error => console.error('Error fetching category:', error));
+            });
+
+        </script>
+
+        <script> // edit form
+            $(document).ready(function() {
+                var modal = $('#editModal');
+                var span = $('.close');
+                var cancelBtn = $('#cancelBtn');
+            
+                $.ajaxSetup({
+                    beforeSend: function(xhr, settings) {
+                        if (!this.crossDomain) {
+                            xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+                        }
+                    }
+                });
+            
+                function getCookie(name) {
+                    var cookieValue = null;
+                    if (document.cookie && document.cookie !== '') {
+                        var cookies = document.cookie.split(';');
+                        for (var i = 0; i < cookies.length; i++) {
+                            var cookie = cookies[i].trim();
+                            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                                break;
+                            }
+                        }
+                    }
+                    return cookieValue;
+                }
+            
+                // Close the modal
+                span.on('click', function() {
+                    modal.hide();
+                });
+            
+                cancelBtn.on('click', function() {
+                    modal.hide();
+                });
+            
+                function convertToDate(dateStr) {
+                    const date = new Date(dateStr);
+                    const pad = (num) => (num < 10 ? '0' + num : num);
+                    const localDate = pad(date.getDate()) + '-' +  // Day first
+                                      pad(date.getMonth() + 1) + '-' +  // Month second
+                                      date.getFullYear();  // Year last
+                    return localDate;
+                }
+            
+                function openModal(exp_id) {
+                    if (exp_id) {
+                        $.ajax({
+                            url: '/get_expense_data/' + exp_id + '/',
+                            method: 'GET',
+                            success: function(data) {
+                                $('#editform').attr('data-edit-id', exp_id); // Set the edit code
+                                $('#editdate').val(convertToDate(data.editdate));
+                                $('#editcategory').val(data.editcategory);
+                                $('#editdescription').val(data.editdescription);
+                                $('#editamount').val(data.editamount);  // Corrected to match field name
+                                $('#addOutsourcing').prop('checked', data.editProjectExpense);  // Set checkbox checked state
+
+                                if (data.editProjectExpense) {
+                                    $('#addOutsourcingDetails').show();
+                                }
+                                else{
+                                    $('#addOutsourcingDetails').hide();
+                                }
+
+                                if (data.project_code) {
+                                    $('#editProjectCode').val(data.project_code.id);  // Set the selected value
+                                } else {
+                                    $('#editProjectCode').val('');  // Set to empty if no project is associated
+                                }
+                                modal.show();
+                            },
+                            error: function() {
+                                alert('Failed to fetch data. Please try again.');
+                            }
+                        });
+                    } else {
+                        $('#editform').removeAttr('data-edit-id'); // Clear the edit code for new projects
+                        modal.show();
+                    }
+                }
+            
+                // Attach click event to edit buttons
+                $('.edit-btn').on('click', function(event) {
+                    event.preventDefault(); // Prevent default link behavior
+                    var id = $(this).data('id'); // Get the project code from the button
+                    openModal(id);
+                });
+            
+                $('#editform').on('submit', function(event) {
+                    event.preventDefault();
+
+                     // Convert the date from dd-mm-yyyy to yyyy-mm-dd
+                     var dateField = $('#editdate');  // Select the date field
+                     var dateValue = dateField.val();
+                     var convertedDate = convertToBackendDate(dateValue);
+                     dateField.val(convertedDate);  // Set the new converted date value back to the field
+    
+                     
+                    var id = $('#editform').attr('data-edit-id'); // Get the edit code
+                    var url = '/edit_expense/' + (id ? id + '/' : ''); // Ensure URL includes code if available
+                    
+                    var serializedData = $(this).serialize();
+                    console.log("data" ,serializedData);
+                    $.ajax({
+                        url: url,
+                        method: 'POST',
+                        data: $(this).serialize(),
+                        success: function(response) {
+                            if (response.success) {
+                                alert('Form submitted successfully!');
+                                modal.hide();
+                                location.reload();  // Reload the page to reflect changes
+                            } else {
+                                alert('Failed to submit form: ' + response.error);
+                            }
+                        },
+                        error: function() {
+                            alert('An error occurred. Please try again.');
+                        }
+                    });
+                });
+            });
+            </script>
+
+            <!-- text box saving code-->
+            <script>
+                $(document).ready(function() {
+                    $('#noteTextarea').on('blur', function() {
+                        var notes = $(this).val();  // Get the text value from the textbox
+                        var expenseId = $(this).data('expense-id');  // Get the expense ID
+            
+                        // Send the data to the backend using AJAX
+                        $.ajax({
+                            url: '/save-expense-notes/',  // URL to your Django view
+                            type: 'POST',
+                            data: {
+                                'expense_id': expenseId,
+                                'notes': notes,
+                                'csrfmiddlewaretoken': '{{ csrf_token }}'  // Include CSRF token for security
+                            },
+                            success: function(response) {
+                                console.log('Notes saved successfully');
+                            },
+                            error: function(xhr, errmsg, err) {
+                                console.error('Error saving notes');
+                            }
+                        });
+                    });
+                });
+            </script>
+
+            <script>
+                function convertToBackendDate(dateStr) {
+                    const parts = dateStr.split('-');
+                    return `${parts[2]}-${parts[1]}-${parts[0]}`;  // Rearrange to yyyy-mm-dd
+                }
+            </script>
+
+            <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script>
+        config={
+            enableTime:false,
+            dateFormat: "d-m-Y"
+
+        }
+        flatpickr("input[type=date]",config);
+    </script>
+            
+     <!--
+    <script>
+
+function insertText(textarea, text, start, end) {
+    const beforeText = textarea.value.substring(0, start);
+    const afterText = textarea.value.substring(end);
+    textarea.value = beforeText + text + afterText;
+    textarea.focus();
+    // Set cursor position after the inserted text
+    const newPosition = start + text.length;
+    textarea.setSelectionRange(newPosition, newPosition);
+}
+// First, make the textarea into a contenteditable div for rich text editing
+document.addEventListener('DOMContentLoaded', function() {
+    // Replace textarea with contenteditable div
+    const textarea = document.getElementById('noteTextarea');
+    const div = document.createElement('div');
+    div.id = 'noteTextarea';
+    div.className = textarea.className;
+    div.contentEditable = true;
+    div.style.minHeight = '100px';
+    div.style.padding = '10px';
+    div.style.border = '1px solid #ddd';
+    div.style.borderRadius = '5px';
+    div.style.outline = 'none';
+    div.style.overflowY = 'auto';
+    div.style.fontFamily = 'Arial, sans-serif';
+    div.innerHTML = textarea.value || 'Write something ...';
+    textarea.parentNode.replaceChild(div, textarea);
+});
+
+function formatText(action) {
+    // Save current selection
+    const selection = window.getSelection();
+    const range = selection.getRangeAt(0);
+
+    // Focus the contenteditable div
+    const editor = document.getElementById('noteTextarea');
+    editor.focus();
+
+    switch (action) {
+        case 'bold':
+            document.execCommand('bold', false, null);
+            break;
+
+        case 'italic':
+            document.execCommand('italic', false, null);
+            break;
+
+        case 'h1':
+            formatHeading('h1');
+            break;
+
+        case 'h2':
+            formatHeading('h2');
+            break;
+
+        case 'color':
+            document.execCommand('foreColor', false, 'red');
+            break;
+
+        case 'blackColor':
+            document.execCommand('foreColor', false, 'black');
+        break;
+
+        case 'numberedList':
+            document.execCommand('insertOrderedList', false, null);
+            break;
+
+        case 'points':
+            document.execCommand('insertUnorderedList', false, null);
+            break;
+    }
+}
+
+function formatHeading(level) {
+    const editor = document.getElementById('noteTextarea');
+    const selection = window.getSelection();
+    const range = selection.getRangeAt(0);
+
+    // Get the current line
+    let container = range.commonAncestorContainer;
+    while (container && container.nodeType !== 1) {
+        container = container.parentNode;
+    }
+
+    // If we're already in a heading of the same level, remove it
+    if (container && container.tagName.toLowerCase() === level) {
+        const p = document.createElement('p');
+        p.innerHTML = container.innerHTML;
+        container.parentNode.replaceChild(p, container);
+    } else {
+        // Create new heading
+        document.execCommand('formatBlock', false, level);
+    }
+}
+function formatHeading(level) {
+    const editor = document.getElementById('noteTextarea');
+    const selection = window.getSelection();
+    const range = selection.getRangeAt(0);
+
+    // Get the current line
+    let container = range.commonAncestorContainer;
+    while (container && container.nodeType !== 1) {
+        container = container.parentNode;
+    }
+if (container && container.tagName.toLowerCase() === level) {
+        const p = document.createElement('p');
+        p.innerHTML = container.innerHTML;
+        container.parentNode.replaceChild(p, container);
+    } else {
+        // Create new heading
+        document.execCommand('formatBlock', false, level);
+    }
+}
+// Update the toggle and close functions
+function toggleFormattingOptions() {
+    const options = document.getElementById('formattingOptions');
+    options.style.display = options.style.display === 'flex' ? 'none' : 'flex';
+}
+
+function closeFormattingOptions() {
+    document.getElementById('formattingOptions').style.display = 'none';
+}
+
+// Add placeholder behavior
+document.addEventListener('DOMContentLoaded', function() {
+    const editor = document.getElementById('noteTextarea');
+    const placeholder = 'Write something ...';
+
+    editor.addEventListener('focus', function() {
+        if (editor.innerHTML === placeholder) {
+            editor.innerHTML = '';
+        }
+    });
+
+    editor.addEventListener('blur', function() {
+        if (editor.innerHTML === '') {
+            editor.innerHTML = placeholder;
+        }
+    });
+});
+
+// Helper function to get form data including rich text
+function getFormData() {
+    const editor = document.getElementById('noteTextarea');
+    const content = editor.innerHTML;
+    // You can now use 'content' which will contain the HTML formatted text
+    return content;
+}
+
+function previewFormattedText() {
+    const textarea = document.getElementById('noteTextarea');
+    let formattedText = textarea.value;
+    
+    // Convert markdown-style formatting to HTML
+    formattedText = formattedText
+        // Convert bold
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        // Convert italic
+        .replace(/\*(.*?)\*/g, '<em>$1</em>')
+        // Convert h1
+        .replace(/^# (.*$)/gm, '<h1>$1</h1>')
+        // Convert h2
+        .replace(/^## (.*$)/gm, '<h2>$1</h2>')
+        // Keep HTML color spans as they are
+        // Convert bullet points
+        .replace(/^• (.*$)/gm, '<li>$1</li>')
+        // Convert numbered lists
+        .replace(/^\d+\. (.*$)/gm, '<li>$1</li>');
+
+    // If you want to add a preview element:
+    // const previewDiv = document.getElementById('preview');
+    // if (previewDiv) {
+    //     previewDiv.innerHTML = formattedText;
+    // }
+} 
+
+    </script>
+
+            
+    </body>
+    </html>

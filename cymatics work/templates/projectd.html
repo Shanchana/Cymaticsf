@@ -1,0 +1,1867 @@
+{% load static %}
+{% static "images" as baseurl %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Details</title>
+    <link rel="stylesheet" type="text/css" href="https://npmcdn.com/flatpickr/dist/themes/dark.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        height: 100vh;
+        flex-direction: column;
+    }
+    .container {
+        display: flex;
+        width: 100%;
+        flex-grow: 1;
+    }
+    .sidebar {
+        background-color: #1e1e1e;
+        color: white;
+        width: 250px;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: center;
+        transition: width 0.3s;
+        position: relative;
+    }
+    
+    .sidebar.closed {
+        width: 60px;
+    }
+    .sidebar .toggle-icon {
+        position: absolute;
+        top: 25px !important; /* Aligned near the top */
+        right: -8px; /* Adjusted to be right on the edge line */
+        cursor: pointer;
+        visibility: hidden;
+        border: 3px solid rgba(78, 27, 231, 0.5); /* Light border */
+        border-radius: 8px;
+        padding: 1px;
+        transition: visibility 0.3s ease-in-out, top 0.3s ease-in-out; /* Smooth transitions */
+        z-index: 2;
+    }
+    #toggle-icon {
+        width: 20px;
+        height: 20px;
+    }
+    
+    
+    /* Adjust position for closed state to avoid overlap */
+    .sidebar.closed .toggle-icon {
+        top: 10px;
+        right: -8px; /* Keep it on the edge even when closed */
+    }
+    
+    /* Show icon when hovering near the sidebar or over the icon */
+    .sidebar:hover .toggle-icon, .toggle-icon:hover {
+        visibility: visible;
+    }
+    
+    .sidebar .logo {
+        padding: 20px;
+        text-align: center;
+    }
+    .sidebar.closed .logo {
+        display: none;
+    }
+    
+    .sidebar nav ul {
+        list-style: none;
+        padding: 0;
+        width: 100%;
+        text-align: center;
+    }
+    
+    .sidebar nav ul li {
+        padding: 12px 20px;
+        cursor: pointer;
+        transition: background-color 0.3s, border-left 0.3s;
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+    }
+    .sidebar.closed nav ul li {
+        justify-content: center;
+    }
+    
+    .sidebar nav ul li a {
+        display: flex;
+        align-items: center;
+        text-decoration: none;
+        color: white;
+        width: 100%;
+        font-family: Arial, sans-serif;
+    }
+    
+    .sidebar nav ul li a:hover {
+        background-color: #555;
+        border-left: 4px solid #ffcc00;
+    }
+    .menu-icon {
+        margin-right: 10px;
+        width: 24px;
+        height: 24px;
+    }
+    
+    .menu-text {
+        transition: opacity 0.3s, visibility 0.3s;
+        font-family: Arial, sans-serif;
+    }
+    
+    .sidebar.closed .menu-text {
+        display: none;
+    }
+    
+    .sidebar.closed nav ul li:hover {
+        background-color: inherit;
+    }
+
+
+  .main-content {
+      flex-grow: 1;
+      background-color: #f1f1f1;
+      padding: 20px;
+      position: relative; /* Required for positioning the form */
+  } 
+  
+  .dropdown ul {
+    list-style: none;
+ padding: 0;
+ margin: 0;
+}
+.profile-section {
+ position: relative;
+ padding: 12px 20px;
+ cursor: pointer;
+ transition: background-color 0.3s, border-left 0.3s;
+}
+.profile-section:hover {
+ background-color: #555;
+ border-left: 4px solid #ffcc00;
+}
+.dropdown {
+ position: absolute;
+ bottom: 100%;
+ left: 0;
+ background-color: white;
+ border: 1px solid #ccc;
+ border-radius: 4px;
+ z-index: 1000;
+ width: 160px;
+ box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+ display: none;
+}
+.dropdown li {
+ padding: 10px;
+ color: black;
+ cursor: pointer;
+}
+.dropdown li:hover {
+ background-color: #f1f1f1;
+}
+  .user-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #ddd;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    font-size: 18px;
+    color: #0e0e0e;
+    background-color: #e1ecb8;
+
+}
+  .project-header .row {
+    display: flex;
+    align-items: center; /* Align items vertically in the row */
+}
+  .project-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px; /* Space between image and details */
+}
+.project-header .map-image {
+    width: 100px; /* Adjust width as necessary */
+    height: auto; /* Maintain aspect ratio */
+    margin-right: 10px; /* Space between image and text */
+}
+.project-details {
+    flex: 1;
+}
+
+.project-title {
+    font-size: 30px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    margin-top: 10px;
+}
+
+.project-status {
+    color: rgb(0, 0, 0);
+    margin-bottom: 10px;
+}
+
+.edit-button {
+    background-color: #000;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 20px;
+}
+.project-details {
+background-color: white;
+padding: 20px;
+border-radius: 8px;
+margin-top: 20px;
+}
+.project-details img {
+width: 40%;
+height: 300px;
+object-fit: cover;
+margin-bottom: 10px;
+
+}
+.project-info {
+margin-top: 20px;
+}
+.info-row {
+display: flex;
+justify-content: space-between;
+padding: 10px 0;
+border-bottom: 1px solid #eee;
+align-items: center;
+}
+.info-row:last-child {
+border-bottom: none;
+}
+.info-label {
+font-weight: bold;
+}
+.info-llabel {
+font-weight:medium;
+margin-top: -10px; 
+color:#9a9595;
+}
+.received-bar-container {
+width: 100%;
+background-color: #e0e0e0;
+border-radius: 4px;
+overflow: hidden;
+margin: 5px 0;
+height: 13px;
+}
+.received-bar {
+height: 15px;
+background-color: #030303;
+width: 70%;
+text-align: right;
+padding-right: 5px;
+color: white;
+line-height: 15px;
+}
+.contact-buttons {
+display: flex;
+justify-content: flex-end;
+margin-bottom: 50px;
+margin-top: 10px;
+margin-left:1000px;
+}
+.contact-buttons button {
+padding: 10px 20px;
+margin-left: 10px;
+border: none;
+border-radius: 4px;
+cursor: pointer;
+}
+.contact-buttons button.call,
+.contact-buttons button.sms,
+.contact-buttons button.map,
+.contact-buttons button.copy {
+background-color: #000;
+color: white;
+}
+.file {
+display: inline-flex;
+justify-content: space-between;
+padding: 1px;
+border: 1px solid #ccc;
+border-radius: 2px;
+margin-top: 5px;
+align-items: center;
+color: #000;
+}
+.file img {
+width: 50%;
+height: 30px;
+object-fit: cover;
+margin-bottom: 5px;
+padding: 20px;
+}
+
+.rating {
+display: flex;
+justify-content: space-between;
+padding: 10px;
+border: 1px solid #ccc;
+border-radius: 10px;
+margin-top: 30px;
+align-items: center;
+padding-right: 400px;
+flex-direction: column;
+width: 200px;
+
+}
+.expense{
+display: flex;
+justify-content: space-between;
+padding: 20px;
+border: 1px solid #ccc;
+border-radius: 10px;
+margin-top: 30px;
+align-items: center;
+padding-right: 100px;   
+}
+.expense1{
+display: flex;
+justify-content: space-between;
+padding: 20px;
+border: 1px solid #ccc;
+border-radius: 10px;
+margin-top: 30px;
+align-items: center;
+padding-right: 100px;
+
+}
+.expense2{
+display: flex;
+justify-content: space-between;
+padding: 20px;
+border: 1px solid #ccc;
+border-radius: 10px;
+margin-top: 30px;
+align-items: center;
+padding-right: 100px;
+
+}
+
+.profit{
+display: flex;
+justify-content: space-between;
+padding: 20px;
+border: 1px solid #ccc;
+border-radius: 10px;
+margin-top: 30px;
+align-items: center;
+padding-right: 30px;
+margin-right:620px;
+font-size: 25px;
+color:#000000;
+
+}
+.profit1 span{
+color:#ababab;
+font-size: medium;
+}
+
+.indiv{
+padding-left: 35px; 
+justify-content: space-between; 
+border-radius: 4px;
+}
+.rating .stars {
+display: flex;
+justify-content: center;
+align-items: center;
+}
+.rating .stars img {
+font-size: 10px;
+color: #616161;
+margin-right: 5px;
+height: 50px;
+width: 51%;
+}
+/* Modal styles */
+.modal {
+display: none;
+position: fixed;
+z-index: 1;
+left: 0;
+top: 0;
+width: 100%;
+height: 100%;
+overflow: auto;
+background-color: rgba(0, 0, 0, 0.4);
+}
+.modal-content {
+background-color: #fefefe;
+margin: 10% auto;
+padding: 20px;
+border: 1px solid #888;
+width: 420px;
+border-radius: 8px;
+}
+.close {
+color: #aaa;
+float: right;
+font-size: 28px;
+font-weight: bold;
+}
+.close:hover,
+.close:focus {
+color: black;
+text-decoration: none;
+cursor: pointer;
+}
+
+.expense-container {
+display: flex;
+flex-direction: column; /* Stack items vertically */
+padding: 20px;
+border: 1px solid #242424;
+margin: 20px;
+border-radius: 10px;
+background-color: #000000;
+}
+
+.expense-item {
+display: flex;
+align-items: center; /* Align items vertically center */
+padding: 10px 0;
+border-bottom: 1px solid #333; /* Optional: Add border between items */
+position: relative; /* Position relative for the arrow positioning */
+}
+
+.expense-item:last-child {
+border-bottom: none; /* Remove border for the last item */
+}
+
+.expense-container .icon img {
+width: 50px;
+height: 50px;
+margin-right: 15px; /* Space between icon and details */
+}
+
+.expense-container .expense-details {
+flex: 1; /* Take up remaining space */
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+}
+
+.expense-container .arrow {
+font-size: 20px;
+color: #ebe8e8;
+margin-left: 15px; /* Space between details and arrow */
+position: absolute; /* Position absolute for correct placement */
+right: 0; /* Align to the right */
+}
+
+
+
+.icon {
+width: 50px;
+height: 50px;
+margin-right: 25px;
+}
+.icon img {
+width: 100%;
+height: 100%;
+margin-right: 25px;
+}
+.expense-details {
+flex: 1;
+margin-right: auto;
+}
+.exd{
+display: flex;
+justify-content: space-between;
+padding: 10px;
+border-bottom: 1px solid #333;
+font-size: 18px;
+color: white;
+font-weight: bold;
+margin-bottom: 10px;
+}
+
+
+.amount {
+font-size: 10px;
+font-weight:medium;
+color: white;
+}
+.category {
+font-size: 17px;
+color: white;
+}
+.subcategory {
+font-size: 15px;
+color: #aaa;
+}
+.sub{
+font-size: 17px;
+color: #fff; 
+}
+.arrow a {
+color: inherit;
+text-decoration: none;
+}
+
+.arrow {
+font-size: 20px;
+color: #ebe8e8;
+margin-left: 15px;
+position: absolute;
+right: 0;
+}
+
+.form-actions {
+display: flex;
+justify-content: flex-end;
+margin-top: 20px;
+}
+.form-actions button {
+margin-left: 10px;
+}
+#editForm {
+display: flex;
+flex-direction: column;
+}
+#editForm label {
+margin-top: 10px;
+}
+#editForm input,
+#editForm select {
+padding: 8px;
+margin-top: 5px;
+border: 1px solid #ccc;
+border-radius: 4px;
+}
+#editForm button {
+padding: 10px;
+margin-top: 20px;
+background-color: #000000;
+color: #fff;
+border: none;
+border-radius: 4px;
+cursor: pointer;
+}
+#editForm button:hover {
+background-color: #555;
+}
+
+#editForm button[type="button"] {
+    background-color: #ffffff;
+    color: rgb(0, 0, 0);
+    border: 1px solid #888;
+}
+
+.close {
+color: #aaa;
+float: right;
+font-size: 28px;
+font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+color: black;
+text-decoration: none;
+cursor: pointer;
+}
+
+
+.info-row {
+display: flex;
+justify-content: space-between;
+padding: 30px 0;
+border-bottom: 1px solid #eee; 
+}
+
+.info-row2 {
+display: flex;
+justify-content: space-between;
+padding: 10px 0;
+border-bottom: 1px solid #eee; 
+}
+
+.container1 {
+background-color: #fff;
+padding: 20px;
+border-radius: 8px;
+box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+max-width: 800px;
+margin: auto;
+}
+.inforow {
+display: flex;
+justify-content: space-between;
+align-items: center;
+margin-bottom: 20px;
+padding-bottom: 10px;
+padding-top: 10px;
+}
+.inforow .text {
+display: flex;
+flex-direction: column;
+}
+.inforow .text .name {
+font-size: 14px;
+color:#808080;
+}
+.inforow.text.phone-number{
+font-size: 19px;
+color: #000000;
+margin-top: 10px;
+font-weight: bolder;
+}
+.inforow .text .location {
+font-size: 14px;
+color:#9a9595;
+margin-top: 10px;
+}
+
+.inforow button {
+background-color: #e4e1e1;
+color: rgb(0, 0, 0);
+border: none;
+padding: 5px 15px;
+border-radius: 25px;
+cursor: pointer;
+margin-left: 10px;
+
+}
+.inforow button img {
+width: 20px; /* Adjust icon size */
+height: 20px; /* Adjust icon size */
+margin-right: 10px; /* Space between icon and text */
+padding-left:10px;
+margin-bottom: auto;
+}
+
+.filesrow {
+display: flex;
+justify-content: space-between;
+align-items: center;
+margin-top: 20px; /* Changed margin to only top */
+}
+
+.filesrow button {
+display: flex;
+align-items: center; /* Center the icon and text vertically */
+justify-content: center; /* Center the icon and text horizontally */
+color: white; /* Text color for buttons */
+border: 1px solid #d0d0d0; /* Border for buttons */
+padding: 10px 20px; /* Padding for buttons */
+border-radius: 4px; /* Rounded corners */
+cursor: pointer; /* Cursor on hover */
+flex: 1; /* Allow buttons to grow */
+margin: 0 5px; /* Space between buttons */
+font-weight: bold;
+}
+
+.files-button {
+background-color: black; /* Black background for Files button */
+}
+
+.share-button,
+.copy-button {
+background-color: white; /* White background for Share and Copy buttons */
+color: black; /* Text color for Share and Copy buttons */
+}
+
+.filesrow button img {
+width: 20px; /* Adjust icon size */
+height: 20px; /* Adjust icon size */
+margin-right: 10px; /* Space between icon and text */
+}
+
+.filesrow button:last-child {
+margin-right: 0; /* No margin on the last button */
+}
+.info-row:last-child {
+border-bottom: none;
+}
+.infolabel {
+font-weight: 200;
+font-size: 16px;
+margin-top: 18px;
+margin-left: 22px;
+color:#616161;
+}
+.inform{
+display: flex;
+justify-content: space-between;
+padding: 15px 0;
+border-bottom: 1px solid #eee;
+font-size:small;
+color:#555;
+}
+.inform-label {
+font-weight: bold;
+margin-top: 25px;
+font-size:medium;
+color:#000
+}
+.info{
+display: flex;
+justify-content: space-between; /* Distributes items evenly with space in between */
+padding: 25px 0;
+border-bottom: 1px solid #eee;
+}
+.info-item {
+flex: 1; /* Allows items to grow and fill the available space equally */
+text-align: center; /* Centers the text within each item */
+font-size: large;
+font-weight: 550;
+color: #242424;
+}
+
+.info-item2 {
+flex: 1; /* Allows items to grow and fill the available space equally */
+text-align: center; /* Centers the text within each item */
+color:#9a9595;
+}
+.rating {
+display: flex;
+justify-content: space-between;
+padding: 5px;
+border: none;
+border-radius: 4px;
+margin-top: 20px;
+align-items: center;
+
+}
+
+
+.rating .stars {
+display: flex;
+justify-content: center;
+align-items: center;
+}
+.rating .stars i {
+font-size: 30px;
+color: #ccc;
+margin-right: 5px;
+cursor: pointer;
+}
+.rating .stars i.filled {
+color: rgb(0, 0, 0);}
+
+.button img {
+width: 50%;
+height: 30px;
+object-fit: cover;
+margin-bottom: 5px;
+padding: 20px;
+}
+.container2 {
+background-color: #fff;
+padding: 30px;
+border-radius: 8px;
+box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+border: 1px solid #ccc;
+width: 100%;
+max-width: 1140px;
+padding-top: 30px;
+margin-top: 18px;
+margin-bottom: 30px; /* Add margin to the bottom for spacing */
+}
+
+.info-row1 {
+display: flex;
+justify-content: space-between;
+gap: 30px; /* Adds spacing between the columns */
+margin-bottom: 20px; /* Add margin between rows */
+}
+
+.info-item1 {
+flex: 1; /* Distributes columns evenly */
+font-size: 16px;
+color: #333;
+text-align:left; /* Centers the text in each column */
+}
+
+.info-item1 span {
+font-weight: medium;
+color: #9a9595;
+display: block;
+margin-bottom: 5px; /* Adds space between label and value */
+}
+
+.project-header .map-image {
+width: 100%; 
+height: auto; 
+margin-right: 20px; 
+}
+.row {
+display: flex;
+align-items: center; 
+}
+.info-llabel {
+font-weight: medium;
+margin-top: -10px;
+color:#9a9595;
+}
+
+.info-llabel1{
+color:#2c2c2c;
+}
+
+/* Outsourcing Section Styles */
+#outsourcingDetails {
+margin-top: 10px;
+}
+
+#outsourcingDetails label {
+display: block;
+margin-top: 10px;
+font-weight: medium;
+}
+
+#outsourcingDetails select,
+#outsourcingDetails input[type="number"] {
+width: 100%;
+padding: 8px;
+margin-top: 5px;
+border: 1px solid #ccc;
+border-radius: 4px;
+}
+
+.switch {
+position: relative;
+display: inline-block;
+width: 34px;
+height: 20px;
+}
+
+.switch input {
+opacity: 0;
+width: 0;
+height: 0;
+}
+
+.slider {
+position: absolute;
+cursor: pointer;
+top: 0;
+left: 0;
+right: 0;
+bottom: 0;
+background-color: #ccc;
+transition: .4s;
+border-radius: 20px;
+}
+
+.slider:before {
+position: absolute;
+content: "";
+height: 16px;
+width: 16px;
+left: 2px;
+bottom: 2px;
+background-color: white;
+border-radius: 50%;
+transition: .4s;
+}
+
+input:checked + .slider {
+background-color: #000000;
+}
+
+input:checked + .slider:before {
+transform: translateX(14px);
+}
+
+.modal-content h3 {
+text-align: center;
+font-size: 20px; /* Adjust as needed */
+margin-bottom: 20px; 
+}
+
+#outsourcingAmount {
+width: 100% !important; /* Ensure this width is applied */
+max-width: 100% !important; /* Limit the width */
+box-sizing: border-box; /* Ensure padding is included in the width */
+}
+.btn-check {
+display: none; /* Hide the checkbox */
+}
+
+.btn-primary {
+background-color: #ffffff !important; /* Ensure white background */
+color: black !important; /* Ensure black text */
+border: 2px solid #ccc;
+border-radius: 10px;
+padding: 10px 15px;
+cursor: pointer;
+margin: 5px; /* Add margin to create gaps */
+transition: background-color 0.3s, color 0.3s, border-color 0.3s, box-shadow 0.3s;
+font-weight: bold;
+font-size: 14px;
+box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.btn-primary.active {
+background-color: #000000; /* Even darker blue */
+border-color: #000000; /* Keep the border color */
+color: white;
+box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+#statusButtons {
+display: flex; /* Align buttons in a row */
+justify-content: flex-start; /* Align to the start */
+}
+.modal-content h2 {
+    text-align: center;
+    font-size: 20px; /* Adjust as needed */
+    margin-bottom: 20px; 
+   }
+
+   .map-link {
+    width: 200px;  
+    height: 150px; 
+    display: flex;  
+    align-items: center;  
+    justify-content: center; 
+    overflow: hidden; 
+}
+
+</style>
+
+</head>
+<body>
+
+    <body>
+        <div class="container">
+            <aside class="sidebar">
+                <div class="toggle-icon">
+                    <img src="{% static 'images/menuleft.png' %}" alt="icon" id="toggle-icon" width="16" height="16">
+                </div>
+                <div class="logo">
+                    <img src="{% static 'images/logowhite.png' %}" alt="logo" width="50" height="50">
+                </div>
+                <nav>
+                    <ul>
+                        <li class="menu-item"><a href="{% url 'dashboard' %}"><img src="{% static 'images/dashboard.png' %}" class="menu-icon"><span class="menu-text">Dashboard</span></a></li>
+                        <li class="menu-item"><a href="{% url 'projects' %}"><img src="{% static 'images/project.png' %}" class="menu-icon"><span class="menu-text">Project</span></a></li>
+                        <li class="menu-item"><a href="{% url 'incomef_view' %}"><img src="{% static 'images/income.png' %}" class="menu-icon"><span class="menu-text">Income</span></a></li>
+                        <li class="menu-item"><a href="{% url 'expense' %}"><img src="{% static 'images/expenses.png' %}" class="menu-icon"><span class="menu-text">Expense</span></a></li>
+                        <li class="menu-item"><a href="{% url 'calendar' %}"><img src="{% static 'images/calendar.png' %}" class="menu-icon"><span class="menu-text">Calendar</span></a></li>
+                        <li class="menu-item"><a href="{% url 'allproject' %}"><img src="{% static 'images/All projects.png' %}" class="menu-icon"><span class="menu-text">All Projects</span></a></li>
+                        <li class="menu-item"><a href="{% url 'clientsbook' %}"><img src="{% static 'images/clientsbook.png' %}" class="menu-icon"><span class="menu-text">Clients Book</span></a></li>
+                        <li class="menu-item"><a href="{% url 'clients' %}"><img src="{% static 'images/Clients.png' %}" class="menu-icon"><span class="menu-text">Clients</span></a></li>
+                        <li class="menu-item"><a href="{% url 'status' %}"><img src="{% static 'images/status.png' %}" class="menu-icon"><span class="menu-text">Status</span></a></li>
+                        <li class="menu-item active"><a href="{% url 'pending_pay' %}"><img src="{% static 'images/pending.png' %}" class="menu-icon"><span class="menu-text">Pending Payments</span></a></li>
+                        <li class="menu-item"><a href="{% url 'project_map' %}"><img src="{% static 'images/map.png' %}" class="menu-icon"><span class="menu-text">Map</span></a></li>
+                        <li class="menu-item"><a href="{% url 'assets' %}"><img src="{% static 'images/Assets.png' %}" class="menu-icon"><span class="menu-text">Assets</span></a></li>
+                        <li class="menu-item"><a href="{% url 'budget' %}"><img src="{% static 'images/budget.png' %}" class="menu-icon"><span class="menu-text">Budget</span></a></li>
+                        <li class="menu-item"><a href="{% url 'entertainment' %}"><img src="{% static 'images/Entertainment.png' %}" class="menu-icon"><span class="menu-text">Entertainment</span></a></li>
+                    </ul>
+                </nav>
+                <div class="profile-section" id="profileMenu">
+                    <div class="user-icon" id="userIcon">
+
+                  </div>
+
+                    <span class="menu-text" id="name">{{ user.username }}</span>
+                    <div class="dropdown" id="profileDropdown">
+                        <ul>
+                            <li><a href="{% url 'profile' %}">View Profile</a></li>
+                            <li><a href="{% url 'logout_view' %}">Sign Out</a></li>
+                        </ul>
+                    </div>
+                  </div>
+            </aside>
+            <div class="main-content">
+                <div class="project-header">
+                    <div class="row">
+                        <a href="https://www.google.com/maps/search/?api=1&query={{ objs.location }}" target="_blank" class="map-link">
+                        <img src="" alt="Map" class="map-image" id="map-1" data-address="{{ objs.location }}">
+                        </a>
+                        <div>
+                            <h4>{{ objs.code }}</h4>
+                            <div class="project-title">{{ objs.name }}</div>
+                            <div class="project-status">{{objs.status }}</div>
+                            
+                            {% if is_admin %}
+                            <button class="edit-button" data-code="{{objs.code}}">Edit</button>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="project-details">
+                    <div class="project-info">
+
+                        {% if is_admin %}
+                        <div class="info-row">
+                            <div class="info-llabel" style="margin-top: -50px;">Pending Amount<br>
+                            <div class="info-llabel1"><b>{{objs.pending_amt}}</b></div></div>
+                        </div>
+                       
+        
+                        <div class="info-row">
+                            <div class="info-label">Received Amount</div>
+                            <div class="received-bar-container">
+                                <div class="received-bar" id="receivedBar">50%</div>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        <div class="info">
+                            <div class="info-item2">{{ objs.type }}</div>
+                            <div class="info-item">{{ objs.company }}</div>
+
+                            {% if is_admin %}
+                            <div class="info-item"><p id="projectAmountDis">{{ objs.amount }} </p></div>
+                            {% endif %}
+
+                        </div>
+                        
+                        <div class="inforow">
+                            <div class="text">
+                                <div class="phone-number"><b>{{ objs.client.number }}</b></div>
+                                <div class="name">{{ objs.client.name }}</div>
+                            </div>
+                            <div>
+                                <button onclick="window.location.href='tel:{{ objs.client.number }}'">
+                                    <img src="{% static 'images/call.png' %}" alt="Call Icon"><b>Call</b>
+                                </button>
+                                <button onclick="window.location.href='sms:{{ objs.client.number }}'">
+                                    <img src="{% static 'images/sms.png' %}" alt="SMS Icon"><b>SMS</b>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="inforow">
+                            <div class="text">
+                                <div class="loc"><b>Location</b></div>
+                                <div class="location">{{ objs.location }}</div>
+                            </div>
+                            <div>
+                                <button onclick="openMap('{{ objs.location }}')">
+                                    <img src="{% static 'images/map-p.png' %}" alt="Map Icon" class="menu-icon"><b>Map</b>
+                                </button>
+                                <button onclick="copyToClipboard('{{ objs.location }}')">
+                                    <img src="{% static 'images/copy.png' %}" alt="Copy Icon"><b>Copy</b>
+                                </button>
+                            </div>
+                        </div>
+                        
+
+                        <div class="filesrow">
+                            <button class="files-button">
+                                <img src="{% static 'images/Files.png' %}" alt="File Icon" class="file-icon">
+                            </button>
+                            <button class="share-button">
+                                <img src="{% static 'images/share.png' %}" alt="Share Icon" class="file-icon">Share
+                            </button>
+                            <button class="copy-button">
+                                <img src="{% static 'images/copy.png' %}" alt="Copy Icon" class="file-icon">Copy
+                            </button>
+                        </div>
+                    </div>
+            
+                
+                    <div class="container2">
+                        <div class="info-row1">
+                            <div class="info-item1">
+                                <span>Shoot Start</span> <br>{{objs.shoot_start_date}}
+                            </div>
+                            <div class="info-item1">
+                                <span>Shoot End</span> <br>{{objs.shoot_end_date}}
+                            </div>
+
+                            {% if is_admin %}
+                            <div class="info-item1">
+                                <span>Received Amount</span> <br><p id="receivedAmountDis">₹{{objs.received_amt}} </p>
+                            </div>
+                            {% endif %}
+                            
+                        </div>
+
+                        {% if is_admin %}
+
+                        {% if not objs.outsourcing %}
+                        <div class="info-row1">
+                            <div class="info-item1">
+                                <span>Expense</span> <br>₹{{totalex}}
+                            </div> 
+                        </div>
+                        </div>
+                        {% endif %}
+                        {% endif %}
+
+                        
+
+                        {% if objs.outsourcing %}
+                        {% if is_admin %}
+
+                        <div class="info-row1">
+                            <div class="info-item1">
+                                <span>Expense</span> <br>₹{{totalex}}
+                            </div> 
+                            <div class="info-item1">
+                                <span>Outsourcing Amount</span> <br>₹{{objs.outsourcing_amt}}
+                            </div>
+                            <div class="info-item1">
+                                <span>Outsourcing Paid</span> <br>
+                                {% if objs.outsourcing_paid %}
+                                {{objs.outsourcing_paid}}
+                                {% else %}
+                                False
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        <div class="info-row1">
+                            <div class="info-item1">
+                                <span>Outsourcing Company</span> <br>{{outcd.company}}
+                            </div>
+                            <div class="info-item1">
+                                <span>Outsourcing phone</span> <br>{{outcd.number}}
+                            </div>
+                            <div class="info-item1">
+                                <span>Outsourcing Customer Name</span> <br>{{objs.out_client}}
+                            </div>
+                        </div>
+                        
+                    </div>
+                    <span>{{objs.out_client}}</span><br>
+                    <span>Outsourcing Customer Name</span>
+                    {% endif %}
+
+                    {% if is_admin %}
+
+                    <div class="profit">
+                        <div class="profit1">
+                            <span>Profit</span><br>
+                            <b>₹{{objs.profit}}</b></div>
+                    </div>
+                    {% endif %}
+        
+                    
+                </div>
+              
+            {% if is_admin %}
+            
+            <div class="expense-container">
+
+                <div class="exd">
+                    <div class="sub">Expenses <br>₹{{totalex}}</div>
+                </div>
+                
+                {% for expense in expenses %}
+                <div class="expense-item" onclick="moveToExpensePage('{{ expense.id }}')" style="cursor: pointer;">
+                <div class="icon">
+                    <img src="fuel.png" alt="Fuel Icon">
+                </div>
+                    <div class="expense-details">
+                        
+                    <div class="amount">₹{{expense.amount}}</div>
+                    <div class="category">{{expense.category}}</div>
+                    <div class="subcategory">{{expense.description}}</div>
+                </div>
+                <div class="arrow"><a href="expense-details.html"></a></div>
+            </div>
+                {% endfor %}
+
+           
+        </div>
+        {% endif %}
+
+    <!-- Modal for Edit Form -->
+<div id="editModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeEditModal()">&times;</span>
+        <h2>Edit</h2>
+        <form id="editForm" method="post">
+            <label for="projectType">Type</label>
+            <select id="projectType" name="projectType" required>
+                <option value="">---</option>
+                <!-- dynamic type dispaly -->
+            </select>
+
+
+            <label for="status">Status</label>
+            <div id="statusButtons">
+                <input type="checkbox" class="btn-check" id="completedBtn" autocomplete="off" name="editstatus" value="COMPLETED" onclick="toggleStatus(this)">
+                <label class="btn btn-primary" for="completedBtn">Completed</label>
+  
+                <input type="checkbox" class="btn-check" id="ongoingBtn" autocomplete="off"  name="editstatus" value="ONGOING" onclick="toggleStatus(this)">
+                <label class="btn btn-primary" for="ongoingBtn">Ongoing</label>
+  
+                <input type="checkbox" class="btn-check" id="pendingBtn" autocomplete="off"  name="editstatus" value="PENDING"  onclick="toggleStatus(this)">
+                <label class="btn btn-primary" for="pendingBtn">Pending</label>
+  
+                <input type="checkbox" class="btn-check" id="cancelledBtn" autocomplete="off" name="editstatus" value="CANCELLED" onclick="toggleStatus(this)">
+                <label class="btn btn-primary" for="cancelledBtn">Cancelled</label>
+            </div>
+
+            <label for="projectName">Project Name</label>
+            <input type="text" id="projectName" name="projectName" required>
+
+            <label for="customerCompany">Customer Company</label>
+            <input type="text" id="customerCompany" name="customerCompany" required>
+
+            <label for="shootStart">Shoot Start</label>
+            <input type="datetime-local" id="shootStart" name="shootStart" required>
+
+            <label for="shootEnd">Shoot End</label>
+            <input type="datetime-local" id="shootEnd" name="shootEnd" required>
+
+            <label for="projectAmount">Project Amount</label>
+            <input type="number" id="projectAmount" name="projectAmount" required>
+
+            <label for="projectLocation">Project Location</label>
+            <input type="text" id="projectLocation" name="projectLocation" required>
+
+             <!--sandhiya-->
+            <div class="form-group">
+            <label for="locationLink">Location Link</label>
+            <input type="text" id="locationLink" name="locationLink" placeholder="Enter Google Maps link">
+            <button type="button" onclick="getAddressFromLink()" style="margin-top:8px">Get Address</button>
+            </div>
+
+            <div class="form-group">
+            <label for="address">Extracted Address</label>
+            <input type="text" id="address" name="address" readonly>
+            </div>
+                        
+            <label for="outsourcing" style="display: flex; align-items: center;">
+                Outsourcing
+                <label class="switch" style="margin-left: 295px;">
+                    <input type="checkbox" id="outsourcing" name="outsourcing" onchange="toggleOutsourcingDetails()">
+                    <span class="slider"></span>
+                </label>
+            </label>
+            
+            <div id="outsourcingDetails" style="display: none; margin-top: 10px;">
+                <label for="outsourcingFor">Outsourcing For</label>
+                <select id="outsourcingFor" name="outsourcingFor">
+                    <option >---</option>
+
+                    <option >Photo</option>
+                    <option >Video</option>
+                    <option >Editor</option>
+                    <option >Drone</option>
+                    <option >Pilot</option>
+                </select>
+            
+                <label for="outsourcingAmount" style="margin-top: 10px;">Outsourcing Amount</label>
+                <input type="number" id="outsourcingAmount" name="outsourcingAmount">
+            
+                <label for="outsourcingCustomer" style="margin-top: 10px;">Outsourcing Customer Name</label>
+                <select id="outsourcingCustomer" name="outsourcingCustomer">
+                    <option value="">---</option>
+                    <!-- dynamic clients display-->
+                </select>
+            
+                <label for="outsourcingPaid" style="display: flex; align-items: center; margin-top: 10px;white-space:nowrap;">
+                    Outsourcing Paid
+                    <label class="switch" style="margin-left: 260px;">
+                        <input type="checkbox" id="outsourcingPaid" name="outsourcingPaid">
+                        <span class="slider"></span>
+                    </label>
+                </label>
+            </div>
+
+            
+
+            <label for="reference">Reference</label>
+            <input type="text" id="reference" name="reference">
+            <div class="form-actions">
+                <button type="submit">Submit</button>
+                <button type="button" id="cancelBtn" onclick="closeEditModal()">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function toggleOutsourcingDetails() {
+        const outsourcingDetails = document.getElementById("outsourcingDetails");
+        const toggle = document.getElementById("outsourcing");
+        outsourcingDetails.style.display = toggle.checked ? "block" : "none";
+    }
+</script>
+
+<script> // edit form
+    $(document).ready(function() {
+        var modal = $('#editModal');
+        var span = $('.close');
+        var cancelBtn = $('#cancelBtn');
+     
+    
+        $.ajaxSetup({
+            beforeSend: function(xhr, settings) {
+                if (!this.crossDomain) {
+                    xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+                }
+            }
+        });
+        
+        function getCookie(name) {
+            var cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        
+    
+    
+        // When the user clicks on <span> (x) or cancel button, close the modal
+        span.on('click', function() {
+            modal.hide();
+        });
+    
+        cancelBtn.on('click', function() {
+            modal.hide();
+        });
+    
+
+    
+        // Function to open modal and fetch data
+        function openModal(code) {
+    
+            function convertToDateTimeLocalDMY(dateStr) {
+                console.log("edit form function");
+                const date = new Date(dateStr);
+                const pad = (num) => (num < 10 ? '0' + num : num);
+            
+                // Ensure correct format for 'dd-mm-yyyyTHH:MM'
+                const localDateTime = pad(date.getDate()) + '-' +  // Day first
+                                      pad(date.getMonth() + 1) + '-' +  // Month second
+                                      date.getFullYear() + ' ' +  // Year third
+                                      pad(date.getHours()) + ':' +  // Hours
+                                      pad(date.getMinutes());  // Minutes
+            
+                return localDateTime;
+            }
+            
+            
+
+            
+            function setStatusForEditForm(status) {
+                console.log("Setting status for edit form:", status);
+                var buttons = document.querySelectorAll('#statusButtons .btn-check');
+            
+                buttons.forEach(function(btn) {
+                    if (btn.value === status) {
+                        btn.checked = true;  // Check the correct checkbox
+                        var label = document.querySelector('label[for="' + btn.id + '"]');
+                        label.classList.add('active');  // Highlight this button
+                        console.log("Checking button for status:", btn.value);
+                    } else {
+                        btn.checked = false;  // Uncheck other buttons
+                        var label = document.querySelector('label[for="' + btn.id + '"]');
+                        label.classList.remove('active');  // Remove highlight from others
+                        console.log("Unchecking button:", btn.value);
+                    }
+                });
+            }
+    
+    
+            if (code) {
+                $.ajax({
+                    url: '/get_model_data/' + code + '/',
+                    method: 'GET',
+                    success: function(data) {
+
+    
+                        $('#editForm').attr('data-edit-code', code); // Set the edit code
+                        $('#projectType').val(data.projectType).change();
+                        $('#projectName').val(data.projectName);
+                        $('#customerCompany').val(data.customerCompany);
+                        $('#shootStart').val(convertToDateTimeLocalDMY(data.shootStart));
+                        $('#shootEnd').val(convertToDateTimeLocalDMY(data.shootEnd));
+                        $('#projectAmount').val(data.projectAmount);
+                        $('#projectLocation').val(data.projectLocation);
+                        $('#address').val(data.address);
+                        $('#outsourcing').prop('checked', data.outsourcing);
+
+                        if (data.outsourcing) {
+                            $('#outsourcingDetails').show(); // Show the outsourcing details if the checkbox is checked
+                        } else {
+                            $('#outsourcingDetails').hide(); // Hide the outsourcing details if not checked
+                        }
+
+                        $('#reference').val(data.reference);
+                        $('#outsourcingFor').val(data.outfor).change();
+                        $('#outsourcingAmount').val(data.outamt);
+                        $('#outsourcingCustomer').val(data.outcus).change();
+                        $('#outsourcingPaid').prop('checked', data.outpaid);
+
+                        console.log("just before the function...")
+                        setStatusForEditForm(data.projectStatus);
+
+                        modal.show();
+                    },
+                    error: function() {
+                        alert('Failed to fetch data. Please try again.');
+                    }
+                });
+            } else {
+                $('#editForm').removeAttr('data-edit-code'); // Clear the edit code for new projects
+                modal.show();
+            }
+        }
+        // Attach click event to edit buttons
+        $('.edit-button').on('click', function(event) {
+            event.stopPropagation();
+            event.preventDefault(); // Prevent default link behavior
+            var code = $(this).data('code'); // Get the project code from the button
+            openModal(code);
+        });
+    
+        $('#editForm').on('submit', function(event) {
+            event.preventDefault();
+
+            // Convert the date from dd-mm-yyyy to yyyy-mm-dd
+            var dateField = $('#shootStart');  // Select the date field
+            var dateValue = dateField.val();
+            var convertedDate = convertToBackendDateTime(dateValue);
+            dateField.val(convertedDate);  // Set the new converted date value back to the field
+
+
+            // Convert the date from dd-mm-yyyy to yyyy-mm-dd
+            var dateField = $('#shootEnd');  // Select the date field
+            var dateValue = dateField.val();
+            var convertedDate = convertToBackendDateTime(dateValue);
+            dateField.val(convertedDate);  // Set the new converted date value back to the field
+
+            var code = $('#editForm').attr('data-edit-code'); // Get the edit code
+            var url = '/edit_model/' + (code ? code + '/' : ''); // Ensure URL includes code if available
+            
+            var formData = $(this).serializeArray(); // Serialize the form data
+            var statusValue; // Variable to hold the selected status
+
+    // Find the checked checkbox for the status
+    $('#statusButtons .btn-check:checked').each(function() {
+        statusValue = $(this).val(); // Get the value of the checked checkbox
+    });
+  
+    if (statusValue) {
+        // Add the selected status to the form data
+        formData.push({ name: 'projectStatus', value: statusValue });
+    }
+    
+    
+            $.ajax({
+                url: url,
+                method: 'POST',
+                data: formData,
+    
+                
+                success: function(response) {
+                    if (response.success) {
+                        alert('Form submitted successfully!');
+                        modal.hide();
+                        location.reload();  // Reload the page to reflect changes
+                    } else {
+                        alert('Failed to submit form: ' + response.error);
+                    }
+                },
+                error: function() {
+                    alert('An error occurred. Please try again.');
+                }
+            });
+        });
+    });
+    
+</script>
+       
+
+<script>
+    function convertToBackendDateTime(dateTimeStr) {
+        console.log("Input dateTimeStr:", dateTimeStr); // Log the input value
+        
+        // Split the datetime string into date and time parts using 'T' as the delimiter
+        const [datePart, timePart] = dateTimeStr.split(' ');  // Correctly splitting on 'T'
+        
+        console.log("After splitting - Date part:", datePart, "Time part:", timePart); // Log the split parts
+        
+        const parts = datePart.split('-');  // Split the date part (dd-mm-yyyy)
+        console.log("Split date parts - Day:", parts[0], "Month:", parts[1], "Year:", parts[2]); // Log the split date parts
+        
+        // Rearrange to yyyy-mm-dd and concatenate with the time part
+        const backendDateTime = `${parts[2]}-${parts[1]}-${parts[0]} ${timePart}`;  
+        
+        console.log("Converted backend datetime format:", backendDateTime); // Log the final converted value
+        
+        return backendDateTime;
+    }
+</script>
+
+
+    <script>
+        //type dynamic dropdown
+        document.addEventListener('DOMContentLoaded', function() {
+           var TypeDropdown = document.getElementById('projectType');
+       
+           // Fetch type when the page loads
+           fetch('/get-unique-types/')
+               .then(response => response.json())
+               .then(data => {
+                   data.forEach(function(type) {
+                       var option = document.createElement('option');
+                       option.value = type;
+                       option.text = type;
+                       TypeDropdown.appendChild(option);
+                   });
+               })
+               .catch(error => console.error('Error fetching type:', error));
+       });
+   </script>
+   
+   <script>
+       //client dynamic dropdown
+       document.addEventListener('DOMContentLoaded', function() {
+          var TypeDropdown = document.getElementById('outsourcingCustomer');
+      
+          // Fetch type when the page loads
+          fetch('/get-unique-client/')
+              .then(response => response.json())
+              .then(data => {
+                  data.forEach(function(client) {
+                      var option = document.createElement('option');
+                      option.value = client;
+                      option.text = client;
+                      TypeDropdown.appendChild(option);
+                  });
+              })
+              .catch(error => console.error('Error fetching type:', error));
+      });
+   </script>
+   <script>
+    //phone sms map and copy functions
+    // Function to open the location in Google Maps
+        function openMap(location) {
+            const encodedLocation = encodeURIComponent(location); // Encode the location for URL
+            window.open(`https://www.google.com/maps/search/?api=1&query=${encodedLocation}`, '_blank');
+        }
+
+        // Function to copy the location to clipboard
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                alert('Coordinates copied to clipboard!'); // Optional: Provide feedback to user
+            }).catch(err => {
+                console.error('Error copying text: ', err);
+            });
+        }
+
+   </script>
+   <script>
+    // page navigation from div
+    function moveToExpensePage(exp_id) {
+        window.location.href = "/expense/" + exp_id + "/";
+    }
+</script>
+<script>
+    const sidebar = document.querySelector('.sidebar');
+    const toggleIcon = document.getElementById('toggle-icon');
+    
+    toggleIcon.addEventListener('click', function() {
+      if (sidebar.classList.contains('closed')) {
+        sidebar.classList.remove('closed');
+        toggleIcon.src = "{% static 'images/menuleft.png' %}";  // Change to the "left-chevron" when open
+      } else {
+        sidebar.classList.add('closed');
+        toggleIcon.src = "{% static 'images/menuright.png' %}";  // Change to the "chevron" when closed
+      }
+    });
+    document.getElementById('profileMenu').addEventListener('click', function(event) {
+        event.stopPropagation(); // Prevents the click from bubbling up
+        const dropdown = document.getElementById('profileDropdown');
+        dropdown.style.display = dropdown.style.display === 'none' || dropdown.style.display === '' ? 'block' : 'none';
+    });
+    
+    // Hide dropdown when clicking outside
+    document.addEventListener('click', function() {
+        const dropdown = document.getElementById('profileDropdown');
+        dropdown.style.display = 'none';
+    });
+  </script>
+
+  <script>
+    function toggleStatus(checkbox) {
+        var buttons = document.querySelectorAll('#statusButtons .btn-check');
+  
+        if (checkbox.checked) {
+            buttons.forEach(function(btn) {
+                if (btn !== checkbox) {
+                    btn.checked = false;
+                }
+            });
+        }
+  
+        buttons.forEach(function(btn) {
+            var label = document.querySelector('label[for="' + btn.id + '"]');
+            if (btn.checked) {
+                label.classList.add('active');
+            } else {
+                label.classList.remove('active');
+            }
+        });
+    }
+  
+    function closeEditModal() {
+        document.getElementById('editModal').style.display = 'none';
+    }
+  </script>
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/5.3.0/js/bootstrap.min.js"></script>
+  
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <script>
+      config = {
+          enableTime: true,  // Enable time picker
+          dateFormat: "d-m-Y H:i",  // Format for datetime-local (ISO format without seconds)
+      };
+      flatpickr("input[type=datetime-local]", config);
+  </script>
+
+      <!-- Places Autocomplete -->
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+    $.getScript("https://maps.googleapis.com/maps/api/js?key=AIzaSyAqIalCM0rqsXeHiyRP4ImBbVgqwMSv8D8&libraries=places")
+    .done(function(script, textStatus) {
+        google.maps.event.addDomListener(window, "load", initAutoComplete);
+    });
+    
+    let autocomplete;
+    
+    function initAutoComplete() {
+        autocomplete = new google.maps.places.Autocomplete(
+            document.getElementById('projectLocation'),
+            {
+                // No 'types' filter for broader searches (places, establishments, addresses, etc.)
+                componentRestrictions: {'country': 'in'} // Restrict to India (or change country if needed)
+            }
+        );
+    
+        autocomplete.addListener('place_changed', onPlaceChanged);
+    }
+    
+    function onPlaceChanged() {
+        var place = autocomplete.getPlace();
+    
+        if (!place.geometry) {
+            document.getElementById('projectLocation').placeholder = "*Begin typing address or place name";
+            return;
+        }
+    
+        // Retrieve latitude and longitude
+        var latitude = place.geometry.location.lat();
+        var longitude = place.geometry.location.lng();
+    
+        // Populate hidden fields with latitude and longitude
+        $('#latitude').val(latitude);
+        $('#longitude').val(longitude);
+    
+        // Optionally, retrieve more address components as before
+        var num = '', route = '', town = '', county = '', country = '', postalCode = '';
+        for (var i = 0; i < place.address_components.length; i++) {
+            for (var j = 0; j < place.address_components[i].types.length; j++) {
+                if (place.address_components[i].types[j] === "street_number") {
+                    num = place.address_components[i].long_name;
+                }
+                if (place.address_components[i].types[j] === "route") {
+                    route = place.address_components[i].long_name;
+                }
+                if (place.address_components[i].types[j] === "locality") {
+                    town = place.address_components[i].long_name;
+                }
+                if (place.address_components[i].types[j] === "administrative_area_level_2") {
+                    county = place.address_components[i].long_name;
+                }
+                if (place.address_components[i].types[j] === "country") {
+                    country = place.address_components[i].long_name;
+                }
+                if (place.address_components[i].types[j] === "postal_code") {
+                    postalCode = place.address_components[i].long_name;
+                }
+            }
+        }
+    
+        console.log(`Latitude: ${latitude}, Longitude: ${longitude}`);
+        console.log(`Address: ${num} ${route}, Town: ${town}, Country: ${country}`);
+    }
+</script>
+<!--Location Link-->
+<script>
+    async function resolveShortUrl(shortUrl) {
+        try {
+            // Call the Django view to resolve the short URL
+            const response = await fetch(`/resolve-url?url=${encodeURIComponent(shortUrl)}`);
+            const data = await response.json();
+
+            if (data.resolved_url) {
+                return data.resolved_url; // Return the resolved URL
+            } else {
+                console.error('Error resolving URL:', data.error);
+                return null;
+            }
+        } catch (error) {
+            console.error('Error resolving short URL:', error);
+            return null;
+        }
+    }
+
+    function extractPlaceNameAndCoordinates(link) {
+        // Updated regex to correctly extract place name and latitude/longitude
+        const regex = /\/maps\/place\/([^\/]+)\/@(-?\d+\.\d+),(-?\d+\.\d+)/;
+        const match = link.match(regex);
+        if (match) {
+            const placeName = decodeURIComponent(match[1]).replace(/\+/g, ' '); // Decode and replace + with spaces
+            const lat = parseFloat(match[2]);
+            const lng = parseFloat(match[3]);
+            return { placeName, coordinates: { lat, lng } };
+        }
+        return null;
+    }
+
+    async function getAddressFromLink() {
+        const locationLink = document.getElementById("locationLink").value;
+        const addressField = document.getElementById("address");
+
+        try {
+            // Resolve the URL if it is a short URL
+            const resolvedUrl = locationLink.includes('goo.gl') ? await resolveShortUrl(locationLink) : locationLink;
+
+            if (resolvedUrl) {
+                // Extract the place name and coordinates from the resolved link
+                const placeInfo = extractPlaceNameAndCoordinates(resolvedUrl);
+                console.log("ex co: ",placeInfo);
+                if (placeInfo) {
+                    // Call initMap with the coordinates
+                    //initMap(placeInfo.coordinates);
+                    addressField.value = 'Fetching address...'; // Optional: Indicate address fetching
+                    const address = await geocodeLatLng(placeInfo.coordinates);
+                    addressField.value = address; // Update the address field with the fetched address
+                } else {
+                    addressField.value = 'Invalid link or no coordinates found';
+                }
+            } else {
+                addressField.value = 'Failed to resolve URL';
+            }
+        } catch (error) {
+            console.error('Error fetching address:', error);
+            addressField.value = 'Error fetching address: ' + error.message;
+        }
+    }
+
+    function geocodeLatLng(latlng) {
+        return new Promise((resolve, reject) => {
+            const geocoder = new google.maps.Geocoder();
+            const { lat, lng } = latlng;
+
+            const latlngObj = { 
+                lat: parseFloat(latlng.lat), 
+                lng: parseFloat(latlng.lng) 
+            };
+            geocoder.geocode({ location: latlngObj }, (results, status) => {
+                if (status === 'OK') {
+                    if (results[0]) {
+                        resolve(results[0].formatted_address); // Resolve with formatted address
+                    } else {
+                        reject('No results found');
+                    }
+                } else {
+                    reject('Geocoder failed due to: ' + status);
+                }
+            });
+        });
+    }
+
+</script>
+<!-- map image display-->
+<script>
+    function fetchStaticMap(address, elementId) {
+        const apiKey = 'AIzaSyAqIalCM0rqsXeHiyRP4ImBbVgqwMSv8D8'; // Your Google Maps API key
+        const mapUrl = `https://maps.googleapis.com/maps/api/staticmap?center=${encodeURIComponent(address)}&zoom=14&size=400x300&maptype=roadmap&markers=color:red%7C${encodeURIComponent(address)}&key=${apiKey}`;
+        
+        // Set the map URL to the image element
+        const mapElement = document.getElementById(elementId);
+        mapElement.src = mapUrl;
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const mapElements = document.querySelectorAll('img.map-image[data-address]');
+        mapElements.forEach((element, index) => {
+            const address = element.getAttribute('data-address');
+            fetchStaticMap(address, element.id); // Use the existing element's ID
+        });
+    });
+</script>
+<script>
+    // user icon
+    const username = document.getElementById('name').textContent; 
+    document.querySelector('#userIcon').innerText = username.charAt(0);
+</script>
+
+<script>
+    function updateReceivedBar() {
+        // Retrieve and log the raw content
+        const receivedAmountText = document.getElementById("receivedAmountDis").textContent;
+        const projectAmountText = document.getElementById("projectAmountDis").textContent;
+    
+        console.log("Raw Received Amount Text:", receivedAmountText);
+        console.log("Raw Project Amount Text:", projectAmountText);
+    
+        // Trim and parse the values
+       // Remove non-numeric characters (like currency symbols or spaces)
+        const receivedAmount = parseFloat(receivedAmountText.replace(/[^\d.-]/g, '').trim());
+        const projectAmount = parseFloat(projectAmountText.replace(/[^\d.-]/g, '').trim());
+        console.log("Parsed Received Amount:", receivedAmount);
+        console.log("Parsed Project Amount:", projectAmount);
+    
+        const receivedBar = document.getElementById('receivedBar');
+    
+        if (!isNaN(receivedAmount) && !isNaN(projectAmount) && projectAmount > 0) {
+            const percentage = (receivedAmount / projectAmount) * 100;
+            receivedBar.style.width = percentage + '%';
+            receivedBar.textContent = Math.round(percentage) + '%';
+        } else {
+            receivedBar.style.width = '0%';
+            receivedBar.textContent = '0%';
+        }
+    }
+    
+
+
+    document.getElementById('editForm').onsubmit = function(event) {
+        event.preventDefault(); 
+        updateReceivedBar();
+        modal.style.display = "none";
+    };
+
+    updateReceivedBar();
+</script>
+
+</body>
+</html>

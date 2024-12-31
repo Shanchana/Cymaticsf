@@ -1,0 +1,1123 @@
+{% load static %}
+{% static "images" as baseurl %}
+<!doctype html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+	    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+	    <title>Allprojects</title>
+       <!-- <link rel="stylesheet" href="{% static './css/allprojects.css' %}">-->
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> 
+       
+
+        <style>
+            /* General Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            height: 100vh;
+            flex-direction: column;
+        }
+        .container {
+            display: flex;
+            width: 100%;
+            flex-grow: 1;
+        }
+        .sidebar {
+            background-color: #1e1e1e;
+            color: white;
+            width: 250px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            transition: width 0.3s;
+            position: relative;
+        }
+        .sidebar.closed {
+            width: 60px;
+        }
+        .sidebar .toggle-icon {
+            position: absolute;
+            top: 25px !important;
+            right: -8px;
+            cursor: pointer;
+            visibility: hidden;
+            border: 3px solid rgba(78, 27, 231, 0.5);
+            border-radius: 8px;
+            padding: 1px;
+            transition: visibility 0.3s ease-in-out, top 0.3s ease-in-out;
+            z-index: 2;
+        }
+        #toggle-icon {
+            width: 20px;
+            height: 20px;
+        }
+        .sidebar.closed .toggle-icon {
+            top: 10px;
+            right: -8px;
+        }
+        .sidebar:hover .toggle-icon, .toggle-icon:hover {
+            visibility: visible;
+        }
+        .sidebar .logo {
+            padding: 20px;
+            text-align: center;
+        }
+        .sidebar.closed .logo {
+            display: none;
+        }
+        .sidebar nav ul {
+            list-style: none;
+            padding: 0;
+            width: 100%;
+            text-align: center;
+        }
+        .sidebar nav ul li {
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: background-color 0.3s, border-left 0.3s;
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+        }
+        .sidebar.closed nav ul li {
+            justify-content: center;
+        }
+        .sidebar nav ul li a {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: white;
+            width: 100%;
+            font-family: Arial, sans-serif;
+        }
+        .sidebar nav ul li a:hover {
+            background-color: #555;
+            border-left: 4px solid #ffcc00;
+        }
+        .menu-icon {
+            margin-right: 10px;
+            width: 24px;
+            height: 24px;
+        }
+        .menu-text {
+            transition: opacity 0.3s, visibility 0.3s;
+            font-family: Arial, sans-serif;
+        }
+        .sidebar.closed .menu-text {
+            display: none;
+        }
+        .sidebar.closed nav ul li:hover {
+            background-color: inherit;
+        }
+        .main-content {
+            flex-grow: 1;
+            background-color: #f1f1f1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        .dropdown ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .profile-section {
+            position: relative;
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: background-color 0.3s, border-left 0.3s;
+        }
+        .profile-section:hover {
+            background-color: #555;
+            border-left: 4px solid #ffcc00;
+        }
+        .dropdown {
+            position: absolute;
+            bottom: 100%;
+            left: 0;
+            background-color: white;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            z-index: 1000;
+            width: 160px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            display: none;
+        }
+        .dropdown li {
+            padding: 10px;
+            color: black;
+            cursor: pointer;
+        }
+        .dropdown li:hover {
+            background-color: #f1f1f1;
+        }
+        .user-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #ddd;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 18px;
+            color: #0e0e0e;
+            background-color: #e1ecb8;
+        }
+        .search-filter {
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .search-add input[type="text"] {
+            padding: 10px;
+            font-size: 14px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .search-add .Filter {
+            padding: 10px 20px;
+            background-color: #000000; /* Black background */
+            color: #fff; /* White text */
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+
+        .search .Filter:hover {
+            background-color: #494949;
+        }
+
+        .table-container {
+            background-color: #fff;
+            padding: 20px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        table th, table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+            position: relative;
+        }
+
+        table th {
+            background-color: #f4f4f4;
+            font-weight: bold;
+        }
+
+        table tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .editable {
+            cursor: pointer;
+            padding: 8px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .edit-input {
+            width: 100%; /* Full width for better visibility */
+            border: 1px solid #ddd;
+            padding: 8px;
+            font-size: 14px;
+            box-sizing: border-box;
+            transition: transform 0.2s ease, box-shadow 0.2s ease; /* Transition for pop-up effect */
+            transform: translateY(0); /* Initial position */
+        }
+
+        .edit-input.focused {
+            transform: translateY(-5px) scale(1.05); /* Move up slightly and scale up */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add shadow for pop-up effect */
+        }
+
+        .edit-input:focus {
+            outline: none;
+            background-color: #e6f7ff;
+        }
+
+        /* Filter Dropdown */
+        .filter-dropdown {
+            background-color: white;
+            border: 1px solid #ddd;
+            box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            position: absolute;
+            top: 60px; /* Adjust to position directly below the filter button */
+            right: 20px; /* Adjust as per your layout */
+            width: 260px;
+            padding: 10px;
+            display: none; /* Initially hidden */
+        }
+
+        .filter-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #f1f1f1;
+            cursor: pointer; /* Change cursor to pointer */
+        }
+
+        .filter-item:last-child {
+            border-bottom: none;
+        }
+
+        .arrow-icon {
+            width: 10px;
+            height: 10px;
+            transition: transform 0.3s; /* Smooth transition for arrow rotation */
+        }
+
+        .amount-dropdown,
+        .type-dropdown,
+        .status-dropdown {
+            display: none; /* Hidden by default */
+            position: absolute;
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+            width: 260px; /* Match filter dropdown width */
+            padding: 10px;
+            z-index: 10; /* Ensure it's above other elements */
+            overflow-y: auto; /* Enable vertical scrolling */
+            max-height: 200px; /* Set maximum height to avoid overflow */
+            top: 100%; /* Position directly below the filter item */
+        }
+
+        .amount-item,
+        .type-item,
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+        }
+
+        .amount-item input[type="checkbox"],
+        .type-item input[type="checkbox"],
+        .status-item input[type="checkbox"] {
+            margin-left: 10px;
+        }
+
+        .filter-actions {
+            display: flex;
+            justify-content: space-between;
+            padding-top: 10px;
+        }
+
+        .filter-btn {
+            background-color: black;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .filter-btn:hover {
+            opacity: 0.8;
+        }
+        .switch {
+  position: relative;
+  display: inline-block;
+  width: 34px;
+  height: 20px;
+  margin-left: 120px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: .4s;
+  transition: .4s;
+  border-radius: 20px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 16px;
+  width: 16px;
+  left: 2px;
+  bottom: 2px;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: #000000;
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(14px);
+  -ms-transform: translateX(14px);
+  transform: translateX(14px);
+}
+
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+
+/* Filter Button */
+.filter-btn {
+    background-color: rgb(248, 248, 248);
+    color: rgb(92, 90, 90);
+    border: 1px solid #ccc;
+    padding: 8px 16px;
+    margin-left: 10px;  /* Adjust spacing between filter and new button */
+    border-radius: 4px;
+    cursor: pointer;
+    position: relative;
+    padding-left: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 130px;
+    font-size: medium;
+    font-style: normal;
+}
+
+.filter-btn .filter-text {
+    flex-grow: 1;
+    margin-left: 10px;
+}
+
+.filter-btn .dropdown-icon {
+    margin-left: 10px; /* Adjust icon spacing */
+    width: 15px;
+    height: 15px;
+    margin-top: 3px;
+}
+       
+.dropdown-section .side-arrow {
+    width: 20px;
+    height: 12px;
+    flex-shrink: 0;
+    transition: transform 0.3s ease;
+}
+
+
+.filter-dropdown {
+    background-color: white;
+    border: 1px solid #ddd;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    position: absolute;
+    top: 80px; /* Position below the filter button */
+    right: 20px;
+    width: 280px;
+    padding: 10px;
+    display: none; /* Initially hidden */
+    z-index: 10;
+}
+
+
+
+         
+.dropdown-section {
+   
+    justify-content:space-between;
+    align-items: center;
+    cursor: pointer;
+    position: relative;  
+    padding: 15px 0;
+}
+
+        .filter-dropdown .dropdown-section:hover{
+            background-color: #f1f1f1;
+            display:block;
+        }
+        .dropdown-section label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    font-weight: bold;
+    cursor: pointer;
+    padding: 0 16px; 
+    box-sizing: border-box; 
+}
+.dropdown-section label span {
+    flex-grow: 1;
+}
+
+        .dropdown-section input[type="checkbox"] {
+            width: 20px; 
+            height: 20px; 
+            margin-right: 10px; 
+
+        }
+
+      
+        .submenu {
+    display: none; 
+    padding: 10px 16px; 
+    color: #000000;
+}
+
+.submenu input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
+}
+
+.submenu.show {
+    display:block;
+}
+
+        .clear-btn {
+            padding: 5px;
+            padding-right: 40px;
+            padding-left: 40px;
+            margin-top: 10px;
+            background-color: #ffffff;
+            color: rgb(0, 0, 0);
+            border: 1px solid #888;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .done-btn {
+            padding: 5px;
+            padding-right: 40px;
+            padding-left: 40px;
+            margin-top: 10px;
+            background-color: #000000;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .clear-btn:hover, .done-btn:hover {
+            background-color: #555;
+        }
+
+        .filter-btn img {
+            width: 20px;
+            height: 20px;
+            vertical-align: middle;
+            margin-right: 6px;
+            margin-top: -2px;
+        }
+       
+        .header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 20px;
+            }
+    
+            .header h1 {
+                font-size: 24px;
+            }
+    
+            .search-add {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;  /* Align everything to the right */
+    width: 100%;
+}
+
+.search-add input {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-right: 10px; /* Space between search bar and filter button */
+    width: 200px;       /* Adjust width of the search bar */
+}
+
+        </style>
+
+    </head>
+    <body>
+
+        <div class="container">
+            <aside class="sidebar">
+                <div class="toggle-icon">
+                    <img src="{% static 'images/menuleft.png' %}" alt="icon" id="toggle-icon" width="16" height="16">
+                </div>
+                <div class="logo">
+                  <img src="{% static './images/logowhite.png' %}" alt="logo" width="50" height="50">
+                </div>
+                <nav>
+                    <ul>
+                    <li class="menu-item"><a href="{% url 'dashboard' %}"><img src="{% static 'images/dashboard.png' %}" class="menu-icon"><span class="menu-text">Dashboard</span></a></li>
+                    <li class="menu-item"><a href="{% url 'projects' %}"><img src="{% static 'images/project.png' %}" class="menu-icon"><span class="menu-text">Project</span></a></li>
+                    <li class="menu-item"><a href="{% url 'incomef_view' %}"><img src="{% static 'images/income.png' %}" class="menu-icon"><span class="menu-text">Income</span></a></li>
+                    <li class="menu-item"><a href="{% url 'expense' %}"><img src="{% static 'images/expenses.png' %}" class="menu-icon"><span class="menu-text">Expense</span></a></li>
+                    <li class="menu-item"><a href="{% url 'calendar' %}"><img src="{% static 'images/calendar.png' %}" class="menu-icon"><span class="menu-text">Calendar</span></a></li>
+                    <li class="menu-item"><a href="{% url 'allproject' %}"><img src="{% static 'images/All projects.png' %}" class="menu-icon"><span class="menu-text">All Projects</span></a></li>
+                    <li class="menu-item"><a href="{% url 'clientsbook' %}"><img src="{% static 'images/clientsbook.png' %}" class="menu-icon"><span class="menu-text">Clients Book</span></a></li>
+                    <li class="menu-item"><a href="{% url 'clients' %}"><img src="{% static 'images/Clients.png' %}" class="menu-icon"><span class="menu-text">Clients</span></a></li>
+                    <li class="menu-item"><a href="{% url 'status' %}"><img src="{% static 'images/status.png' %}" class="menu-icon"><span class="menu-text">Status</span></a></li>
+                    <li class="menu-item active"><a href="{% url 'pending_pay' %}"><img src="{% static 'images/pending.png' %}" class="menu-icon"><span class="menu-text">Pending Payments</span></a></li>
+                    <li class="menu-item"><a href="{% url 'project_map' %}"><img src="{% static 'images/map.png' %}" class="menu-icon"><span class="menu-text">Map</span></a></li>
+                    <li class="menu-item"><a href="{% url 'assets' %}"><img src="{% static 'images/Assets.png' %}" class="menu-icon"><span class="menu-text">Assets</span></a></li>
+                    <li class="menu-item"><a href="{% url 'budget' %}"><img src="{% static 'images/budget.png' %}" class="menu-icon"><span class="menu-text">Budget</span></a></li>
+                    <li class="menu-item"><a href="{% url 'entertainment' %}"><img src="{% static 'images/Entertainment.png' %}" class="menu-icon"><span class="menu-text">Entertainment</span></a></li>
+                </ul>
+                </nav>
+                <div class="profile-section" id="profileMenu">
+                    <div class="user-icon" id="userIcon">
+
+                  </div>
+
+                    <span class="menu-text" id="name">{{ user.username }}</span>
+                    <div class="dropdown" id="profileDropdown">
+                        <ul>
+                            <li><a href="{% url 'profile' %}">View Profile</a></li>
+                            <li><a href="{% url 'logout_view' %}">Sign Out</a></li>
+                        </ul>
+                    </div>
+                  </div>
+            </aside>
+            <main class="main-content">
+                <header class="header">
+                   
+                    <div class="search-add">
+
+<!--search and filter-->
+
+<!-- search box-->
+<form method = "post" action ="{% url 'allproject' %}">
+    {% csrf_token %}
+    <input type="text" name="q" placeholder="search..." , value="{{ query }}" ></div>
+    
+
+<!-- filter box -->        
+
+<button id="filter-btn" onclick="toggleFilterDropdown(event)" class="filter-btn">
+    <span class="filter-text">Filter</span>
+    <img src="{% static 'images/filter.png' %}" alt="Filter Icon" class="dropdown-icon">
+</button>  
+
+        
+<div class="filter-dropdown" id="filterDropdown">
+    <!-- 1. Pending Amount Filter -->
+    <div class="dropdown-section">
+        <label class="toggle-amount"onclick="toggleDropdown('amount-dropdown1', this)">
+            <span>Pending Amount</span>
+            <i class="fa-solid fa-chevron-right side-arrow"></i>
+        </label>
+        <div class="submenu" id="amount-dropdown1">
+            <label><input type="checkbox" onchange="setPendingAmountFilter(0, 50000)"style="margin-bottom: 12px;"> 0 - 50,000<br></label>
+            <label><input type="checkbox" onchange="setPendingAmountFilter(50000, 100000)"style="margin-bottom: 12px;"> 50,000 - 1,00,000<br></label>
+            <label><input type="checkbox" onchange="setPendingAmountFilter(100000, 150000)"style="margin-bottom: 12px;"> 1,00,000 - 1,50,000<br></label>
+            <label><input type="checkbox" onchange="setPendingAmountFilter(150000, 200000)"style="margin-bottom: 12px;"> 1,50,000 - 2,00,000<br></label>
+            <label><input type="checkbox" onchange="setPendingAmountFilter(200000, 250000)"style="margin-bottom: 12px;"> 2,00,000 - 2,50,000<br></label>
+        </div>
+    </div>
+
+    <!-- 2. Status Filter -->
+    <div class="dropdown-section">
+        <label class="toggle-status" onclick="toggleDropdown('status-dropdown1', this)">
+            <span>Status</span>
+            <i class="fa-solid fa-chevron-right side-arrow"></i>
+        </label>
+        <div class="submenu" id="status-dropdown1">
+            <!-- -->
+        </div>
+    </div>
+
+    <!-- 3. Type Filter -->
+    <div class="dropdown-section">
+        <label class="toggle-type" onclick="toggleDropdown('type-dropdown1', this)">
+            <span>Type</span>
+            <i class="fa-solid fa-chevron-right side-arrow"></i>
+        </label>
+        <div class="submenu" id="type-dropdown1">
+                    <!-- dynamic--> 
+       </div>
+    </div>
+
+    <!-- 4. Outsourcing Filter -->
+    <div class="dropdown-section">
+        <label class="toggle-company" onclick="toggleDropdown('company-dropdown1', this)">
+            <span>Outsourcing</span>
+            <i class="fa-solid fa-chevron-right side-arrow"></i>
+        </label>
+        <div class="submenu" id="company-dropdown1">
+            <label><input type="checkbox" onchange="setFilter('outsourcing', 'True')"> True<br></label><br>
+            <label><input type="checkbox" onchange="setFilter('outsourcing', 'False')"> False<br></label>
+        </div>
+    </div>
+
+    <!-- Hidden fields for filters -->
+<input type="hidden" name="outsourcing" id="outsourcing" value="{{ outsourcing }}">
+<input type="hidden" name="pending_amnt_min" id="pending_amnt_min" value="{{ pending_amnt_min }}">
+<input type="hidden" name="pending_amnt_max" id="pending_amnt_max" value="{{ pending_amnt_max }}">
+<input type="hidden" name="status" id="status" value="{{ status }}">
+<input type="hidden" name="type" id="type" value="{{ type }}">
+
+    <div class="filter-actions">
+        <button class="clear-btn" onclick="clearFilters()">Clear All</button>
+        <button class="done-btn" type="submit">Done</button>
+    </div>
+</div>
+
+
+</form>
+
+</header>
+
+
+<section class="income-table">
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Project Code</th>
+                    <th>Project Name</th>
+                    <th>Customer Company</th>
+
+                    {% if is_admin %}
+                    <th>Project Amount</th>
+                    <th>Outsourcing</th>
+                    <th>Amount</th>
+                    <th>Received Amount</th>
+                    <th>Pending Amount</th>
+                    <th>Profit</th>
+                    <th>Outsourcing Paid</th>
+                    <th>Expense</th>
+                    {% endif %}
+
+                </tr>
+            </thead>
+                <tbody>
+                    {% for item in project_expenses %}
+                    <tr>
+                        <td><div class="editable" contenteditable="true" data-field="shoot_start_date" data-item-id="{{ item.project.id }}" data-type="datetime">{{ item.project.shoot_start_date|date:"d/m/Y" }}
+                        </div></td>
+                        <td><div class="editable" contenteditable="true" data-field="code" data-item-id="{{ item.project.id }}">{{item.project.code}}</div></td>
+                        <td><div class="editable" contenteditable="true" data-field="name" data-item-id="{{ item.project.id }}">{{item.project.name}}</div></td>
+                        <td><div class="editable" contenteditable="true" data-field="company" data-item-id="{{ item.project.id }}">{{ item.project.company }}</div></td>
+
+                        {% if is_admin %}
+                        <td><div class="editable" contenteditable="true" data-field="amount" data-item-id="{{ item.project.id }}" data-type="number">₹{{item.project.amount}}</div></td>
+                        <td><div class="editable"><input type="checkbox" class="editable-checkbox" data-field="outsourcing" data-item-id="{{ item.project.id }}" {% if item.project.outsourcing %} checked {% endif %}></div></td>
+                        <td><div class="editable" contenteditable="true" data-field="outsourcing_amt" data-item-id="{{ item.project.id }}" data-type="number">₹{{item.project.outsourcing_amt}}</div></td>
+                        <td><div class="editable" contenteditable="true" data-field="received_amt" data-item-id="{{ item.project.id }}" data-type="number">₹{{item.project.received_amt}}</div></td>
+                        <td><div class="editable" contenteditable="true" data-field="pending_amt" data-item-id="{{ item.project.id }}" data-type="number">₹{{item.project.pending_amt}}</div></td>
+                        <td><div class="editable" contenteditable="true" data-field="profit" data-item-id="{{ item.project.id }}" data-type="number">₹{{item.project.profit}}</div></td>
+                        <td><div class="editable"><input type="checkbox" class="editable-checkbox" data-field="outsourcing_paid" data-item-id="{{ item.project.id }}" {% if item.project.outsourcing_paid %} checked {% endif %}></div></td>
+                        <td><div class="editable" contenteditable="true" data-field="expenses" data-item-id="{{ item.project.id }}" data-type="number">₹{{item.total_expense}}</div></td>
+                        {% endif %}                    </tr>
+                    
+                    
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+</main>
+</div>
+
+<script>
+    // user icon
+    const username = document.getElementById('name').textContent; 
+    document.querySelector('#userIcon').innerText = username.charAt(0);
+    document.getElementById('profileMenu').addEventListener('click', function(event) {
+        event.stopPropagation(); // Prevents the click from bubbling up
+        const dropdown = document.getElementById('profileDropdown');
+        dropdown.style.display = dropdown.style.display === 'none' || dropdown.style.display === '' ? 'block' : 'none';
+    });
+    
+    // Hide dropdown when clicking outside
+    document.addEventListener('click', function() {
+        const dropdown = document.getElementById('profileDropdown');
+        dropdown.style.display = 'none';
+    });
+</script>
+
+<script>
+    function toggleDropdown(dropdownId, element) {
+        var dropdown = document.getElementById(dropdownId);
+        var icon = element.querySelector('.fa-solid');
+        dropdown.classList.toggle('show'); // Toggle 'show' class to control visibility
+        
+        // Toggle the icon between right and down
+        if (dropdown.classList.contains('show')) {
+            icon.classList.remove('fa-chevron-right');
+            icon.classList.add('fa-chevron-down');
+        } else {
+            icon.classList.remove('fa-chevron-down');
+            icon.classList.add('fa-chevron-right');
+        }
+    }
+</script>
+
+<script>
+    // Function to convert date strings to the datetime-local format
+    function convertToDatetimeLocal(dateStr) {
+        const date = new Date(dateStr);
+        const pad = (num) => (num < 10 ? '0' + num : num);
+        
+        const localDateTime = date.getFullYear() + '-' +
+                              pad(date.getMonth() + 1) + '-' +
+                              pad(date.getDate()) + 'T' +
+                              pad(date.getHours()) + ':' +
+                              pad(date.getMinutes());
+
+        return localDateTime;
+    }
+    
+    
+    document.querySelectorAll('.editable').forEach(cell => {
+        cell.addEventListener('click', function() {
+            if (!this.querySelector('input')) {
+                const currentText = this.innerText.trim();
+                let input = document.createElement('input');
+                
+                // Determine the input type based on the data-type attribute
+                const fieldType = cell.getAttribute('data-type');
+                
+                switch (fieldType) {
+                    case 'number':
+                        input.type = 'number';
+                        input.step = 'any';  // Allows decimal numbers
+                        input.value = currentText.replace(/[^0-9.-]/g, '');  // Clean up number formatting
+                        break;
+                    case 'datetime':
+                        input.type = 'datetime-local';
+                        input.value = convertToDatetimeLocal(currentText);  // Use the custom function for formatting
+                        break;
+                    case 'text':
+                    default:
+                        input.type = 'text';
+                        input.value = currentText;
+                        break;
+                }
+                
+                input.className = 'edit-input';
+                this.innerHTML = '';
+                this.appendChild(input);
+                input.focus();
+                input.classList.add('focused');  // Add class for pop-up effect
+    
+                // Handle blur event
+                input.addEventListener('blur', function() {
+                    let newValue = this.value.trim();
+                    
+                    
+    
+                    cell.innerHTML = fieldType === 'datetime' ? convertToDatetimeLocal(newValue) : newValue;  // Format back to display format
+                    input.classList.remove('focused');  // Remove class after editing
+    
+                    // Call AJAX to save new value
+                    const field = cell.getAttribute('data-field');
+                    const itemId = cell.getAttribute('data-item-id');
+    
+                    if (newValue !== currentText) {  // Only send if the value is different
+                        $.ajax({
+                            url: '/save-item/',
+                            type: 'POST',
+                            data: {
+                                'item_id': itemId,
+                                'field': field,
+                                'value': newValue,
+                                'csrfmiddlewaretoken': '{{ csrf_token }}'
+                            },
+                            success: function(response) {
+                                console.log('Field updated successfully');
+                            },
+                            error: function(xhr, errmsg, err) {
+                                console.error('Error updating field');
+                            }
+                        });
+                    }
+                });
+    
+                // Handle Enter keypress to trigger blur
+                input.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter') {
+                        this.blur();
+                    }
+                });
+            }
+        });
+    });
+    
+    // jQuery for handling checkbox change event
+    $(document).ready(function() {
+        // Handle checkbox change event
+        $('.editable-checkbox').on('change', function() {
+            var isChecked = $(this).is(':checked');  // Get whether the checkbox is checked
+            var field = $(this).data('field');  // Get the field name
+            var itemId = $(this).data('item-id');  // Get the item ID
+    
+            // Send the checkbox state to the backend using AJAX
+            $.ajax({
+                url: '/save-item/',
+                type: 'POST',
+                data: {
+                    'item_id': itemId,
+                    'field': field,
+                    'value': isChecked ? 1 : 0,  // Send 1 for checked, 0 for unchecked
+                    'csrfmiddlewaretoken': '{{ csrf_token }}'  // Include CSRF token for security
+                },
+                success: function(response) {
+                    console.log('Checkbox updated successfully');
+                },
+                error: function(xhr, errmsg, err) {
+                    console.error('Error updating checkbox');
+                }
+            });
+        });
+    });
+    </script>
+
+
+<script> // FRONT END dropdown
+
+    document.querySelector('input[name="q"]').addEventListener('keypress', function(event) {
+               if (event.key === 'Enter') {
+                   event.preventDefault(); 
+                   this.form.submit(); 
+               }
+           });
+
+
+           function toggleFilterDropdown(event) {
+               event.preventDefault(); 
+               const filterDropdown = document.getElementById('filterDropdown');
+               filterDropdown.style.display = filterDropdown.style.display === 'block' ? 'none' : 'block';
+           }
+
+document.addEventListener('click', function(event) {
+   const filterDropdown = document.getElementById('filterDropdown');
+   const filterBtn = document.getElementById('filter-btn');
+   
+  
+   if (!filterDropdown.contains(event.target) && !filterBtn.contains(event.target)) {
+            event.stopPropagation();
+   }
+});
+
+           // Ensure clicking inside the dropdown does not close it
+document.querySelectorAll('.dropdown-section').forEach(section => {
+   section.addEventListener('click', function(event) {
+       event.stopPropagation(); // Prevent the dropdown from closing when interacting with it
+   });
+});
+
+           // Ensure clicking inside the dropdown does not close it
+           const dropdownSections = document.querySelectorAll('.dropdown-section');
+           dropdownSections.forEach(section => {
+               section.addEventListener('click', function(event) {
+                   event.stopPropagation(); 
+               });
+           });
+
+
+// Ensure clear button closes the filter dropdown
+document.querySelector('.clear-btn').addEventListener('click', function(event) {
+   event.preventDefault();
+   clearFilters(); 
+});
+
+          
+           dropdownSections.forEach(section => {
+               section.addEventListener('click', function() {
+                   const submenu = this.querySelector('.submenu');
+                   submenu.style.display = submenu.style.display === 'block' ? 'none' : 'block';
+               });
+           });
+
+        </script>
+
+<!-- script for dropdown style -->
+
+<script>
+    // Store selected filter values in arrays
+    let selectedStatus = [];
+    let selectedType = [];
+    let selectedOutsourcing = [];
+    let selectedPendingAmount = [];
+
+    function setFilter(field, value) {
+        const fieldElement = document.getElementById(field);
+        if (fieldElement) {
+            const currentValues = fieldElement.value ? fieldElement.value.split(',') : [];
+            if (currentValues.includes(value)) {
+                // Remove the value if it's already checked (uncheck scenario)
+                fieldElement.value = currentValues.filter(item => item !== value).join(',');
+            } else {
+                // Add the value if it's checked
+                currentValues.push(value);
+                fieldElement.value = currentValues.join(',');
+            }
+        }
+    }
+
+   
+
+    // Function to clear all filters
+    function clearFilters() {
+        document.getElementById('outsourcing').value = '';
+        document.getElementById('pending_amnt_min').value = '';
+        document.getElementById('pending_amnt_max').value = '';
+        document.getElementById('status').value = '';
+        document.getElementById('type').value = '';
+        document.forms[0].submit();
+    }
+
+    // Function to set pending amount filter
+    function setPendingAmountFilter(min, max) {
+        const range = `${min}-${max}`;
+        const index = selectedPendingAmount.indexOf(range);
+
+        // Toggle the selection for pending amount
+        if (index === -1) {
+            selectedPendingAmount.push(range);
+        } else {
+            selectedPendingAmount.splice(index, 1);
+        }
+
+        // Update the hidden fields for pending amount min and max
+        if (selectedPendingAmount.length > 0) {
+            const amounts = selectedPendingAmount[selectedPendingAmount.length - 1].split('-');
+            document.getElementById('pending_amnt_min').value = amounts[0];
+            document.getElementById('pending_amnt_max').value = amounts[1];
+        } else {
+            document.getElementById('pending_amnt_min').value = '';
+            document.getElementById('pending_amnt_max').value = '';
+        }
+    }
+
+    // Function to fetch unique types from the server
+    function fetchUniqueTypes() {
+        fetch('/get-unique-types/')  // Adjust the URL if needed
+            .then(response => response.json())
+            .then(data => {
+                const dropdown = document.getElementById('type-dropdown1');
+                dropdown.innerHTML = '';  // Clear existing content
+
+                // Get selected types from hidden input
+                const selectedTypes = document.getElementById('type').value.split(',');
+
+                // Loop through the types and create checkboxes
+                data.forEach(type => {
+                    const label = document.createElement('label');
+                    const checkbox = document.createElement('input');
+                    checkbox.type = 'checkbox';
+                    checkbox.setAttribute('onchange', `setFilter('type', '${type}')`);
+
+                    // Check if this type is already selected and check the box
+                    if (selectedTypes.includes(type)) {
+                        checkbox.checked = true;
+                    }
+
+                    label.appendChild(checkbox);
+                    label.append(type);
+                    dropdown.appendChild(label);
+                    dropdown.appendChild(document.createElement('br'));
+                });
+            });
+    }
+
+    // Function to restore filter states for status and pending amount
+    
+    function restoreFilters() {
+        
+
+        // Restore outsourcing filters
+        const selectedOutsourcingValues = document.getElementById('outsourcing').value.split(',');
+        selectedOutsourcingValues.forEach(outsourcing => {
+            const checkbox = document.querySelector(`input[onchange="setFilter('outsourcing', '${outsourcing}')"]`);
+            if (checkbox) {
+                checkbox.checked = true;
+            }
+        });
+
+
+        // pending amount
+        const min = document.getElementById('pending_amnt_min').value;
+        const max = document.getElementById('pending_amnt_max').value;
+        if (min && max) {
+            const checkbox = document.querySelector(`input[onchange="setPendingAmountFilter(${min}, ${max})"]`);
+            if (checkbox) {
+                checkbox.checked = true;
+            }
+        }
+    } 
+
+    function populateStatusDropdown() {
+        const statuses = ['COMPLETED', 'ONGOING', 'PENDING' ,'CANCELLED'];
+        const dropdown = document.getElementById('status-dropdown1');
+        dropdown.innerHTML = ''; 
+    
+        const selectedStatuses = document.getElementById('status').value.split(',');
+    
+        statuses.forEach(status => {
+            const label = document.createElement('label');
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.setAttribute('onchange', `setFilter('status', '${status}')`);
+    
+            if (selectedStatuses.includes(status)) {
+                checkbox.checked = true;
+            }
+    
+            label.appendChild(checkbox);
+            label.append(status);
+            dropdown.appendChild(label);
+            dropdown.appendChild(document.createElement('br'));
+        });
+    }
+
+    // Call functions to fetch types and restore filters on page load
+    window.onload = function() {
+        fetchUniqueTypes();
+        populateStatusDropdown();
+        restoreFilters();
+        
+
+    };
+
+    
+</script>
+
+
+</body>
+</html>

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Sheets GID Test</title>
+    <!-- CSRF token setup for Django -->
+    <meta name="csrfmiddlewaretoken" content="{{ csrf_token }}">
+    <script>
+        // Function to extract 'gid' from the current URL
+        function getGidFromUrl() {
+            const url = window.location.href;
+            console.log('Current URL:', url); // Log the current URL
+
+            const params = new URLSearchParams(url.split('?')[1]); // Split the URL at '?' to get the query parameters
+            const gid = params.get('gid'); // Get the value of 'gid' parameter
+
+            console.log('Extracted GID:', gid); // Log the extracted GID
+            return gid;
+        }
+
+        // Send 'gid' to the Django backend via AJAX
+        function sendGidToBackend() {
+            const gid = getGidFromUrl();
+
+            if (gid) {
+                // Make an AJAX POST request to send gid to Django backend
+                fetch('/update-gid/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                    },
+                    body: JSON.stringify({ gid: gid })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('GID successfully sent to backend:', data);
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                });
+            } else {
+                console.error('No GID found in the current URL');
+            }
+        }
+
+        // Call the function to send GID on page load
+        window.onload = function() {
+            sendGidToBackend();
+        };
+    </script>
+</head>
+<body>
+    <h1>Google Sheets GID Extraction Test</h1>
+    <p>Open the browser console (F12) to view the logs.</p>
+</body>
+</html>
