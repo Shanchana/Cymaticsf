@@ -1,19 +1,22 @@
-FROM python:3.11.0
+# Start with a Python base image
+FROM python:3.9
 
+# Set working directory
 WORKDIR /app
 
-# Copy requirements first for better caching
-COPY cymaticswork/requirements.txt requirements.txt
+# Copy requirements first
+COPY cymaticswork/requirements.txt /app/
 
 # Install dependencies
-RUN pip install -r requirements.txt
+RUN python -m pip install --upgrade pip && \
+    pip install -r requirements.txt
 
 # Copy project files
-COPY cymaticswork/ .
+COPY . /app/
 
 # Collect static files and run migrations
-RUN python manage.py collectstatic --noinput
-RUN python manage.py migrate --noinput
+RUN python manage.py collectstatic --noinput && \
+    python manage.py migrate --noinput
 
 # Command to run the application
 CMD ["gunicorn", "cymaticspro.wsgi", "--log-file", "-"]
