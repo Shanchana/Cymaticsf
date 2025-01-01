@@ -1,13 +1,19 @@
-[phases.setup]
-nixPkgs = ["python3", "python39Packages.pip", "python3.pkgs.venv"]
+[
+phases.setup
+]
+aptPkgs = ["python3", "python3-pip", "python3-venv"]
 
-[phases.build]
+[
+phases.build
+]
 cmds = [
     "cd cymaticswork",
-    "python -m pip install -r requirements.txt",
+    "pip install -r requirements.txt",
     "python manage.py collectstatic --noinput",
     "python manage.py migrate --noinput"
 ]
 
-[start]
+[
+start
+]
 cmd = "gunicorn cymaticspro.wsgi --log-file -"
