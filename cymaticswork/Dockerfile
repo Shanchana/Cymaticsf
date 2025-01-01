@@ -1,9 +1,9 @@
-FROM python:3.9
+FROM python:3.11.0
 
 WORKDIR /app
 
 # Copy requirements first for better caching
-COPY cymaticswork/requirements.txt .
+COPY cymaticswork/requirements.txt requirements.txt
 
 # Install dependencies
 RUN pip install -r requirements.txt
