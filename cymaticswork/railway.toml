@@ -2,3 +2,51 @@
 [build]
 builder = "DOCKERFILE"
 dockerfilePath = "Dockerfile"
+buildCommand = ""
+
+# Dockerfile
+FROM python:3.9-slim
+
+WORKDIR /app
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    python3-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy requirements first to leverage Docker cache
+COPY cymaticswork/requirements.txt .
+
+# Install Python dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy project files
+COPY cymaticswork/ .
+
+# Run collectstatic and migrations
+RUN python manage.py collectstatic --noinput && \
+    python manage.py migrate --noinput
+
+# Command to run the application
+CMD gunicorn cymaticspro.wsgi --log-file -
+
+# .dockerignore
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.env
+*.sqlite3
+staticfiles/
+media/
+.git
+.gitignore
+.docker
+docker-compose*
+Dockerfile*
+.nixpacks/
+nixpacks.toml
