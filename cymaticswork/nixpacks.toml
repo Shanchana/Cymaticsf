@@ -1,0 +1,7 @@
+[phases.setup]
+cmds = [
+    "chmod +x ./entrypoint.sh"
+]
+
+[start]
+cmd = "./entrypoint.sh"
