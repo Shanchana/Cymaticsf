@@ -1,7 +1,13 @@
 [phases.setup]
+nixPkgs = ["python3", "python39Packages.pip", "python3.pkgs.venv"]
+
+[phases.build]
 cmds = [
-    "chmod +x ./entrypoint.sh"
+    "cd cymaticswork",
+    "python -m pip install -r requirements.txt",
+    "python manage.py collectstatic --noinput",
+    "python manage.py migrate --noinput"
 ]
 
 [start]
-cmd = "./entrypoint.sh"
+cmd = "gunicorn cymaticspro.wsgi --log-file -"
