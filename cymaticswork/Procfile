@@ -1,1 +1,0 @@
-web: cd cymaticswork && gunicorn cymaticspro.wsgi --log-file -
