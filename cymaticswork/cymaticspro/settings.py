@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'django_extensions',
+    'social_django'
     'cymaticsapp',
     'django.contrib.sites',
     'allauth',
