@@ -104,7 +104,7 @@ WSGI_APPLICATION = 'cymaticspro.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
-DATABASES = {
+"""DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': config('DB_NAME'),
@@ -113,6 +113,15 @@ DATABASES = {
         'HOST': config('DB_HOST'),
         'PORT': config('DB_PORT')
     }
+}"""
+
+import dj_database_url
+
+DATABASES = {
+    'default': dj_database_url.config(
+        default=config('DATABASE_URL'),
+        conn_max_age=600
+    )
 }
 
 
