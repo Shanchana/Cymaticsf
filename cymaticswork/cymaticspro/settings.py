@@ -46,14 +46,13 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'django_extensions',
-    'social_django'
+    'social_django',  # Added the missing comma here
     'cymaticsapp',
     'django.contrib.sites',
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google'
-
 ]
 
 SOCIALACCOUNT_PROVIDERS = {
